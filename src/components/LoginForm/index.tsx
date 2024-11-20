@@ -1,24 +1,33 @@
 import Input from "./Input"
 import logoCuan from "../../assets/CoffeeNCouple.png"
 import { Link } from "react-router-dom"
-import { useState } from "react"
+import { isNotEmpty } from '../../util/validation.js'
+import { useInput } from "../../hooks/useInput"
 
-const LoginForm = () => {
-  const [enteredValues, setEnteredValues] = useState({
-    email: '',
-    password: ''
-  });
+const LoginForm:React.FC = () => {
+  const {
+    value: usernameValue, 
+    handleInputChange: handleUsernameChange, 
+    handleInputBlur: handleUsernameBlur,
+    hasError: usernameHasError
+  } = useInput('', (value: string) => isNotEmpty(value));
 
-  function handleSubmit(event : React.FormEvent<HTMLFormElement>){
+  const {
+    value: passwordValue, 
+    handleInputChange: handlePasswordChange, 
+    handleInputBlur: handlePasswordBlur, 
+    hasError: passwordHasError
+  } = useInput('', (value: string) => isNotEmpty(value));
+
+  function handleSubmit(event : any){
     event.preventDefault();
-    console.log(enteredValues)
-  }
 
-  function handleInputChange(identifier: string, value : string) {
-    setEnteredValues(preValues => ({
-      ...preValues,
-      [identifier] : value
-    }))
+    // const fd = new FormData(event.target as HTMLFormElement);
+    // const data = Object.fromEntries(fd.entries())
+    if(usernameHasError || passwordHasError){
+      return;
+    }
+    console.log(usernameValue, passwordValue);
   }
 
 
@@ -29,18 +38,27 @@ const LoginForm = () => {
           <div className="flex flex-col gap-4 items-center">
             <Input 
               label="Username" 
-              htmlFor="username" 
-              onChange={(event) => handleInputChange('email', event.target.value)} 
-              value={enteredValues.email} 
+              id="username" 
+              name="username"
+              onChange={handleUsernameChange}
+              onBlur={handleUsernameBlur}
+              value={usernameValue}
+              error= {usernameHasError && 'Please enter a username'}
               required/>
             <Input 
               label="Password" 
               type="password" 
-              htmlFor="password"
-              onChange={(event) => handleInputChange('password', event.target.value)}
-              value={enteredValues.password}  
+              id="password"
+              name="password"
+              onChange={handlePasswordChange}
+              onBlur={handlePasswordBlur}
+              value={passwordValue}
+              error= {passwordHasError && 'Please enter a password'}
               required/>
-            <button className="bg-slate-600 px-3 py-2 rounded-md text-slate-100 w-2/4 hover:bg-slate-800 font-bold text-lg">Login</button>
+            <button 
+              className="bg-slate-600 px-3 py-2 rounded-md text-slate-100 w-2/4 hover:bg-slate-800 font-bold text-lg">
+              Login
+            </button>
           </div>
         </form>
     </div>
