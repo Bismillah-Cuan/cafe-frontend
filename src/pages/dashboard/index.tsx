@@ -1,13 +1,12 @@
-import { Outlet } from 'react-router-dom'
-import Sidebar from '../../components/SideBar'
+
+import Header from '../../components/Header'
 
 
 const index = () => {
   return (
-    <main className='flex gap-10 bg-slate-100 h-screen'>
-      <Sidebar />
-      <Outlet />
-    </main>
+    <div>
+      <Header title='Dashboard' />
+    </div>
   )
 }
 

@@ -1,19 +1,25 @@
 import Input from "./Input"
 import logoCuan from "../../assets/CoffeeNCouple.png"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { isNotEmpty } from '../../util/validation.js'
 import { useInput } from "../../hooks/useInput"
+interface LoginData {
+  username: string
+  password: string
+}
 
 const LoginForm:React.FC = () => {
+  const navigate = useNavigate()
+
   const {
-    value: usernameValue, 
+    value: username, 
     handleInputChange: handleUsernameChange, 
     handleInputBlur: handleUsernameBlur,
     hasError: usernameHasError
   } = useInput('', (value: string) => isNotEmpty(value));
 
   const {
-    value: passwordValue, 
+    value: password, 
     handleInputChange: handlePasswordChange, 
     handleInputBlur: handlePasswordBlur, 
     hasError: passwordHasError
@@ -27,9 +33,31 @@ const LoginForm:React.FC = () => {
     if(usernameHasError || passwordHasError){
       return;
     }
-    console.log(usernameValue, passwordValue);
+    console.log(username, password);
+
+    handleLogin({username, password})
   }
 
+  const handleLogin = (values: LoginData) => {
+    fetch('http://127.0.0.1:5000/api/v1/users/login',{
+        method:'POST',
+        body:JSON.stringify({
+            username: values.username,
+            password: values.password
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(async response => {
+            if (!response.ok)
+               return navigate('/login')
+
+            const token = await response.json()
+            localStorage.setItem("access_token", token.access_token)
+            navigate('/dashboard')
+    })
+  }
 
   return (
     <div className="flex w-full flex-column flex-col gap-4 px-6 items-center">
@@ -42,7 +70,7 @@ const LoginForm:React.FC = () => {
               name="username"
               onChange={handleUsernameChange}
               onBlur={handleUsernameBlur}
-              value={usernameValue}
+              value={username}
               error= {usernameHasError && 'Please enter a username'}
               required/>
             <Input 
@@ -52,7 +80,7 @@ const LoginForm:React.FC = () => {
               name="password"
               onChange={handlePasswordChange}
               onBlur={handlePasswordBlur}
-              value={passwordValue}
+              value={password}
               error= {passwordHasError && 'Please enter a password'}
               required/>
             <button 
