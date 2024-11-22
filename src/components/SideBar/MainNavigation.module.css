@@ -16,5 +16,6 @@ li {
 .list a.active {
   color: seashell;
   background-color: #2d3e59;
+  font-weight: 600;
   width: 100%;
 }

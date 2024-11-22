@@ -21,6 +21,12 @@ const SideBar = () => {
                     }>Reports
                     </NavLink>
                 </li>
+                <li>
+                    <NavLink to="Materials" className={({ isActive }) =>
+                    (isActive ? classes.active : undefined)
+                    }>Materials
+                    </NavLink>
+                </li>
             </ul>
         </nav>
 </aside>

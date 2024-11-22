@@ -7,6 +7,7 @@ import ErrorPage from './pages/error'
 import ReportDetailPage from './pages/reportDetails'
 import InitialPages from './pages/initial'
 import ReportsEditPage from './pages/reportsEdit'
+import MaterialPage from './pages/MaterialPage'
 
 const router = createBrowserRouter([
   { path: '/', 
@@ -22,6 +23,7 @@ const router = createBrowserRouter([
       {path: "reports", element: <Reports />},
       {path: "reports/:reportsId", element: <ReportDetailPage />},
       {path: "reports/:reportsId/edit", element: <ReportsEditPage />},
+      {path: "Materials", element: <MaterialPage />}
     ]
   },
 

@@ -13,11 +13,17 @@ type Field = {
   type ReusableFormProps = {
     fields: Field[];
     onSubmit: (formData: Record<string, string>) => void;
+    onClose?: () => void;
     buttonLabel?: string;
+    isSelected?: boolean
   };
 
-  const ReusableForm: React.FC<ReusableFormProps> = ({ fields, onSubmit, buttonLabel = "Submit",
+  const bgClass = "fixed top-0 left-0 w-full h-full bg-black opacity-50 z-[10]";
+
+  const ReusableForm: React.FC<ReusableFormProps> = ({ fields, onSubmit, onClose, buttonLabel = "Submit", isSelected
   }) => {
+
+
     const [formData, setFormData] = useState<Record<string, string>>(
       fields.reduce((acc, field) => {
         acc[field.name] = field.defaultValue || "";
@@ -33,42 +39,50 @@ type Field = {
       event.preventDefault();
       onSubmit(formData);
     }
-  return (
-    <>
-    <div className="fixed top-0 left-0 w-full h-full bg-black opacity-50 z-[10]"></div>
-      <section className="fixed top-1/2 left-1/2 bg-slate-100 p-5 rounded-md w-[25rem] h-[18rem] z-[20] transform -translate-x-1/2 -translate-y-1/2" role="dialog">
-          <div className="p-5 z-[20]">
-            <form onSubmit={handleSubmit} className="flex flex-col gap-5" action="/">
-                {fields.map((field, index) => (
-                <div key={index}>
-                  <label htmlFor={field.name}>{field.label}</label>
-                  {field.type === "textarea" ? (
-                    <textarea
-                      id={field.name}
-                      name={field.name}
-                      value={formData[field.name]}
-                      onChange={handleChange}
-                      placeholder={field.placeholder}
-                    />
-                  ) : (
-                    <input
-                      type={field.type}
-                      id={field.name}
-                      name={field.name}
-                      value={formData[field.name]}
-                      onChange={handleChange}
-                      placeholder={field.placeholder}
-                    />
-                  )}
-                  </div>
-                  ))}
-                  <button type="submit">{buttonLabel}</button>
-              </form>
-            </div>
 
-            
-        </section>
-                     
+  return (
+    
+    <>
+    <div>
+    {isSelected &&  <div onClick={onClose} className={bgClass}></div>}
+    {isSelected && <section className="fixed top-1/2 left-1/2 bg-slate-100 p-5 rounded-3xl w-[25rem] h-auto z-[20] transform -translate-x-1/2 -translate-y-1/2" role="dialog">
+      <div className="p-5 z-[20]">
+        <h2 className="text-2xl font-bold mb-5">Create Order</h2>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5" action="/">
+            {fields.map((field, index) => (
+            <div className="flex flex-col gap-2" key={index}>
+              <label htmlFor={field.name}>{field.label}</label>
+              {field.type === "textarea" ? (
+                <textarea
+                  id={field.name}
+                  name={field.name}
+                  value={formData[field.name]}
+                  onChange={handleChange}
+                  placeholder={field.placeholder}
+                />
+              ) : (
+                <input className="text-md px-2 h-10 rounded-md bg-slate-300"
+                  type={field.type}
+                  id={field.name}
+                  name={field.name}
+                  value={formData[field.name]}
+                  onChange={handleChange}
+                  placeholder={field.placeholder}
+                />
+              )}
+              </div>
+              ))}
+              <button className="text-slate-900 text-center font-semibold bg-slate-400 hover:bg-slate-500 px-2 py-1 rounded-md" type="submit">{buttonLabel}</button>
+          </form>
+        </div>
+        
+        
+    </section>}
+      
+    </div>
+      
+      
+             
     </>
   )
 }

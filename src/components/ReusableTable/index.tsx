@@ -1,5 +1,24 @@
 import { Link } from "react-router-dom";
 
+type Data = {
+  id: number;
+  date: string;
+  title: string;
+  pic: string;
+  description: string;
+  status: string;
+}
+
+type TableFields = {
+  label: string;
+  accessor: string;
+}
+
+type ReusableTableProps = {
+  data: Data[];
+  tableFields: TableFields[];
+}
+
 const REPORTS = [
     {
         id: 1,
@@ -19,16 +38,14 @@ const REPORTS = [
     },
 ]
 const classTableRow= "py-3";
-const ReportsTable = () => {
+const ReusableTable: React.FC<ReusableTableProps> = ({tableFields, data}) => {
   return (
     <table className="w-full text-sm text-left text-gray-500 sm:rounded-lg mt-2 mr-5 py-10">
         <thead className="text- text-gray-700 uppercase bg-gray-300">
           <tr>
-            <th className={classTableRow}>Date</th>
-            <th className={classTableRow}>Report Title</th>
-            <th className={classTableRow}>PIC</th>
-            <th className={classTableRow}>Description</th>
-            <th className={classTableRow}>Status</th>
+            {tableFields.map((column) => (
+              <th key={column.accessor} className={classTableRow}>{column.label}</th>
+            ))}
           </tr>
         </thead>
         <tbody>
@@ -50,4 +67,4 @@ const ReportsTable = () => {
   )
 }
 
-export default ReportsTable
+export default ReusableTable
