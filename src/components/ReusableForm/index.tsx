@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { UserContext } from "../store/user-context";
 
 type Field = {
     name: string;
@@ -23,17 +24,20 @@ type Field = {
   const ReusableForm: React.FC<ReusableFormProps> = ({ fields, onSubmit, onClose, buttonLabel = "Submit", isSelected
   }) => {
 
-
-    const [formData, setFormData] = useState<Record<string, string>>(
-      fields.reduce((acc, field) => {
-        acc[field.name] = field.defaultValue || "";
-        return acc;
-      }, {} as Record<string, string>)
+    const userCtx = useContext(UserContext);
+    const [formData, setFormData] = useState(
+      Object.fromEntries(fields.map(field => [field.name, field.defaultValue || ""]))
     );
+    
+    const currentUser = userCtx.user;
+
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().split("T")[0];
 
     const handleChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void = (event) => {
      const { name , value} = event.target;
-     setFormData({ ...formData, [name]: value }); 
+     
+     setFormData({ ...formData, [name]: value, date: formattedDate, user: currentUser }); 
     }
     const handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void = (event) => {
       event.preventDefault();

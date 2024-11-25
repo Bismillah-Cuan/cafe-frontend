@@ -9,6 +9,23 @@ import { useState } from "react"
 
 const Reports= () => {
   const [showForm, setShowForm] = useState(false);
+  const [data, setData] = useState([{
+    // id: 1,
+    date: "2023-01-01",
+    user: "John Doe",
+    materials: "Daging Ayam",
+    quantities: "10",
+    unit: "Kg",
+},
+{
+    // id: 2,
+    date: "2023-01-01",
+    user: "John Doe",
+    materials: "Daging Sapi",
+    quantities: "5",
+    unit: "Kg",
+},]);
+
 
   //Dummy Fields for input
   const fields = [
@@ -19,8 +36,8 @@ const Reports= () => {
       placeholder: "Enter the material name",
     },
     {
-      name: "quantity",
-      label: "Quantity",
+      name: "quantities",
+      label: "Quantities",
       type: "number",
       placeholder: "Enter a Quantity",
     },
@@ -32,38 +49,23 @@ const Reports= () => {
     },
   ];
 
-  //Dummy Data
+  //Dummy Data For Table
   const columns = [
     {label : "Date", accessor : "date"},
     {label : "User", accessor : "user"},
-    {label : "Material", accessor : "materials"},
-    {label : "Quantity", accessor : "quantity"},
+    {label : "Materials", accessor : "materials"},
+    {label : "Quantities", accessor : "quantities"},
     {label : "Unit", accessor : "unit"},
   ];
-  const REPORTS = [
-    {
-        id: 1,
-        date: "2023-01-01",
-        title: "Report 1",
-        pic: "John Doe",
-        description: "This is a report description.",
-        status: "Open",
-    },
-    {
-        id: 2,
-        date: "2023-01-02",
-        title: "Report 2",
-        pic: "Jane Doe",
-        description: "This is another report description.",
-        status: "Closed",
-    },
-  ]
+
   function handleShowForm() {
     setShowForm((prev) => !prev);
   }
 
   function handleSubmit(data: any) {
+    setShowForm(!showForm);
     console.log(data);
+    setData((prev) => [...prev, ...[data]]);
   }
   const closeForm = () => setShowForm(false);
 
@@ -76,7 +78,7 @@ const Reports= () => {
         {showForm && <ReusableFormfrom fields={fields} onSubmit={handleSubmit} onClose={closeForm} buttonLabel="Submit" isSelected={showForm}/>}
         </div>
       </header>
-      <ReusableTable  tableFields={columns} data={REPORTS}/>
+      <ReusableTable  tableFields={columns} data={data}/>
     </div>
   )
 }

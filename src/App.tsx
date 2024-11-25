@@ -8,6 +8,8 @@ import ReportDetailPage from './pages/reportDetails'
 import InitialPages from './pages/initial'
 import ReportsEditPage from './pages/reportsEdit'
 import MaterialPage from './pages/MaterialPage'
+import { UserContext } from './components/Store/user-context'
+
 
 const router = createBrowserRouter([
   { path: '/', 
@@ -30,8 +32,11 @@ const router = createBrowserRouter([
 ])
 
 const App = () => {
+  const user = { user: "" };
   return (
-    <RouterProvider router={router}/>
+    <UserContext.Provider value={user}>
+      <RouterProvider router={router}/>
+    </UserContext.Provider>
   )
 }
 

@@ -3,14 +3,20 @@ import logoCuan from "../../assets/CoffeeNCouple.png"
 import { Link, useNavigate } from "react-router-dom"
 import { isNotEmpty } from '../../util/validation.js'
 import { useInput } from "../../hooks/useInput"
+import { useContext } from "react"
+import { UserContext } from "../store/user-context"
+
+
 interface LoginData {
   username: string
   password: string
 }
 
 const LoginForm:React.FC = () => {
+  let useCtx = useContext(UserContext)
   const navigate = useNavigate()
 
+  
   const {
     value: username, 
     handleInputChange: handleUsernameChange, 
@@ -25,6 +31,7 @@ const LoginForm:React.FC = () => {
     hasError: passwordHasError
   } = useInput('', (value: string) => isNotEmpty(value));
 
+  
   function handleSubmit(event : any){
     event.preventDefault();
 
@@ -33,8 +40,10 @@ const LoginForm:React.FC = () => {
     if(usernameHasError || passwordHasError){
       return;
     }
+    
+    useCtx = {user : username}
     console.log(username, password);
-
+    navigate('/dashboard')
     handleLogin({username, password})
   }
 
