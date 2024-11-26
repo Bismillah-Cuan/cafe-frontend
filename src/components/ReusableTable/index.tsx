@@ -20,24 +20,6 @@ type ReusableTableProps = {
   tableFields: TableFields[];
 }
 
-// const REPORTS = [
-//     {
-//         id: 1,
-//         date: "2023-01-01",
-//         title: "Report 1",
-//         pic: "John Doe",
-//         description: "This is a report description.",
-//         status: "Open",
-//     },
-//     {
-//         id: 2,
-//         date: "2023-01-02",
-//         title: "Report 2",
-//         pic: "Jane Doe",
-//         description: "This is another report description.",
-//         status: "Closed",
-//     },
-// ]
 const classTableRow= "py-3 pl-2";
 const ReusableTable: React.FC<ReusableTableProps> = ({tableFields, data}) => {
   return (

@@ -32,9 +32,18 @@ const router = createBrowserRouter([
 ])
 
 const App = () => {
-  const user = { user: "" };
+  const [currentUser, setCurrentUser] = useState({
+    user:"" ,
+  })
+
+  const ctxValue = {
+    user: currentUser.user,
+    updateCurrentUser: (user: string) => setCurrentUser({ user })
+  }
+
+  
   return (
-    <UserContext.Provider value={user}>
+    <UserContext.Provider value={ctxValue}>
       <RouterProvider router={router}/>
     </UserContext.Provider>
   )
