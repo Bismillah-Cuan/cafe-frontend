@@ -1,7 +1,7 @@
 import Input from "./Input"
 import logoCuan from "../../assets/CoffeeNCouple.png"
 import { Link, useNavigate } from "react-router-dom"
-import { isNotEmpty } from '../../util/validation.js'
+import { Required } from '../../util/validation.js'
 import { useInput } from "../../hooks/useInput"
 import { useContext, useState } from "react"
 import { UserContext } from "../store/user-context"
@@ -23,14 +23,14 @@ const LoginForm:React.FC = () => {
     handleInputChange: handleUsernameChange, 
     handleInputBlur: handleUsernameBlur,
     hasError: usernameHasError
-  } = useInput('', (value: string) => isNotEmpty(value));
+  } = useInput('', (value: string) => Required(value));
 
   const {
     value: password, 
     handleInputChange: handlePasswordChange, 
     handleInputBlur: handlePasswordBlur, 
     hasError: passwordHasError
-  } = useInput('', (value: string) => isNotEmpty(value));
+  } = useInput('', (value: string) => Required(value));
 
   
   function handleSubmit(event : any){
@@ -93,6 +93,10 @@ const LoginForm:React.FC = () => {
               value={password}
               error= {passwordHasError && 'Please enter a password'}
               required/>
+
+            <p className="text-slate-600 font-light">Belum punya akun?  
+                    <Link to="/register" className="text-slate-600 hover:text-slate-800 font-bold"> Yuk Daftar!</Link>
+                </p>
             <button 
               className="bg-slate-600 px-3 py-2 rounded-md text-slate-100 w-2/4 hover:bg-slate-800 font-bold text-lg">
               Login
