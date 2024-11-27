@@ -1,0 +1,21 @@
+li {
+  display: flex;
+  font-weight: lighter;
+  font-size: large;
+}
+
+.list a {
+  display: flex;
+  padding: 0 1.5rem;
+  height: 3rem;
+  width: 100%;
+  align-items: center;
+}
+
+.list a:hover,
+.list a.active {
+  color: seashell;
+  background-color: #2d3e59;
+  font-weight: 600;
+  width: 100%;
+}
