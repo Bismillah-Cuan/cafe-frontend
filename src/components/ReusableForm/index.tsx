@@ -2,7 +2,6 @@ import { useState, useContext } from "react";
 import { UserContext } from "../store/user-context";
 
 type Field = {
-    
     name: string;
     label: string;
     type: string;
@@ -38,7 +37,7 @@ type Field = {
     const handleChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void = (event) => {
      const { name , value} = event.target;
      
-     setFormData({ ...formData, [name]: value, date: formattedDate, user: currentUser, id: Math.floor(Math.random()*1000).toString()  }); 
+     setFormData({ ...formData, [name]: value, date: formattedDate, user: currentUser }); 
     }
     const handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void = (event) => {
       event.preventDefault();
