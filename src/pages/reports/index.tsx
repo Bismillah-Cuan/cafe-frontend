@@ -3,6 +3,8 @@ import ReusableTable from "../../components/ReusableTable"
 import Header from "../../components/Header"
 import ReusableForm from "../../components/ReusableForm"
 import CreateFormButton from "../../components/CreateFormButton"
+import ReusableDetailPopOut from "../../components/ReusableDetailPopOut"
+import EditDetailButton from "../../components/EditDetailButton"
 import { useState } from "react"
 
 type TableFields = {
@@ -15,6 +17,9 @@ const buttonClass = "text-slate-900 font-light text-center bg-slate-400 hover:bg
 
 const Reports= () => {
   const [showForm, setShowForm] = useState(false);
+  const [showEditDetail, setShowEditDetail] = useState(false);
+  const [itemEditId, setitemEditId] = useState(0);
+
   const [data, setData] = useState([{
     id: 1,
     date: "2023-01-01",
@@ -67,9 +72,8 @@ const Reports= () => {
       accessor: "action",
       cell: ({row}: any) => (
         <div className="flex gap-2">
-          <button onClick={() => handleEdit(row.id)} className={buttonClass}>
-            Edit
-          </button>
+          <EditDetailButton onClick={() => handleEditDetail(row.id)} label="Edit"/>
+          
           <button onClick={() => handleDelete(row.id)} className={buttonClass}>
             Delete
           </button>
@@ -81,13 +85,15 @@ const Reports= () => {
   function handleDelete(id: number) {
     setData((prev) => prev.filter((item) => item.id !== id));
   }
-
-  function handleEdit(id: number) {
+  function handleEditDetail(id: number) {
     const item = data.find((item) => item.id === id);
     if (item) {
-      console.log(item);
+      setShowEditDetail((prev) => !prev);
+      setitemEditId(item.id);
     }
+    
   }
+  
   function handleShowForm() {
     setShowForm((prev) => !prev);
   }
@@ -97,7 +103,7 @@ const Reports= () => {
     console.log(data);
     setData((prev) => [...prev, ...[data]]);
   }
-  const closeForm = () => setShowForm(false);
+  const closeForm = () => {setShowForm(false); setShowEditDetail(false)};
 
   return (
     <div className="w-full mr-8 text-slate-800 relative overflow-x-auto flex flex-col gap-5 mt-5">
@@ -105,7 +111,21 @@ const Reports= () => {
         <Header title="Reports" />
         <div>
         <CreateFormButton onClick={handleShowForm} label="Create Order" />
-        {showForm && <ReusableForm fields={fields} onSubmit={handleSubmit} onClose={closeForm} buttonLabel="Submit" isSelected={showForm}/>}
+        {showForm && 
+          <ReusableForm 
+            fields={fields} 
+            onSubmit={handleSubmit} 
+            onClose={closeForm} 
+            buttonLabel="Submit" 
+            isSelected={showForm}/>}
+        {showEditDetail && 
+          <ReusableDetailPopOut 
+            fields={columns} 
+            values={data.find((item) => item.id === itemEditId)?? {id: "", date: "", user: "", materials: "", quantities: "", unit: ""}}
+            onSubmit={handleSubmit} 
+            onClose={closeForm} 
+            buttonLabel="Submit" 
+            isSelected={showEditDetail}/>}
         </div>
       </header>
       <ReusableTable  tableFields={columns as TableFields[]} data={data}/>

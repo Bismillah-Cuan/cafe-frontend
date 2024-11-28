@@ -38,7 +38,7 @@ type Field = {
     const handleChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void = (event) => {
      const { name , value} = event.target;
      
-     setFormData({ ...formData, [name]: value, date: formattedDate, user: currentUser, id: Math.random().toString()  }); 
+     setFormData({ ...formData, [name]: value, date: formattedDate, user: currentUser, id: Math.floor(Math.random()*1000).toString()  }); 
     }
     const handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void = (event) => {
       event.preventDefault();
