@@ -1,16 +1,22 @@
 
 import ReusableTable from "../../components/ReusableTable"
 import Header from "../../components/Header"
-import ReusableFormfrom from "../../components/ReusableForm"
+import ReusableForm from "../../components/ReusableForm"
 import CreateFormButton from "../../components/CreateFormButton"
 import { useState } from "react"
 
+type TableFields = {
+  label: string;
+  accessor: string;
+  cell: any
+}
 
+const buttonClass = "text-slate-900 font-light text-center bg-slate-400 hover:bg-slate-500 px-2 py-1 rounded-md";
 
 const Reports= () => {
   const [showForm, setShowForm] = useState(false);
   const [data, setData] = useState([{
-    // id: 1,
+    id: 1,
     date: "2023-01-01",
     user: "John Doe",
     materials: "Daging Ayam",
@@ -18,7 +24,7 @@ const Reports= () => {
     unit: "Kg",
 },
 {
-    // id: 2,
+    id: 2,
     date: "2023-01-01",
     user: "John Doe",
     materials: "Daging Sapi",
@@ -56,8 +62,32 @@ const Reports= () => {
     {label : "Materials", accessor : "materials"},
     {label : "Quantities", accessor : "quantities"},
     {label : "Unit", accessor : "unit"},
+    {
+      label: "Action",
+      accessor: "action",
+      cell: ({row}: any) => (
+        <div className="flex gap-2">
+          <button onClick={() => handleEdit(row.id)} className={buttonClass}>
+            Edit
+          </button>
+          <button onClick={() => handleDelete(row.id)} className={buttonClass}>
+            Delete
+          </button>
+        </div>
+      ),
+    }
   ];
 
+  function handleDelete(id: number) {
+    setData((prev) => prev.filter((item) => item.id !== id));
+  }
+
+  function handleEdit(id: number) {
+    const item = data.find((item) => item.id === id);
+    if (item) {
+      console.log(item);
+    }
+  }
   function handleShowForm() {
     setShowForm((prev) => !prev);
   }
@@ -75,10 +105,10 @@ const Reports= () => {
         <Header title="Reports" />
         <div>
         <CreateFormButton onClick={handleShowForm} label="Create Order" />
-        {showForm && <ReusableFormfrom fields={fields} onSubmit={handleSubmit} onClose={closeForm} buttonLabel="Submit" isSelected={showForm}/>}
+        {showForm && <ReusableForm fields={fields} onSubmit={handleSubmit} onClose={closeForm} buttonLabel="Submit" isSelected={showForm}/>}
         </div>
       </header>
-      <ReusableTable  tableFields={columns} data={data}/>
+      <ReusableTable  tableFields={columns as TableFields[]} data={data}/>
     </div>
   )
 }
