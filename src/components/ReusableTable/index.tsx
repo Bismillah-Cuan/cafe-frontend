@@ -13,6 +13,7 @@ type Data = {
 type TableFields = {
   label: string;
   accessor: string;
+  cell: any
 }
 
 type ReusableTableProps = {
@@ -32,16 +33,13 @@ const ReusableTable: React.FC<ReusableTableProps> = ({tableFields, data}) => {
           </tr>
         </thead>
         <tbody>
-          {data.map((row, rowIndex) => (
-            <tr key={rowIndex} className="bg-white border-b">
+          {data.map((row) => (
+            <tr key={row.id} className="bg-white border-b">
                 {tableFields.map((column) => (
-                  <td 
-                  key={column.accessor} className={classTableRow}>
-                    <Link to={`${rowIndex}`}>{row[column.accessor]}
-                    </Link>
-                  </td>
+                  <td key={column.accessor} className={classTableRow}>
+                    {column.cell ? column.cell({row}) : row[column.accessor]}
+                    </td>
                 ))}
-                
             </tr>
             
           ))}
