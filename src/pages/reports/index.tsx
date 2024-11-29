@@ -6,6 +6,7 @@ import CreateFormButton from "../../components/CreateFormButton"
 import ReusableDetailPopOut from "../../components/ReusableDetailPopOut"
 import EditDetailButton from "../../components/EditDetailButton"
 import { useState } from "react"
+import { tableData } from "../../util/tableDummyData"
 
 type TableFields = {
   label: string;
@@ -20,22 +21,7 @@ const Reports= () => {
   const [showEditDetail, setShowEditDetail] = useState(false);
   const [itemEditId, setitemEditId] = useState(0);
 
-  const [data, setData] = useState([{
-    id: 1,
-    date: "2023-01-01",
-    user: "John Doe",
-    materials: "Daging Ayam",
-    quantities: "10",
-    unit: "Kg",
-},
-{
-    id: 2,
-    date: "2023-01-01",
-    user: "John Doe",
-    materials: "Daging Sapi",
-    quantities: "5",
-    unit: "Kg",
-},]);
+  const [data, setData] = useState(tableData);
 
 
   //Dummy Fields for input
@@ -71,12 +57,9 @@ const Reports= () => {
       label: "Action",
       accessor: "action",
       cell: ({row}: any) => (
-        <div className="flex gap-2">
+        <div className="flex gap-2 mr-3">
           <EditDetailButton onClick={() => handleEditDetail(row.id)} label="Edit"/>
-          
-          <button onClick={() => handleDelete(row.id)} className={buttonClass}>
-            Delete
-          </button>
+          <EditDetailButton onClick={() => handleDelete(row.id)} label="Delete"/>
         </div>
       ),
     }
@@ -106,7 +89,7 @@ const Reports= () => {
   const closeForm = () => {setShowForm(false); setShowEditDetail(false)};
 
   return (
-    <div className="w-full mr-8 text-slate-800 relative overflow-x-auto flex flex-col gap-5 mt-5">
+    <div className="w-full mr-8 text-slate-800 relative overflow-x-hidden flex flex-col gap-5 mt-5">
       <header className="flex justify-between items-center">
         <Header title="Reports" />
         <div>
