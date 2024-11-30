@@ -8,7 +8,8 @@ import ReportDetailPage from './pages/reportDetails'
 import InitialPages from './pages/initial'
 import ReportsEditPage from './pages/reportsEdit'
 import MaterialPage from './pages/MaterialPage'
-import { UserContext } from "./components/Store/user-context";
+import { UserContext } from './components/Store/user-context'
+import RegisterPage from './pages/register'
 
 
 const router = createBrowserRouter([
@@ -17,6 +18,7 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   { path: '/login', element: <LoginPage />},
+  { path: '/register', element: <RegisterPage />},
   { 
     path: '/', 
     element: <InitialPages/>,
@@ -25,7 +27,7 @@ const router = createBrowserRouter([
       {path: "reports", element: <Reports />},
       {path: "reports/:reportsId", element: <ReportDetailPage />},
       {path: "reports/:reportsId/edit", element: <ReportsEditPage />},
-      {path: "Materials", element: <MaterialPage />}
+      {path: "materials", element: <MaterialPage />}
     ]
   },
 
