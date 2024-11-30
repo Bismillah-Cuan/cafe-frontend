@@ -24,7 +24,7 @@ type ReusableTableProps = {
 
 const classTableRow= "py-3 pl-2 border-b border-gray-200";
 const classTableHead= "py-3 pl-2 border-b border-gray-200";
-const ReusableTable: React.FC<ReusableTableProps> = ({tableFields, data}) => {
+const ReusableTable: React.FC<ReusableTableProps> = ({tableFields, data,}) => {
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
 
