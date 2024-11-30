@@ -88,11 +88,10 @@ const RegisterForm = () => {
                     onBlur={formik.handleBlur}
                     value={formik.values.roleType}
                 >
-                    <option value="admin">Admin</option>
                     <option value="kitchen">Kitchen</option>
                     <option value="bar">Bar</option>
                     <option value="sosmed">Sosmed</option>
-                    <option value="finance">finance</option>
+                    <option value="finance">Finance</option>
                 </MySelect>
                 { formik.touched.roleType && formik.errors.roleType ? 
 
