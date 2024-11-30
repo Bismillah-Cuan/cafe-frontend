@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { isNotEmpty } from '../../util/validation.js'
 import { useInput } from "../../hooks/useInput"
 import { useContext, useState } from "react"
-import { UserContext } from "../store/user-context"
+import { UserContext } from "../Store/user-context";
 
 
 interface LoginData {

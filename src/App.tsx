@@ -8,7 +8,7 @@ import ReportDetailPage from './pages/reportDetails'
 import InitialPages from './pages/initial'
 import ReportsEditPage from './pages/reportsEdit'
 import MaterialPage from './pages/MaterialPage'
-import { UserContext } from './components/Store/user-context'
+import { UserContext } from "./components/Store/user-context";
 
 
 const router = createBrowserRouter([
