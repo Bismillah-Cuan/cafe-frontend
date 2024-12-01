@@ -10,11 +10,16 @@ import ReportsEditPage from './pages/reportsEdit'
 import MaterialPage from './pages/MaterialPage'
 import { UserContext } from './components/Store/user-context'
 import RegisterPage from './pages/register'
+import MarketListPage from './pages/marketList'
+import PurchaseOrderPage from './pages/poPage'
+import PurchaseRequestPage from './pages/prPage'
+import SupplierPage from './pages/supplier'
+import ListUserPage from './pages/listUser'
 
 
 const router = createBrowserRouter([
   { path: '/', 
-    element: <LoginPage />,
+    element: <InitialPages />,
     errorElement: <ErrorPage />,
   },
   { path: '/login', element: <LoginPage />},
@@ -27,7 +32,12 @@ const router = createBrowserRouter([
       {path: "reports", element: <Reports />},
       {path: "reports/:reportsId", element: <ReportDetailPage />},
       {path: "reports/:reportsId/edit", element: <ReportsEditPage />},
-      {path: "materials", element: <MaterialPage />}
+      {path: "materials", element: <MaterialPage />},
+      {path: "market-list", element: <MarketListPage />},
+      {path: "purchase-order", element: <PurchaseOrderPage />},
+      {path: "purchase-request", element: <PurchaseRequestPage />},
+      {path: "supplier", element: <SupplierPage />},
+      {path: "list-user", element: <ListUserPage />}
     ]
   },
 

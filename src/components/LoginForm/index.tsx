@@ -5,7 +5,7 @@ import { Required } from '../../util/validation.js'
 import { useInput } from "../../hooks/useInput"
 import { useContext, useState } from "react"
 import { UserContext } from "../Store/user-context";
-
+import { useLogin } from "../../hooks/useFetch"
 
 interface LoginData {
   username: string
@@ -14,6 +14,7 @@ interface LoginData {
 
 const LoginForm:React.FC = () => {
   const {user, updateCurrentUser} = useContext(UserContext)
+  const { handleLogin, loading, error } = useLogin();
   
   const navigate = useNavigate()
 
@@ -45,29 +46,15 @@ const LoginForm:React.FC = () => {
     updateCurrentUser(username)
     console.log(username, password);
     navigate('/dashboard')
-    handleLogin({username, password})
+    const onSubmit = async (data: LoginData) => {
+      await handleLogin(data)
+    }
+    
+    onSubmit({username, password})
+    
   }
 
-  const handleLogin = (values: LoginData) => {
-    fetch('http://127.0.0.1:5000/api/v1/users/login',{
-        method:'POST',
-        body:JSON.stringify({
-            username: values.username,
-            password: values.password
-        }),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-        .then(async response => {
-            if (!response.ok)
-               return navigate('/login')
 
-            const token = await response.json()
-            localStorage.setItem("access_token", token.access_token)
-            navigate('/dashboard')
-    })
-  }
 
   return (
     <div className="flex w-full flex-column flex-col gap-4 px-6 items-center">
