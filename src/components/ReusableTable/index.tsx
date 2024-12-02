@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import {useTable, useSortBy, useGlobalFilter } from 'react-table';
+import { GlobalFilter } from "../GlobalFilter";
+
 
 type Data = {
   // id: number;
@@ -14,20 +17,42 @@ type Data = {
 type TableFields = {
   label: string;
   accessor: string;
-  cell: any
+  Cell: any
 }
 
 type ReusableTableProps = {
   data: Data[];
   tableFields: TableFields[];
+  onDelete: (id: number) => void
+  onEdit: (id: number) => void
 }
 
 const classTableRow= "py-3 pl-2 border-b border-gray-200";
 const classTableHead= "py-3 pl-2 border-b border-gray-200";
-const ReusableTable: React.FC<ReusableTableProps> = ({tableFields, data,}) => {
+const ReusableTable: React.FC<ReusableTableProps> = ({tableFields, data, onDelete, onEdit}) => {
   const [currentPage, setCurrentPage] = useState(1);
+
+  const tableFieldsMemo = useMemo(() => tableFields, []);
+  const dataMemo = useMemo(() => data, []);
   const rowsPerPage = 10;
 
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+    state,
+    setGlobalFilter,
+  } = useTable(
+    {
+      columns: tableFieldsMemo,
+      data,
+    },
+    useGlobalFilter, useSortBy,  // Add this line to enable sorting
+  );
+
+  const { globalFilter } = state;
   // Calculate total pages
   const totalPages = Math.ceil(data.length / rowsPerPage);
 
@@ -35,8 +60,10 @@ const ReusableTable: React.FC<ReusableTableProps> = ({tableFields, data,}) => {
   const startIndex = (currentPage - 1) * rowsPerPage;
   const currentData = data.slice(startIndex, startIndex + rowsPerPage);
 
+  
+  
 
-
+  
   function handlePreviousPage() {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
@@ -55,25 +82,43 @@ const ReusableTable: React.FC<ReusableTableProps> = ({tableFields, data,}) => {
 
   return (
     <>
-    <table className="w-full text-sm text-left text-gray-500 border-separate border-spacing-0 mt-2 mr-5 rounded-xl border-slate-300 border-4">
+      {/* External Sort Controls */}
+      <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} />
+    <table 
+      {...getTableProps()} 
+      className="w-full text-sm text-left text-gray-500 border-separate border-spacing-0 mt-2 mr-5 rounded-xl border-slate-300 border-4">
         <thead className=" text-gray-700 uppercase bg-gray-300 rounded-t-lg border">
-          <tr>
-            {tableFields.map((column) => (
-              <th key={column.accessor} className={`${classTableRow} `}>{column.label}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {currentData.map((row) => (
-            <tr key={row.id} className="bg-white border-b last:border-none">
-                {tableFields.map((column) => (
-                  <td key={column.accessor} className={classTableRow}>
-                    {column.cell ? column.cell({row}) : row[column.accessor]}
-                    </td>
-                ))}
-            </tr>
-            
+          {headerGroups.map((headerGroup) => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((column) => (
+                <th {...column.getHeaderProps(column.getSortByToggleProps())} className={classTableHead}>
+                  {column.render('label')}
+                  <span>{column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}</span>
+                </th>
+              
+              ))}
+              </tr>
           ))}
+          
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {rows.map((row) => {
+            prepareRow(row);
+            const { key, ...rest } = row.getRowProps();
+            return (
+              <tr  key={key} {...rest}>
+                {row.cells.map((cell) => {
+                  const { key, ...rest} = cell.getCellProps();
+                  return (
+                    <td key={key} {...rest} className={classTableRow}>
+                      { 
+                      cell.render('Cell')}
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
 

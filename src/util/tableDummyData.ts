@@ -35,7 +35,7 @@ export const tableData = [
       {
         id: 5,
         date: "2023-01-01",
-        user: "John Doe",
+        user: "Jake Miller",
         materials: "Daging Sapi",
         quantities: "5",
         unit: "Kg",

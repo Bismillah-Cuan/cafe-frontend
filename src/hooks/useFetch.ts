@@ -29,8 +29,8 @@ export const useLogin = () => {
       });
 
       if (!response.ok) {
-        alert("Invalid credentials or server error");
-        throw new Error("Invalid credentials or server error");
+        alert("Invalid credentials");
+        throw new Error("Invalid credentials");
       }
 
       const data: LoginResponse = await response.json();

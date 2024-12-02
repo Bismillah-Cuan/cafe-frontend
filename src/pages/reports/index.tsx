@@ -7,11 +7,12 @@ import ReusableDetailPopOut from "../../components/ReusableDetailPopOut"
 import EditDetailButton from "../../components/EditDetailButton"
 import { useState } from "react"
 import { tableData } from "../../util/tableDummyData"
+import {format} from "date-fns"
 
 type TableFields = {
   label: string;
   accessor: string;
-  cell: any
+  Cell: any
 }
 
 const buttonClass = "text-slate-900 font-light text-center bg-slate-400 hover:bg-slate-500 px-2 py-1 rounded-md";
@@ -48,7 +49,7 @@ const Reports= () => {
 
   //Dummy Data For Table
   const columns = [
-    {label : "Date", accessor : "date"},
+    {label : "Date", accessor : "date", Cell: ({value}: any) => {return format(new Date(value), "dd-MM-yyyy")}},
     {label : "User", accessor : "user"},
     {label : "Materials", accessor : "materials"},
     {label : "Quantities", accessor : "quantities"},
@@ -56,10 +57,10 @@ const Reports= () => {
     {
       label: "Action",
       accessor: "action",
-      cell: ({row}: any) => (
+      Cell: ({row}: any) => (
         <div className="flex gap-2 mr-3">
-          <EditDetailButton onClick={() => handleEditDetail(row.id)} label="Edit"/>
-          <EditDetailButton onClick={() => handleDelete(row.id)} label="Delete"/>
+          <EditDetailButton key={`edit-${row.original.id}`} onClick={() => handleEditDetail(row.original.id)} label="Edit"/>
+          <EditDetailButton key={`delete-${row.original.id}`} onClick={() => handleDelete(row.original.id)} label="Delete"/>
         </div>
       ),
     }
@@ -67,6 +68,8 @@ const Reports= () => {
 
   function handleDelete(id: number) {
     setData((prev) => prev.filter((item) => item.id !== id));
+
+    console.log(`Deleted item with id ${id}`);
   }
   function handleEditDetail(id: number) {
     const item = data.find((item) => item.id === id);
@@ -111,7 +114,9 @@ const Reports= () => {
             isSelected={showEditDetail}/>}
         </div>
       </header>
-      <ReusableTable  tableFields={columns as TableFields[]} data={data}/>
+      <section>
+        <ReusableTable tableFields={columns as TableFields[]} data={data} onDelete={handleDelete} onEdit={handleEditDetail}/>
+      </section>
     </div>
   )
 }
