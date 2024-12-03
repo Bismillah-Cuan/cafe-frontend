@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import { useState, useMemo } from "react";
-import {useTable, useSortBy, useGlobalFilter } from 'react-table';
+import {useTable, useSortBy, useGlobalFilter, useFilters, usePagination, SortingRule } from 'react-table';
 import { GlobalFilter } from "../GlobalFilter";
+import { ColumnFilter } from "../ColumnFilter";
+import { set } from "date-fns";
 
 
 type Data = {
@@ -15,102 +17,110 @@ type Data = {
 }
 
 type TableFields = {
-  label: string;
+  Header: string;
   accessor: string;
   Cell: any
+  Filter: any
 }
 
 type ReusableTableProps = {
   data: Data[];
   tableFields: TableFields[];
-  onDelete: (id: number) => void
-  onEdit: (id: number) => void
 }
 
 const classTableRow= "py-3 pl-2 border-b border-gray-200";
 const classTableHead= "py-3 pl-2 border-b border-gray-200";
-const ReusableTable: React.FC<ReusableTableProps> = ({tableFields, data, onDelete, onEdit}) => {
-  const [currentPage, setCurrentPage] = useState(1);
+const ReusableTable: React.FC<ReusableTableProps> = ({tableFields, data}) => {
 
+  // const [sortBy, setSortBy] = useState<({ id: any; desc: boolean } | null)[]>([]);
+  const [sortBy, setSortBy] = useState<SortingRule<Data>[]>([]);
   const tableFieldsMemo = useMemo(() => tableFields, []);
-  const dataMemo = useMemo(() => data, []);
-  const rowsPerPage = 10;
+  const dataMemo = useMemo(() => data, [])
+  const defaultColumn = useMemo(() => ({
+    Filter: ColumnFilter,
+    sortable: true
+  }), []);
+
+
 
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
-    rows,
+    page,
+    nextPage,
+    previousPage,
+    canNextPage,
+    canPreviousPage,
+    pageOptions,
+    gotoPage,
+    pageCount,
     prepareRow,
+    setPageSize,
     state,
     setGlobalFilter,
   } = useTable(
     {
       columns: tableFieldsMemo,
-      data,
-    },
-    useGlobalFilter, useSortBy,  // Add this line to enable sorting
+      data: dataMemo,
+      manualSortBy: false,
+      defaultColumn,
+      initialState: {
+        pageSize: 9,
+        // sortBy
+      },
+    }, 
+    
+    useFilters,  useGlobalFilter, useSortBy,  usePagination, // Add this line to enable sorting
   );
 
-  const { globalFilter } = state;
-  // Calculate total pages
-  const totalPages = Math.ceil(data.length / rowsPerPage);
-
-  // Get current page data
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const currentData = data.slice(startIndex, startIndex + rowsPerPage);
-
+  const { globalFilter, pageIndex, pageSize } = state; 
   
-  
+  const handleSort = (columnId : any) => {
+    console.log(columnId)
+    setSortBy((prev) =>
+      prev[0]?.id === columnId
+        ? [{ id: columnId, desc: !prev[0]?.desc }]
+        : [{ id: columnId, desc: false }]
+    );
+  };
 
-  
-  function handlePreviousPage() {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  }
 
-  function handleNextPage() {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  }
-
-  function handlePageChange(page: number) {
-    setCurrentPage(page);
-  }
 
   return (
     <>
       {/* External Sort Controls */}
       <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} />
+      <div className="flex gap-2">
+        <button onClick={() => handleSort('user')}>Sort by Name</button>
+        <button onClick={() => handleSort('materials')}>Sort by Age</button>
+        <button onClick={() => handleSort('quantities')}>Sort by City</button>
+      </div>
     <table 
       {...getTableProps()} 
       className="w-full text-sm text-left text-gray-500 border-separate border-spacing-0 mt-2 mr-5 rounded-xl border-slate-300 border-4">
         <thead className=" text-gray-700 uppercase bg-gray-300 rounded-t-lg border">
           {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
+            <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
               {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps(column.getSortByToggleProps())} className={classTableHead}>
-                  {column.render('label')}
+                <th {...column.getHeaderProps(column.getSortByToggleProps())} className={classTableHead} key={column.id}>
+                  {column.render('Header')}
+                  {/* <div>{column.canFilter ? column.render('Filter') : null}</div> */}
                   <span>{column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}</span>
                 </th>
-              
               ))}
               </tr>
           ))}
           
         </thead>
         <tbody {...getTableBodyProps()}>
-          {rows.map((row) => {
+          {page.map((row) => {
             prepareRow(row);
-            const { key, ...rest } = row.getRowProps();
             return (
-              <tr  key={key} {...rest}>
+              <tr  {...row.getRowProps()} key={row.id}>
                 {row.cells.map((cell) => {
-                  const { key, ...rest} = cell.getCellProps();
                   return (
-                    <td key={key} {...rest} className={classTableRow}>
+                    <td {...cell.getCellProps()} key={cell.column.id} className={classTableRow}>
                       { 
                       cell.render('Cell')}
                     </td>
@@ -125,28 +135,32 @@ const ReusableTable: React.FC<ReusableTableProps> = ({tableFields, data, onDelet
       {/* //Pagination COntrols */}
 
       <div className="flex items-center border-t fixed bottom-0 right-0 border-gray-200 bg-white px-4 py-3 mr-10 mb-5 sm:px-6">
-                  <button 
-                    onClick={handlePreviousPage}
-                    disabled={currentPage === 1}
-                    className={`px-3 py-1 border rounded-md ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'bg-gray-300 hover:bg-gray-400'}`}>
-                      Previous
-                  </button>
+        <button 
+          onClick={() => previousPage()}
+          disabled={!canPreviousPage}
+          className={`px-3 py-1 border rounded-md ${!canPreviousPage === true ? 'opacity-50 cursor-not-allowed' : 'bg-gray-300 hover:bg-gray-400'}`}>
+            Previous
+        </button>
+          
+         <span>
+            Page{''}
+            <strong>{`${pageIndex + 1} of ${pageOptions.length}`}</strong>{''}
+          </span> 
+        {Array.from({ length: pageCount }, (_, index) => index + 1).map((page) => (
+          <button 
+            key={page}
+            onClick={() =>gotoPage(page - 1)}
+            className={`px-3 py-1 border rounded-md ${page === pageIndex + 1 ? 'bg-gray-500' : 'bg-gray-300 hover:bg-gray-400'}`}>
+              {page}
+          </button>
+        ))}
 
-                  {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
-                    <button 
-                      key={page}
-                      onClick={() => handlePageChange(page)}
-                      className={`px-3 py-1 border rounded-md ${page === currentPage ? 'bg-gray-500' : 'bg-gray-300 hover:bg-gray-400'}`}>
-                        {page}
-                    </button>
-                  ))}
-
-                  <button 
-                    onClick={handleNextPage}
-                    disabled={currentPage === totalPages}
-                    className={`px-3 py-1 border rounded-md ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'bg-gray-300 hover:bg-gray-400'}`}>
-                      Next
-                  </button>
+        <button 
+          onClick={() => nextPage()}
+          disabled={!canNextPage}
+          className={`px-3 py-1 border rounded-md ${!canNextPage === true ? 'opacity-50 cursor-not-allowed' : 'bg-gray-300 hover:bg-gray-400'}`}>
+            Next
+        </button>
       </div>
       </>
   )
