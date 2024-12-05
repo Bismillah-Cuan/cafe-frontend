@@ -6,7 +6,6 @@ import { ColumnFilter } from "../ColumnFilter";
 import { set } from "date-fns";
 
 
-
 type Data = {
   // id: number;
   date: string;
@@ -38,7 +37,7 @@ const ReusableTable: React.FC<ReusableTableProps> = ({tableFields, data}) => {
   const tableFieldsMemo = useMemo(() => tableFields, []);
   const dataMemo = useMemo(() => data, [])
   const defaultColumn = useMemo(() => ({
-    Filter:  ColumnFilter,
+    Filter: ColumnFilter,
     sortable: true
   }), []);
 
@@ -64,7 +63,7 @@ const ReusableTable: React.FC<ReusableTableProps> = ({tableFields, data}) => {
     {
       columns: tableFieldsMemo,
       data: dataMemo,
-      // manualSortBy: false,
+      manualSortBy: false,
       defaultColumn,
       initialState: {
         pageSize: 9,
@@ -101,7 +100,6 @@ const ReusableTable: React.FC<ReusableTableProps> = ({tableFields, data}) => {
       {...getTableProps()} 
       className="w-full text-sm text-left text-gray-500 border-separate border-spacing-0 mt-2 mr-5 rounded-xl border-slate-300 border-4">
         <thead className=" text-gray-700 uppercase bg-gray-300 rounded-t-lg border">
-
           {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
               {headerGroup.headers.map((column) => (
@@ -156,7 +154,6 @@ const ReusableTable: React.FC<ReusableTableProps> = ({tableFields, data}) => {
               {page}
           </button>
         ))}
-        
 
         <button 
           onClick={() => nextPage()}
