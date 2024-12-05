@@ -7,11 +7,14 @@ import ReusableDetailPopOut from "../../components/ReusableDetailPopOut"
 import EditDetailButton from "../../components/EditDetailButton"
 import { useState } from "react"
 import { tableData } from "../../util/tableDummyData"
+import {format} from "date-fns"
+import { ColumnFilter } from "../../components/ColumnFilter"
 
 type TableFields = {
-  label: string;
+  Header: string;
   accessor: string;
-  cell: any
+  Cell: any
+  Filter: any
 }
 
 const buttonClass = "text-slate-900 font-light text-center bg-slate-400 hover:bg-slate-500 px-2 py-1 rounded-md";
@@ -48,25 +51,28 @@ const Reports= () => {
 
   //Dummy Data For Table
   const columns = [
-    {label : "Date", accessor : "date"},
-    {label : "User", accessor : "user"},
-    {label : "Materials", accessor : "materials"},
-    {label : "Quantities", accessor : "quantities"},
-    {label : "Unit", accessor : "unit"},
+    {Header : "Date", accessor : "date", Cell: ({value}: any) => {return format(new Date(value), "dd-MM-yyyy")}, disableFilters: true},
+    {Header : "User", accessor : "user"},
+    {Header : "Materials", accessor : "materials", },
+    {Header : "Quantities", accessor : "quantities",},
+    {Header : "Unit", accessor : "unit", },
     {
-      label: "Action",
+      Header: "Action",
       accessor: "action",
-      cell: ({row}: any) => (
+      Cell: ({row}: any) => (
         <div className="flex gap-2 mr-3">
-          <EditDetailButton onClick={() => handleEditDetail(row.id)} label="Edit"/>
-          <EditDetailButton onClick={() => handleDelete(row.id)} label="Delete"/>
+          <EditDetailButton key={`edit-${row.original.id}`} onClick={() => handleEditDetail(row.original.id)} label="Edit"/>
+          <EditDetailButton key={`delete-${row.original.id}`} onClick={() => handleDelete(row.original.id)} label="Delete"/>
         </div>
       ),
+      disableFilters: true
     }
   ];
 
   function handleDelete(id: number) {
     setData((prev) => prev.filter((item) => item.id !== id));
+
+    console.log(`Deleted item with id ${id}`);
   }
   function handleEditDetail(id: number) {
     const item = data.find((item) => item.id === id);
@@ -111,7 +117,9 @@ const Reports= () => {
             isSelected={showEditDetail}/>}
         </div>
       </header>
-      <ReusableTable  tableFields={columns as TableFields[]} data={data}/>
+      <section>
+        <ReusableTable tableFields={columns as TableFields[]} data={data}/>
+      </section>
     </div>
   )
 }

@@ -2,13 +2,21 @@ import { useContext } from 'react'
 import { NavLink, Link } from 'react-router-dom'
 import logoCuan from '../../assets/CoffeeNCouple.png'
 import classes from './MainNavigation.module.css'
-import { UserContext } from '../store/user-context'
+import { UserContext } from '../Store/user-context'
+import { navLinks } from '../../util/navLinks'
 
 const SideBar = () => {
-  const {user, updateCurrentUser} = useContext(UserContext);
+  // const {user, updateCurrentUser} = useContext(UserContext);
+  const username = localStorage.getItem('username');
+  console.log(username);
 
   function handleLogout() {
-    updateCurrentUser('');
+    try {
+      localStorage.removeItem("username");
+      console.log("Successfully logged out");
+    } catch (error) {
+      console.error("Error during logout", error);
+    }
   }
 
   return (
@@ -16,28 +24,22 @@ const SideBar = () => {
         <img src={logoCuan} alt="CoffeeNCoupleLogo" className='mb-5 px-6' />
         <nav className='w-full flex-1 '>
             <ul className={`flex flex-col gap-1 w-full ${classes.list}`}>
-                <li>
-                    <NavLink to="dashboard" className={({ isActive }) => 
-                    (isActive ? classes.active : undefined)
-                    } end>
-                      Dashboard
-                      </NavLink>
-                </li>
-                <li>
-                    <NavLink to="reports" className={({ isActive }) => 
-                    (isActive ? classes.active : undefined)
-                    }>Reports
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink to="Materials" className={({ isActive }) =>
-                    (isActive ? classes.active : undefined)
-                    }>Materials
-                    </NavLink>
-                </li>
+            {navLinks
+          .filter((link) => username !== null && link.roles.includes(username)) // Filter by role
+          .map((link) => (
+            <li key={link.path}>
+              <NavLink
+                to={link.path}
+                className={({ isActive }) => (isActive ? classes.active : undefined)}
+                end
+              >
+                {link.label}
+              </NavLink>
+            </li>
+          ))}
             </ul>
         </nav>
-        <Link onClick={handleLogout} to="/" className='w-[10rem] items-center text-slate-50 text-center bg-slate-400 hover:bg-slate-500 mb-10 px-2 py-1 rounded-md'>Logout</Link>
+        <Link onClick={handleLogout} to="/login" className='w-[10rem] items-center text-slate-50 text-center bg-slate-400 hover:bg-slate-500 mb-10 px-2 py-1 rounded-md'>Logout</Link>
 </aside>
   )
 }

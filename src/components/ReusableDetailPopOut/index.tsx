@@ -1,5 +1,5 @@
 type Field = {
-  label: string;
+  Header: string;
   accessor: string;
 };
 
@@ -35,10 +35,10 @@ const ReusableDetailPopOut: React.FC<ReusableEditProps> = ({ fields, values, onS
         <h3 className="text-sm text-slate-600 italic mb-5">Click any of the field to edit</h3>
         <div className="flex flex-col gap-4">
           {fields.map((field) => ( 
-            field.label === "Action" ? null :(
-            <div key={field.label}>
-              <label className="text-md font-semibold" htmlFor={field.label}>
-                {field.label} : <span className="font-light">{values[field.accessor] ? values[field.accessor] : "No Data"} </span> 
+            field.Header === "Action" ? null :(
+            <div key={field.Header}>
+              <label className="text-md font-semibold" htmlFor={field.Header}>
+                {field.Header} : <span className="font-light">{values[field.accessor] ? values[field.accessor] : "No Data"} </span> 
               </label> 
             </div>)))}
         </div>

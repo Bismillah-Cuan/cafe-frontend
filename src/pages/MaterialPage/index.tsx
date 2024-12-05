@@ -1,4 +1,5 @@
 import Header from "../../components/Header"
+import { Materials } from "../../components/Materials"
 
 const MaterialPage = () => {
   return (
@@ -8,7 +9,7 @@ const MaterialPage = () => {
                 <Header title="Material Page" />
             </header>
             <section>
-                Test
+                <Materials />
             </section>
         </div>
     </>
