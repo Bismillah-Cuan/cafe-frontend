@@ -1,41 +1,37 @@
 import { Link } from "react-router-dom";
+
 import { useState, useMemo } from "react";
-import {useTable, useSortBy, useGlobalFilter, useFilters, usePagination, SortingRule } from 'react-table';
+import {useTable, useSortBy, useGlobalFilter, useFilters, usePagination, SortingRule, Column } from 'react-table';
 import { GlobalFilter } from "../GlobalFilter";
 import { ColumnFilter } from "../ColumnFilter";
+import { TableHeaders } from "../../pages/reports/types";
 import { set } from "date-fns";
 
+// interface TableHeaders<T> {
+//   Header: string
+//   accessor: keyof T | string
+//   Cell?: (props: { value: any; row: any; column: any }) => JSX.Element | null;
+//   disableFilters?: boolean
+//   type?: string
 
-type Data = {
-  // id: number;
-  date: string;
-  user: string;
-  materials: string;
-  quantities: string;
-  unit: string;
-  [key: string]: any;
-}
+// }
 
-type TableFields = {
-  Header: string;
-  accessor: string;
-  Cell: any
-  Filter: any
-}
-
-type ReusableTableProps = {
-  data: Data[];
-  tableFields: TableFields[];
+interface ReusableTableProps <T>  {
+  tableFields: TableHeaders<T>[];
+  data: T[];
 }
 
 const classTableRow= "py-3 pl-2 border-b border-gray-200";
 const classTableHead= "py-3 pl-2 border-b border-gray-200";
-const ReusableTable: React.FC<ReusableTableProps> = ({tableFields, data}) => {
+const ReusableTable = <T extends object,>({tableFields, data}: ReusableTableProps<T>) => {
 
   // const [sortBy, setSortBy] = useState<({ id: any; desc: boolean } | null)[]>([]);
-  const [sortBy, setSortBy] = useState<SortingRule<Data>[]>([]);
-  const tableFieldsMemo = useMemo(() => tableFields, []);
-  const dataMemo = useMemo(() => data, [])
+  const [sortBy, setSortBy] = useState<SortingRule<T>[]>([]);
+  const tableFieldsMemo = useMemo(
+    () => tableFields,
+    [tableFields]
+  );
+  const dataMemo = useMemo(() => data, [data])
   const defaultColumn = useMemo(() => ({
     Filter: ColumnFilter,
     sortable: true
@@ -64,7 +60,7 @@ const ReusableTable: React.FC<ReusableTableProps> = ({tableFields, data}) => {
       columns: tableFieldsMemo,
       data: dataMemo,
       manualSortBy: false,
-      defaultColumn,
+      // defaultColumn,
       initialState: {
         pageSize: 9,
         // sortBy

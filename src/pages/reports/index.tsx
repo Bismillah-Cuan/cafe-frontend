@@ -1,4 +1,3 @@
-
 import ReusableTable from "../../components/ReusableTable"
 import Header from "../../components/Header"
 import ReusableForm from "../../components/ReusableForm"
@@ -6,16 +5,11 @@ import CreateFormButton from "../../components/CreateFormButton"
 import ReusableDetailPopOut from "../../components/ReusableDetailPopOut"
 import EditDetailButton from "../../components/EditDetailButton"
 import { useState } from "react"
-import { tableData } from "../../util/tableDummyData"
+import { tableData, RowData } from "../../util/tableDummyData"
 import {format} from "date-fns"
-import { ColumnFilter } from "../../components/ColumnFilter"
+import { TableHeaders } from "./types"
 
-type TableFields = {
-  Header: string;
-  accessor: string;
-  Cell: any
-  Filter: any
-}
+
 
 const buttonClass = "text-slate-900 font-light text-center bg-slate-400 hover:bg-slate-500 px-2 py-1 rounded-md";
 
@@ -48,14 +42,14 @@ const Reports= () => {
       placeholder: "Enter a Unit e.g. kg, liter, box",
     },
   ];
-
+  // Cell: ({value}: any) => <span>{format(new Date(value), "dd-MM-yyyy")}</span>,
   //Dummy Data For Table
-  const columns = [
-    {Header : "Date", accessor : "date", Cell: ({value}: any) => {return format(new Date(value), "dd-MM-yyyy")}, disableFilters: true},
-    {Header : "User", accessor : "user"},
-    {Header : "Materials", accessor : "materials", },
-    {Header : "Quantities", accessor : "quantities",},
-    {Header : "Unit", accessor : "unit", },
+  const columns: TableHeaders<RowData>[] = [
+    { Header: "Date", accessor: "date",  disableFilters: true},
+    { Header: "User", accessor: "user"},
+    { Header: "Materials", accessor: "materials", },
+    { Header: "Quantities", accessor: "quantities",},
+    { Header: "Unit", accessor: "unit", },
     {
       Header: "Action",
       accessor: "action",
@@ -67,7 +61,7 @@ const Reports= () => {
       ),
       disableFilters: true
     }
-  ];
+  ]
 
   function handleDelete(id: number) {
     setData((prev) => prev.filter((item) => item.id !== id));
@@ -118,7 +112,7 @@ const Reports= () => {
         </div>
       </header>
       <section>
-        <ReusableTable tableFields={columns as TableFields[]} data={data}/>
+        <ReusableTable tableFields={columns} data={data} />
       </section>
     </div>
   )
