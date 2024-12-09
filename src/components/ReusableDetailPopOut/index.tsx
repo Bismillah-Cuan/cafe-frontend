@@ -4,12 +4,18 @@ type Field = {
 };
 
 type Data = {
-  // id: number;
-  date: string;
-  user: string;
-  materials: string;
-  quantities: string;
-  unit: string;
+  date?: string;
+  id?: number;
+  name?: string;
+  brand?: string;
+  type?: string;
+  purchase_unit?: string;
+  quantity?: number;
+  quantity_unit?: string;
+  user?: string;
+  materials?: string;
+  quantities?: string;
+  unit?: string;
   [key: string]: any;
 }
 
@@ -35,7 +41,7 @@ const ReusableDetailPopOut: React.FC<ReusableEditProps> = ({ fields, values, onS
         <h3 className="text-sm text-slate-600 italic mb-5">Click any of the field to edit</h3>
         <div className="flex flex-col gap-4">
           {fields.map((field) => ( 
-            field.Header === "Action" ? null :(
+            field.Header === "Action" || field.Header === "id" ? null :(
             <div key={field.Header}>
               <label className="text-md font-semibold" htmlFor={field.Header}>
                 {field.Header} : <span className="font-light">{values[field.accessor] ? values[field.accessor] : "No Data"} </span> 

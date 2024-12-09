@@ -8,15 +8,20 @@ interface Metadata {
   }
   
 interface Data {
-id: number;
-name: string;
-brand: string;
-type: string;
-purchase_unit: string;
-quantity: number;
-quantity_unit: string;
-metadata: Metadata;
-jumlah: number
+  name: string;
+  label?: string;
+  type: string;
+  id: number;
+  brand: string;
+  purchase_unit: string;
+  quantity: number;
+  quantity_unit: string;
+  metadata: Metadata;
+  jumlah: number
+  placeholder?: string;
+  defaultValue?: string;
+  options?: { value: string; label: string }[]; // Only for "select" type
+  validate?: (value: string) => string | null; // Validation function
 }
 
 export interface RawMaterialResponse {

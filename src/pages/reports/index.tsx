@@ -104,7 +104,7 @@ const Reports= () => {
         {showEditDetail && 
           <ReusableDetailPopOut 
             fields={columns} 
-            values={data.find((item) => item.id === itemEditId)?? {id: "", date: "", user: "", materials: "", quantities: "", unit: ""}}
+            values={data.find((item) => item.id === itemEditId)?? {id: 0, date: "", user: "", materials: "", quantities: "", unit: ""}}
             onSubmit={handleSubmit} 
             onClose={closeForm} 
             buttonLabel="Submit" 
