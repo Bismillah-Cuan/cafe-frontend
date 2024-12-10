@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { json, useNavigate } from "react-router-dom";
 
 type LoginData = {
     username: string;
@@ -20,6 +20,7 @@ export const useLogin = () => {
     setLoading(true);
     setError(null);
     try {
+      console.log(JSON.stringify(values, null, 2));
       const response = await fetch("http://127.0.0.1:5000/api/v1/users/login", {
         method: "POST",
         headers: {

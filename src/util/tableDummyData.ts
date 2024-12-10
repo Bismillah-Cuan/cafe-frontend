@@ -1,5 +1,13 @@
-
-export const tableData = [
+export interface RowData {
+  id: number;
+  date: string;
+  user: string;
+  materials: string;
+  quantities: string;
+  unit: string;
+  action?: string; // Optional field for custom columns
+}
+export const tableData: RowData[] = [
     {
       id: 1,
       date: "2023-01-01",

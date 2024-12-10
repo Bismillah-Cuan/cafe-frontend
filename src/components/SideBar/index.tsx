@@ -5,6 +5,7 @@ import classes from './MainNavigation.module.css'
 import { UserContext } from '../Store/user-context'
 import { navLinks } from '../../util/navLinks'
 
+
 const SideBar = () => {
   // const {user, updateCurrentUser} = useContext(UserContext);
   const username = localStorage.getItem('username');
