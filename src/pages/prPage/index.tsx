@@ -1,5 +1,5 @@
 import Header from '../../components/Header'
-
+import PurchaseRequest from '../../components/PurchaseRequest'
 
 const index = () => {
   return (
@@ -9,7 +9,7 @@ const index = () => {
         <Header title='Purchase Request' />
         </header>
         <section className="text-slate-950">
-          Ini Section
+          <PurchaseRequest />
         </section>
       </div>
     </>

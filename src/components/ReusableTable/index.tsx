@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
-
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { ArrowUpDown } from "../CustomIcon";
 import { useState, useMemo } from "react";
 import {useTable, useSortBy, useGlobalFilter, useFilters, usePagination, SortingRule, Column } from 'react-table';
 import { GlobalFilter } from "../GlobalFilter";
@@ -7,14 +9,6 @@ import { ColumnFilter } from "../ColumnFilter";
 import { TableHeaders } from "../../pages/reports/types";
 import { set } from "date-fns";
 
-// interface TableHeaders<T> {
-//   Header: string
-//   accessor: keyof T | string
-//   Cell?: (props: { value: any; row: any; column: any }) => JSX.Element | null;
-//   disableFilters?: boolean
-//   type?: string
-
-// }
 
 interface ReusableTableProps <T>  {
   tableFields: TableHeaders<T>[];
@@ -23,15 +17,27 @@ interface ReusableTableProps <T>  {
 
 const classTableRow= "py-3 pl-2 border-b border-gray-200";
 const classTableHead= "py-3 pl-2 border-b border-gray-200";
+
+const filterRows = <T extends object> (rows: T[], filterValue: string) => {
+  if (!filterValue) {
+    return rows;
+  }
+  return rows.filter((row) =>
+    Object.values(row).some((value) =>
+      value.toString().toLowerCase().includes(filterValue.toLowerCase())
+    )
+  );
+}
 const ReusableTable = <T extends object,>({tableFields, data}: ReusableTableProps<T>) => {
 
   // const [sortBy, setSortBy] = useState<({ id: any; desc: boolean } | null)[]>([]);
   const [sortBy, setSortBy] = useState<SortingRule<T>[]>([]);
+  const [filter, setFilter] = useState<string | undefined>('');
   const tableFieldsMemo = useMemo(
     () => tableFields,
     [tableFields]
   );
-  const dataMemo = useMemo(() => data, [data])
+  const dataMemo = useMemo(() => filterRows(data, filter ?? ''), [data, filter]);
   const defaultColumn = useMemo(() => ({
     Filter: ColumnFilter,
     sortable: true
@@ -72,26 +78,11 @@ const ReusableTable = <T extends object,>({tableFields, data}: ReusableTableProp
 
   const { globalFilter, pageIndex, pageSize } = state; 
   
-  const handleSort = (columnId : any) => {
-    console.log(columnId)
-    setSortBy((prev) =>
-      prev[0]?.id === columnId
-        ? [{ id: columnId, desc: !prev[0]?.desc }]
-        : [{ id: columnId, desc: false }]
-    );
-  };
-
-
 
   return (
     <>
       {/* External Sort Controls */}
       <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} />
-      <div className="flex gap-2">
-        <button onClick={() => handleSort('user')}>Sort by Name</button>
-        <button onClick={() => handleSort('materials')}>Sort by Age</button>
-        <button onClick={() => handleSort('quantities')}>Sort by City</button>
-      </div>
     <table 
       {...getTableProps()} 
       className="w-full text-sm text-left text-gray-500 border-separate border-spacing-0 mt-2 mr-5 rounded-xl border-slate-300 border-4">
@@ -100,9 +91,15 @@ const ReusableTable = <T extends object,>({tableFields, data}: ReusableTableProp
             <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
               {headerGroup.headers.map((column) => (
                 <th {...column.getHeaderProps(column.getSortByToggleProps())} className={classTableHead} key={column.id}>
+                <div className="flex items-center gap-2">
                   {column.render('Header')}
                   {/* <div>{column.canFilter ? column.render('Filter') : null}</div> */}
-                  <span>{column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}</span>
+                  <span className="relative">
+                  {column.render('Header') !== "Action" && (column.isSorted ? 
+                    (column.isSortedDesc ? <ArrowDropDownIcon className="absolute -right-4 -top-3" /> 
+                    : <ArrowDropUpIcon className="absolute -right-4 -bottom-3" />) : <ArrowUpDown />)}
+                    </span>
+                    </div>
                 </th>
               ))}
               </tr>

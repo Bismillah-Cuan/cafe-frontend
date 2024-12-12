@@ -15,6 +15,7 @@ import PurchaseOrderPage from './pages/poPage'
 import PurchaseRequestPage from './pages/prPage'
 import SupplierPage from './pages/supplier'
 import ListUserPage from './pages/listUser'
+import { DataProvider } from './util/context'
 
 
 const router = createBrowserRouter([
@@ -55,9 +56,9 @@ const App = () => {
 
   
   return (
-    <UserContext.Provider value={ctxValue}>
+    <DataProvider >
       <RouterProvider router={router}/>
-    </UserContext.Provider>
+    </DataProvider>
   )
 }
 

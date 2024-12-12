@@ -7,17 +7,20 @@ interface Metadata {
     updated_at: string | null;
   }
   
-interface Data {
-  name: string;
+export interface Data {
+  name?: string;
   label?: string;
-  type: string;
+  type?: string;
   id: number;
-  brand: string;
-  purchase_unit: string;
-  quantity: number;
-  quantity_unit: string;
-  metadata: Metadata;
-  jumlah: number
+  brand?: string;
+  purchase_unit?: string;
+  note?: string;
+  quantity?: number;
+  quantity_unit?: string;
+  metadata?: Metadata;
+  division?: string;
+  status?: string;
+  date?: string;
   placeholder?: string;
   defaultValue?: string;
   options?: { value: string; label: string }[]; // Only for "select" type

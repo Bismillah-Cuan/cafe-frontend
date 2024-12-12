@@ -7,7 +7,7 @@ const CreateFormButton: React.FC<CreateFormButtonProps> = ({ label, onClick }) =
     return (
         <>
             <button onClick={onClick}
-            className="text-slate-900 font-light text-center bg-slate-400 hover:bg-slate-500 px-2 py-1 rounded-md">
+            className="text-slate-800 font-medium text-center bg-slate-400 hover:bg-slate-300 px-2 py-1 rounded-lg transition-all">
             {label}
             </button>
         </>

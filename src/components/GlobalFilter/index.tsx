@@ -11,7 +11,7 @@ export const GlobalFilter: React.FC<GlobalFilterProps> = ({filter, setFilter}) =
   return (
     <span>
         Search: {' '}
-        <input className="w-[10rem] bg-slate-100 border-[2px] border-slate-500 rounded-md" value={value || ' '}
+        <input className="w-[10rem] bg-slate-100 border-[2px] border-slate-500 rounded-md" value={value || ''}
         onChange={e => {setValue(e.target.value); onChange(e.target.value)}}/>
     </span>
   )
