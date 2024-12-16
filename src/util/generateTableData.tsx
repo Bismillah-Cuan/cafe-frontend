@@ -45,7 +45,7 @@ function generateTableData(data: Data[]): TableData<Data> {
     const headers: TableHeaders<Data>[] = Object.keys(data[0])
       .filter(key => key !== 'metadata' && key !== 'id') // Exclude 'metadata' if needed
       .map(key => ({
-        Header: key.replace(/_/g, ' '),
+        Header: key.replace(/__/g, '/').replace(/_/g, ' '),
         accessor: key.replace(/_/g, '_').toLowerCase(), // Format as "KEY NAME"
         Cell: ({ row }: any) => row.values[key],
       }));

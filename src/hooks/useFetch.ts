@@ -8,6 +8,7 @@ type LoginData = {
   
   type LoginResponse = {
     access_token: string;
+    division: string;
   };
   
 
@@ -36,6 +37,7 @@ export const useLogin = () => {
 
       const data: LoginResponse = await response.json();
       localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("division", data.division);
       localStorage.setItem("username", values.username);
       navigate("/");
     } catch (err: unknown) {

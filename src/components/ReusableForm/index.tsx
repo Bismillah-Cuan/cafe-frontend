@@ -103,7 +103,7 @@ type Field = {
                   placeholder={field.placeholder}
                 />
               ) : (
-                <input className="text-sm  px-2 h-10 rounded-md bg-slate-300"
+                <input className="text-sm  px-2 h-10 rounded-md bg-slate-200"
                   type={field.type}
                   id={field.name}
                   name={field.name}

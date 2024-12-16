@@ -108,7 +108,7 @@ export const Materials = () => {
   return (
     <div>
         <div className="w-full mr-8 text-slate-800 relative overflow-x-hidden flex flex-col gap-5">
-      <section className="flex justify-between items-center">
+      <section className="flex justify-end items-center">
         <div>
         <CreateFormButton onClick={handleShowForm} label="Create Order" />
         {showForm && 
