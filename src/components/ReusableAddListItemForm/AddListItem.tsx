@@ -2,6 +2,7 @@ import { useState, useRef } from "react"
 import SavedListItem from "./SavedListItem"
 import { string } from "yup"
 import { Field } from "./typeAddList"
+import { add } from "date-fns"
 
 const listStyle = "text-sm font-bold"
 const isSelectedStyle = "hover:bg-slate-200 w[80rem]"
@@ -13,6 +14,9 @@ const rawMaterialsTypes=[
   {value: "atk", label: "atk"},
 ]
 
+interface AddListItemProps {
+  onAddItem: (data: any) => void;
+}
 
 type addFormField = {
   name: string, 
@@ -61,7 +65,7 @@ const initialFormData = [
     data: prValue,
   },
 ];
-const AddListItem = () => {
+const AddListItem: React.FC<AddListItemProps> = ({ onAddItem }) => {
     const [isSelected, setIsSelected] = useState(false);
     const [dataSaved, setDataSaved] = useState(initialFormData);
 
@@ -82,16 +86,7 @@ const AddListItem = () => {
       }
     }
 
-    function handleBlur(e: React.FocusEvent<HTMLInputElement>) {
-      
-      if(e.target.value !== '')
-        {
-            setIsSelected(false);
-        } else {
-            setIsSelected(false);
-        }
-    }
-
+    //Handle Add parent Item object
     const handleAddItem = (event: React.FocusEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>) => {
       const { name, value } = (event.target as HTMLInputElement); // Extract input name and value
     
@@ -105,48 +100,36 @@ const AddListItem = () => {
     
       // Add the new item to the state
       setDataSaved((prevState) => [...prevState, { id, item: value, data: [] }]);
-    
+      console.log(dataSaved);
+
+      onAddItem(dataSaved)
       // Clear the input field
       setIsSelected(false);
     };
 
-    const handleChange = (id: number, fieldName: string, value: string) => {
-      setDataSaved((prevState) => {
-        const itemExists = prevState.some((item) => item.id === id);
-    
-        if (itemExists) {
-          // Update existing item
-          return prevState.map((item) =>
-            item.id === id
-              ? {
-                  ...item,
-                  data: item.data.map((field) =>
-                    field.name === fieldName
-                      ? { ...field, value }
-                      : field
-                  ),
-                  item: item.item, // Add this line to ensure the item property is present
-                }
-              : item
-          );
-        } else {
-          // Add a new item
-          return [
-            ...prevState,
-            {
-              id,
-              item: '', // Add this line to ensure the item property is present
-              data: [
-                {
-                  name: fieldName,
-                  value,
-                },
-              ],
-            },
-          ];
-        }
-      });
+    //Handle Add sub data in items object
+    const addItemToData = (parentId: number, newData: { name: string; value: string }) => {
+      setDataSaved((prevState) =>
+        prevState.map((item) =>
+          item.id === parentId
+            ? {
+                ...item,
+                data: item.data.some((field) => field.name === newData.name)
+                  ? item.data.map((field) =>
+                      field.name === newData.name
+                        ? { ...field, value: newData.value } // Update existing field
+                        : field
+                    )
+                  : [...item.data, newData], // Add new field if it doesn't exist
+              }
+            : item
+        )
+      );
+      console.log(dataSaved);
+
+      onAddItem(dataSaved)
     };
+
     function handleSubmit(e: React.FormEvent) {
       e.preventDefault();
 
@@ -163,10 +146,7 @@ const AddListItem = () => {
                 formFields = {addFormField}
                 listItem= {item.item}
                 prValue= {item.data}
-                onChange= {(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-                  const { name, value } = event.target;
-                  handleChange(item.id, name, value);
-                }}
+                onChange= {(name, value) => addItemToData(item.id, { name, value })}
               />
             </li>
           ))}
@@ -179,9 +159,6 @@ const AddListItem = () => {
             name="item"
             onBlur={(event) => handleAddItem(event)}
             onKeyDown={(event) => handleKeyPress(event)}
-            // onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-
-            // }}
             ref={inputRef}
             placeholder="Nama bahan baku"
           />

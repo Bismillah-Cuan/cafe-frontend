@@ -47,37 +47,8 @@ type Field = {
     }
     function handleSubmit (event: React.FormEvent<HTMLFormElement>)  {
       event.preventDefault();
-      // try {
-        
-      //   const headers = {
-      //     'Authorization': `Bearer ${token}`,
-      //     'Content-Type': 'application/json',
 
-      //   }
-      //   // Object.entries(formData).forEach(([key, value]) => {
-      //   //   console.log(`${key}: ${JSON.stringify(value)}, Type: ${typeof value}`);
-      //   // });
-      //   console.log(JSON.stringify(formData, null, 2));
-
-      //   const response = await fetch('http://127.0.0.1:5000/api/v1/raw-materials/', {
-      //     method: 'POST',
-      //     headers: headers,
-      //     body: JSON.stringify(formData),
-      //   });
-      //   console.log(response);
-      //   if (!response.ok) {
-      //     throw new Error(`Error: ${response.statusText}`);
-      //   }
-  
-      //   alert('Form submitted successfully!');
-        onSubmit(formData);
-      // } catch (error) {
-      //   if (error instanceof Error) {
-        
-      //   console.error('Error submitting form:', error.message);
-      //   alert('Failed to submit the form. Please try again.');
-      //   }
-      // }
+        onSubmit(formData)
       
     }
 

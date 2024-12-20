@@ -7,15 +7,17 @@ type ReusableFormProps = {
     onClose?: () => void;
     buttonLabel?: string;
     isSelected?: boolean
+    division?: string | null
+    username?: string | null
   };
 
   const buttonStyle ="text-slate-900 font-light text-center bg-slate-400 w-40 hover:bg-slate-300 px-2 py-1 rounded-lg transition-all"
-const ReusableAddListItemForm: React.FC<ReusableFormProps> = ( {onClose, isSelected}) => {
-    const division = localStorage.getItem("division");
-    const username = localStorage.getItem("username");
+const ReusableAddListItemForm: React.FC<ReusableFormProps> = ( {onSubmit, onClose, isSelected, division, username}) => {
+    const [formData, setFormData] = useState({});
 
-    function handleSubmit(formData: Record<string, string | number>) {
-      console.log(formData);
+    function handleSubmit() {
+      console.log("Form submitted with data:", formData);
+      onSubmit(formData);
     }
   return (
     <>
@@ -29,7 +31,7 @@ const ReusableAddListItemForm: React.FC<ReusableFormProps> = ( {onClose, isSelec
             Back
         </button>
         <button 
-          onClick={onClose} 
+          onClick={handleSubmit} 
           className={buttonStyle}>
             Submit
         </button>
@@ -49,7 +51,7 @@ const ReusableAddListItemForm: React.FC<ReusableFormProps> = ( {onClose, isSelec
                   <label className=" text-md font-light" htmlFor="note">Catatan</label>
                 </div>
             </div>
-            <AddListItem />
+            <AddListItem onAddItem={(formData) => setFormData(formData)}/>
         </div>
     </div>
     </section>}

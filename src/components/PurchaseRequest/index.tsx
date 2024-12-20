@@ -19,12 +19,15 @@ const PurchaseRequest = () => {
     const [isFetching, setIsFetching] = useState(false);
     const [showEditDetail, setShowEditDetail] = useState(false);
     const [itemEditId, setitemEditId] = useState(0);
+    const [addedMaterials, setAddedMaterials] = useState(dummyPR);
     const [error, setError] = useState();
 
+    const division = localStorage.getItem("division");
+    const username = localStorage.getItem("username");
     function handleShowForm() {
         setShowForm((prev) => !prev);   
     }
-    const tableData = generateTableData(dummyPR);
+    const tableData = generateTableData(addedMaterials);
 
     const existingHeader = tableData.headers.find(header => header.accessor === 'status__action');
     if (existingHeader) {
@@ -43,6 +46,7 @@ const PurchaseRequest = () => {
     }
 
     function handleSubmit(data: any) {
+      setShowForm(!showForm);
       console.log(data);
     }
     function handleEditDetail(id: number) {
@@ -65,7 +69,12 @@ const PurchaseRequest = () => {
             onSubmit={handleSubmit} 
             onClose={closeForm} 
             buttonLabel="Submit" 
-            isSelected={showForm}/>}
+            isSelected={showForm}
+            division={division}
+            username= {username}
+            />
+
+            }
         {showEditDetail && 
           <ReusableDetailPopOut 
             fields={tableData.headers.filter((header) => header.accessor !== 'actions')} 

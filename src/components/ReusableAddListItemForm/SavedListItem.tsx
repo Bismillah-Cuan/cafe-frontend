@@ -7,10 +7,7 @@ type prValue = {
 interface SavedListItemProps {
     listItem: string,
     formFields: any
-    onChange: (event: React.ChangeEvent<HTMLInputElement> | 
-      React.ChangeEvent<HTMLTextAreaElement> | 
-      React.ChangeEvent<HTMLSelectElement> | 
-      React.ChangeEvent<HTMLInputElement>) => void;
+    onChange: (name: string, value: string) => void;
     prValue: prValue[] 
 }
 

@@ -1,9 +1,6 @@
 interface AddableInputProps {
   onChange:
-    (event: React.ChangeEvent<HTMLInputElement> | 
-      React.ChangeEvent<HTMLTextAreaElement> | 
-      React.ChangeEvent<HTMLSelectElement> | 
-      React.ChangeEvent<HTMLInputElement>) => void;
+    (name: string, value: string) => void;
   inputType: "text" | "textarea" | "select" | "number" | "checkbox" | "radio";
   options?: { value: string; label: string }[]; // For select, radio
   name?: string; // Name for input, radio
@@ -16,14 +13,20 @@ const listStyle = "text-sm font-bold"
 const inputStyle = "text-sm font-bold h-full rounded-md h-full  flex-none px-2 py-1" 
 const AddableInput: React.FC<AddableInputProps> = ({placeholder, onChange, inputType, options, name, value}) => {
 
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement| HTMLSelectElement>) {
+    const { name, value } = e.target;
+
+      // Trigger the parent's onChange with the name and value
+    onChange(name, value);
+  }
   function handleKeyPress(e: any) {
     if (e.key === "Enter") {
-      onChange(e.target.value)
+      handleChange(e);
     }
   }
 
   function handleBlur(e: any) {
-    onChange(e.target.value)
+    handleChange(e);
   }
 
   return (
@@ -34,7 +37,7 @@ const AddableInput: React.FC<AddableInputProps> = ({placeholder, onChange, input
               name={name} 
               onBlur={handleBlur}
               onKeyDown={handleKeyPress}
-              onChange={onChange}
+              onChange={handleChange}
               value={value}
               placeholder={placeholder} />
       )}
@@ -45,7 +48,7 @@ const AddableInput: React.FC<AddableInputProps> = ({placeholder, onChange, input
               type="text" 
               onBlur={handleBlur}
               onKeyDown={handleKeyPress}
-              onChange={onChange}
+              onChange={handleChange}
               value={value}
               placeholder={placeholder} />
       )}
@@ -56,7 +59,7 @@ const AddableInput: React.FC<AddableInputProps> = ({placeholder, onChange, input
               type="number" 
               onBlur={handleBlur}
               onKeyDown={handleKeyPress}
-              onChange={onChange}
+              onChange={handleChange}
               value={value}
               placeholder={placeholder} />
       )}
@@ -64,10 +67,9 @@ const AddableInput: React.FC<AddableInputProps> = ({placeholder, onChange, input
         <select 
               className={`border-none bg-slate-100 focus:outline-none placeholder:font-light ${inputStyle}` }
               name={name} 
-              onBlur={handleBlur}
-              onKeyDown={handleKeyPress}
-              onChange={onChange}
+              onChange={handleChange}
               value={value}>
+            <option value="" className="text-slate-400 font-light" hidden disabled selected>Tipe</option>
           {options?.map((option, index) => (
             <option key={index} value={option.value}>{option.label}</option>
           ))}
@@ -82,7 +84,7 @@ const AddableInput: React.FC<AddableInputProps> = ({placeholder, onChange, input
                   type={inputType} 
                   onBlur={handleBlur}
                   onKeyDown={handleKeyPress}
-                  onChange={onChange}
+                  onChange={handleChange}
                   value={value}
                   placeholder={placeholder} />
               <span>{option.label}</span>
