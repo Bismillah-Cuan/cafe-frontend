@@ -6,7 +6,7 @@ export const dummyPR = [
         division: "kitchen",
         quantity_item: 10,
         detail: "Rice, noodle, chicken",
-        status__action: "Pending",
+        status__action: "Requested",
     },
     {
         id: 2,

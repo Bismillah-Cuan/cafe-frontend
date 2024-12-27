@@ -32,7 +32,33 @@ export const MaterialFormFields = [
     {
       name: "type",
       label: "Tipe Bahan Mentah",
-      type: "text",
-      placeholder: "Masukan tipe bahan mentah contoh: DRY, DAIRY, FRESH",   
+      placeholder: "Tipe Bahan",
+      type: "select",
+      options: [
+        {
+          value: "dry",
+          label: "Dry",
+        },
+        {
+          value: "fresh",
+          label: "Fresh",
+        },
+        { 
+          value: "dairy",
+          label: "Dairy",
+        },  
+        {
+          value: "atk",
+          label: "ATK",
+        },
+        {
+          value: "packaging",
+          label: "Packaging",
+        },
+        {
+          value: "support",
+          label: "Support",
+        },
+      ]   
     },
   ];

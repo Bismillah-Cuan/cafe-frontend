@@ -90,9 +90,7 @@ const AddableInput: React.FC<AddableInputProps> = ({placeholder, onChange, input
               <span>{option.label}</span>
             </label>
           ))
-
       )}
-      
     </>
   )
 }

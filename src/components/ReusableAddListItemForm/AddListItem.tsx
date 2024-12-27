@@ -81,6 +81,10 @@ const AddListItem: React.FC<AddListItemProps> = ({ onAddItem }) => {
 
     function handleKeyPress(event: React.KeyboardEvent<HTMLInputElement>) {
       if (event.key === "Enter") {
+        if (event.currentTarget.value === "") {
+          setIsSelected(false);
+          return
+        }
         handleAddItem(event);
         setIsSelected(false);
       }
@@ -89,10 +93,11 @@ const AddListItem: React.FC<AddListItemProps> = ({ onAddItem }) => {
     //Handle Add parent Item object
     const handleAddItem = (event: React.FocusEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>) => {
       const { name, value } = (event.target as HTMLInputElement); // Extract input name and value
-    
+      
       // Skip if input is empty
-      if (!value.trim()) {
+      if (!value) {
         setIsSelected(false);
+        return;
       }
     
       // Calculate new ID (use 1 if dataSaved is empty)
@@ -147,7 +152,9 @@ const AddListItem: React.FC<AddListItemProps> = ({ onAddItem }) => {
                 listItem= {item.item}
                 prValue= {item.data}
                 onChange= {(name, value) => addItemToData(item.id, { name, value })}
+                onDelete= {() => setDataSaved((prevState) => prevState)}
               />
+
             </li>
           ))}
            

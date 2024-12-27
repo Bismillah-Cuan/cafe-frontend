@@ -58,7 +58,7 @@ export const Materials = () => {
         }
       }
       handleFetch(); 
-      }, [fetchTrigger]);
+      }, []);
       
       if (error) {
 
@@ -98,10 +98,17 @@ export const Materials = () => {
     
      async function handleSubmit(data: any) {
       console.log('Before setMaterials:', materials);
-        await createMaterial(data);
+        try {
+          await createMaterial(data);
+          setMaterials((prev) => ({ ...prev, rows: [...prev.rows, data] }));
+          console.log('After setMaterials (should be outdated):', materials);
+        } catch (error) {
+          setMaterials(materials);
+        }
         setShowForm(!showForm);
-        setMaterials((prev) => ({ ...prev, rows: [...prev.rows, data] }));
-        console.log('After setMaterials (should be outdated):', materials);
+        
+        
+        
       }
       const closeForm = () => {setShowForm(false); setShowEditDetail(false)};
       
@@ -110,7 +117,7 @@ export const Materials = () => {
         <div className="w-full mr-8 text-slate-800 relative overflow-x-hidden flex flex-col gap-5">
       <section className="flex justify-end items-center">
         <div>
-        <CreateFormButton onClick={handleShowForm} label="Create Order" />
+        <CreateFormButton onClick={handleShowForm} label="Create Materials" />
         {showForm && 
           <ReusableForm 
             fields={MaterialFormFields} 

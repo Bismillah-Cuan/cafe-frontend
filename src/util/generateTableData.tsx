@@ -11,7 +11,7 @@ export interface Data {
   name?: string;
   label?: string;
   type?: string;
-  id: number;
+  id?: number;
   brand?: string;
   purchase_unit?: string;
   note?: string;
@@ -19,6 +19,8 @@ export interface Data {
   quantity_unit?: string;
   metadata?: Metadata;
   division?: string;
+  user_id?: number;
+  pr_code?: string;
   status?: string;
   date?: string;
   placeholder?: string;
@@ -29,6 +31,10 @@ export interface Data {
 
 export interface RawMaterialResponse {
     raw_materials: Data[]
+}
+
+export interface PurchaseRequestResponse {
+    pr_list: Data[]
 }
 
 
@@ -43,17 +49,47 @@ function generateTableData(data: Data[]): TableData<Data> {
     
     // Extract headers dynamically from the first item's keys
     const headers: TableHeaders<Data>[] = Object.keys(data[0])
-      .filter(key => key !== 'metadata' && key !== 'id') // Exclude 'metadata' if needed
+      .filter(key =>  key !== 'id' && key !== 'user_id' && key !== 'pr_code') // Exclude 'metadata' if needed
       .map(key => ({
-        Header: key.replace(/__/g, '/').replace(/_/g, ' '),
+        Header: key.replace(/__/g, '/').replace(/_/g, ' ').replace("metadata", 'date'),
         accessor: key.replace(/_/g, '_').toLowerCase(), // Format as "KEY NAME"
-        Cell: ({ row }: any) => row.values[key],
+        Cell: ({ row }: any) => {
+
+         const value = row.values[key]
+
+        if (Array.isArray(value)) {
+          return value
+            .map(item => item.details?.name) // Safely access `details.name`
+            .filter(Boolean) // Remove undefined/null values
+            .join(', '); // Join with commas
+        
+        }
+        else if (key === "metadata") {
+          const metadata = Object.entries(value).map(([key, value]) => {
+            if(key  === "created_at" ) {
+              const date = new Date(value as string | number);
+              const formattedDate = date.toLocaleDateString('en-US', {
+                day: 'numeric',
+                month: 'numeric',
+                year: 'numeric',
+              });
+              return formattedDate  
+            }
+
+          }
+          )
+          return metadata;
+        }
+        
+
+          return value;
+        }
       }));
   
     // Rows are the same as the input data
     const rows: Data[] = data;
   
-    // Add "actions" column if needed
+
     return { headers, rows };
   }
   

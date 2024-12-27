@@ -86,7 +86,7 @@ const ReusableTable = <T extends object,>({tableFields, data}: ReusableTableProp
     <table 
       {...getTableProps()} 
       className="w-full text-sm text-left text-gray-500 border-separate border-spacing-0 mt-2 mr-5 rounded-xl border-slate-300 border-4">
-        <thead className=" text-gray-700 uppercase bg-gray-300 rounded-t-lg border">
+        <thead key="head" className=" text-gray-700 uppercase bg-gray-300 rounded-t-lg border">
           {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
               {headerGroup.headers.map((column) => (

@@ -37,9 +37,9 @@ type Field = {
     );
     
   
-    const handleChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void = (event) => {
+    const handleChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement>) => void = (event) => {
      const { name , value, type} = event.target;
-     
+     console.log(value);
      // Convert value to a number if the input type is "number"
       const processedValue = type === "number" ? Number(value) : value;
 
@@ -59,13 +59,13 @@ type Field = {
     {isSelected &&  <div onClick={onClose} className={bgClass}></div>}
     {isSelected && <section className="fixed top-1/2 left-1/2 bg-slate-100 p-5 rounded-3xl w-auto h-auto z-[20] transform -translate-x-1/2 -translate-y-1/2" role="dialog">
       <div className="p-5 z-[20]">
-        <h2 className="text-2xl font-bold mb-5">Create Order</h2>
+        <h2 className="text-2xl font-bold mb-5">Create Materials</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3 items-center">
           <div className="flex flex-wrap justify-center gap-4">
             {fields.map((field, index) => (
             <div className="flex flex-col gap-2 w-[20rem]" key={index}>
               <label className="text-sm font-semibold" htmlFor={field.name}>{field.label}</label>
-              {field.type === "textarea" ? (
+              {field.type === "textarea" && (
                 <textarea
                   id={field.name}
                   name={field.name}
@@ -73,7 +73,8 @@ type Field = {
                   onChange={handleChange}
                   placeholder={field.placeholder}
                 />
-              ) : (
+              )}
+              {field.type === "text" && (
                 <input className="text-sm  px-2 h-10 rounded-md bg-slate-200"
                   type={field.type}
                   id={field.name}
@@ -84,8 +85,37 @@ type Field = {
                   required
                 />
               )}
+              {field.type === "number" && (
+                <input className="text-sm  px-2 h-10 rounded-md bg-slate-200"
+                  type={field.type}
+                  id={field.name}
+                  name={field.name}
+                  value={formData[field.name]}
+                  onChange={handleChange}
+                  placeholder={field.placeholder}
+                  required
+                />
+              )}
+              {field.type === "select" && (
+                <select
+                  id={field.name}
+                  className="text-sm px-2 h-10 rounded-md bg-slate-200"
+                  name={field.name}
+                  value={formData[field.name]}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="" disabled>{field.placeholder}</option>
+                  {field.options?.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              )}
               </div>
-              ))}
+            ))}
+
             </div>
               <button className="flex-grow text-slate-900 text-center mt-2 font-semibold w-[20rem] bg-slate-400 hover:bg-slate-500 px-2 py-1 rounded-md" type="submit">{buttonLabel}</button>
           </form>
