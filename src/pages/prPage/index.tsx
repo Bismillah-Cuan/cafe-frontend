@@ -1,5 +1,5 @@
 import Header from '../../components/Header'
-import PurchaseRequest from '../../components/PurchaseRequest'
+import {PurchaseRequest} from '../../components/PurchaseRequest'
 
 const index = () => {
   return (

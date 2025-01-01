@@ -4,23 +4,26 @@ import { Data } from "../../util/generateTableData"
 import ReusableTable from "../ReusableTable"
 import CreateFormButton from "../CreateFormButton"
 import EditDetailButton from "../EditDetailButton"
-import ReusableDetailPopOut from "../ReusableDetailPopOut"
+import ReusablePrDetailPopOut from "../ReusablePrDetailPopOut"
 import { dummyPR } from "./DummyPR"
-import { useEffect, useState } from "react"
-import { fetchPurchaseRequests } from "./DataFetch"
+import { useEffect, useState, useContext } from "react"
+import { fetchPurchaseRequests, fetchSearchPurchaseRequests } from "./DataFetch"
+import { UsePrContext } from "../../util/context"
 
 const statusColor = {
   requested: "bg-yellow-400",
   approved: "bg-green-400",
   rejected: "bg-red-400"
 }
-const PurchaseRequest = () => {
+export const PurchaseRequest = () => {
 
     
     // const [purchaseRequests, setPurchaseRequests] = useState<PurchaseRequestsResponse>({})
     const [showForm, setShowForm] = useState(false);
     const [isFetching, setIsFetching] = useState(false);
     const [showEditDetail, setShowEditDetail] = useState(false);
+    const [division , setDivision] = useState("");
+    const {prList, setPrList} = UsePrContext();
     const [itemEditId, setitemEditId] = useState(0);
     const [addedPurchaseRequests, setAddedPurchaseRequests] = useState<TableData<Data>>(
     {
@@ -36,7 +39,7 @@ const PurchaseRequest = () => {
           
           setIsFetching(true);
           const {tableData, division, pr_code} = await fetchPurchaseRequests();
-
+          setDivision(division);  
           const existingHeader = tableData.headers.find(header => header.accessor === 'status');
           if (existingHeader) {
             const originalCell = existingHeader.Cell;
@@ -47,7 +50,7 @@ const PurchaseRequest = () => {
                   {originalCell?.({ value: null, row, column: null })}
                 </span>
                 </div>
-                  <EditDetailButton key={`edit-${row.original.id}`} onClick={() => handleEditDetail(row.original.id)}  label="Selengkapnya" />
+                  <EditDetailButton key={`edit-${row.original.id}`} onClick={() => handleEditDetail(row.original.user_id)}  label="Selengkapnya" />
               </div>
             );
           }
@@ -75,10 +78,27 @@ const PurchaseRequest = () => {
           }
         }
       }
+
+      async function handleFetchSearch() {
+        try { 
+            console.log("Fetch search PR");
+            const data = await fetchSearchPurchaseRequests()
+            setPrList(data);
+
+            console.log("Fetch search PR", prList);
+        } catch (error) {
+          if (error instanceof Error) {
+            setError({message: error.message || 'An error occurred while fetching data.'});
+          }
+        }
+      }
+
       handleFetch();
+      handleFetchSearch();
       setIsFetching(false);
+
+      
     }, [])
-    const division = localStorage.getItem("division");
     const username = localStorage.getItem("username");
     function handleShowForm() {
         setShowForm((prev) => !prev);   
@@ -92,10 +112,12 @@ const PurchaseRequest = () => {
       console.log(data);
     }
     function handleEditDetail(id: number) {
+      console.log("id", id);
       const item = addedPurchaseRequests.rows.find((item) => item.user_id === id);
+      console.log(item);
       if (item) {
         setShowEditDetail((prev) => !prev);
-        setitemEditId(item.id);
+        setitemEditId(item.user_id);
       }
     }
     const closeForm = () => {setShowForm(false); setShowEditDetail(false)};
@@ -118,11 +140,13 @@ const PurchaseRequest = () => {
 
             }
         {showEditDetail && 
-          <ReusableDetailPopOut 
+          <ReusablePrDetailPopOut 
             fields={addedPurchaseRequests.headers.filter((header) => header.accessor !== 'actions')} 
             values={addedPurchaseRequests.rows.find((item) => item.user_id === itemEditId)?? {brand: '', name: '', type: '', purchase_unit: '', quantity: 0, quantity_unit: ''}}
             onSubmit={handleSubmit} 
             onClose={closeForm} 
+            username={username ?? ''}
+            division={division}
             buttonLabel="Submit" 
             isSelected={showEditDetail}/>}
         </div>
@@ -135,5 +159,3 @@ const PurchaseRequest = () => {
     </>
   )
 }
-
-export default PurchaseRequest

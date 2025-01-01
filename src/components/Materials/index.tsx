@@ -7,9 +7,9 @@ import EditDetailButton from "../../components/EditDetailButton"
 import { useState, useEffect, useCallback, useRef } from "react"
 import { TableData, Data, RawMaterialResponse } from "./types"
 import ErrorModal from "../ErrorModal"
-import {DataFetchMaterial, DeleteMaterial, createMaterial} from "./DataFetch"
+import {DataFetchMaterial, DeleteMaterial, CreateMaterial} from "./DataFetch"
 import {MaterialFormFields} from "./MaterialFormFields"
-import { useDataContext } from "../../util/context"
+import { UseDataContext } from "../../util/context"
 import { set } from "date-fns"
 
 
@@ -19,13 +19,8 @@ export const Materials = () => {
   const [itemEditId, setitemEditId] = useState(0);
   const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState();
-  const {materials, setMaterials} = useDataContext();
-  const [fetchTrigger, setFetchTrigger] = useState(0); 
-
-  // const logMaterials = useCallback(() => {
-  //   // console.log('Materials updated:', materials);
-   
-  // }, [addedMaterials]);
+  const {materials, setMaterials} = UseDataContext();
+  const [fetchTrigger, setFetchTrigger] = useState(false); 
 
     useEffect(() => {
       async function handleFetch() {
@@ -48,17 +43,20 @@ export const Materials = () => {
           }
           // Update materials only if data has changed
           setIsFetching(false);
-          setMaterials(tableData)  // Update the ref)
-          console.log(materials);
+          console.log("fetched",tableData);
+
+
+          setMaterials(tableData);
+
   
         } catch (error) {
           if (error instanceof Error) {
             setError({message: error.message || 'An error occurred while fetching data.'});
           }
         }
-      }
+      } 
       handleFetch(); 
-      }, []);
+      }, [fetchTrigger]);
       
       if (error) {
 
@@ -79,15 +77,19 @@ export const Materials = () => {
       }
 
       function handleEditDetail(id: number) {
-        setFetchTrigger(prev => prev + 1);
+        
         console.log('After setFetchTrigger:', fetchTrigger);
+        console.log('Materials:', materials);
         const item = materials.rows.find((item) => item.id === id);
+
         console.log(item);
         if (item) {
           setShowEditDetail((prev) => !prev);
           console.log(showEditDetail);
           
           setitemEditId(item.id);
+        } else{
+          setFetchTrigger(prev => !prev);
         }
         
       }
@@ -98,17 +100,17 @@ export const Materials = () => {
     
      async function handleSubmit(data: any) {
       console.log('Before setMaterials:', materials);
+      
         try {
-          await createMaterial(data);
+          await CreateMaterial(data);
           setMaterials((prev) => ({ ...prev, rows: [...prev.rows, data] }));
+          setFetchTrigger(prev => !prev);
           console.log('After setMaterials (should be outdated):', materials);
         } catch (error) {
           setMaterials(materials);
         }
         setShowForm(!showForm);
-        
-        
-        
+
       }
       const closeForm = () => {setShowForm(false); setShowEditDetail(false)};
       
@@ -125,14 +127,14 @@ export const Materials = () => {
             onClose={closeForm} 
             buttonLabel="Submit" 
             isSelected={showForm}/>}
-        {showEditDetail && 
+        {showEditDetail ? (
           <ReusableDetailPopOut 
             fields={materials.headers.filter((header) => header.accessor !== 'actions')} 
             values={materials.rows.find((item) => item.id === itemEditId)?? {brand: '', name: '', type: '', purchase_unit: '', quantity: 0, quantity_unit: ''}}
             onSubmit={handleSubmit} 
             onClose={closeForm} 
             buttonLabel="Submit" 
-            isSelected={showEditDetail}/>}
+            isSelected={showEditDetail}/>) : (null)}
         </div>
       </section>
       <section>

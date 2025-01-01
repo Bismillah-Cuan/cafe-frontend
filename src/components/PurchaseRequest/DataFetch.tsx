@@ -1,5 +1,9 @@
 import { DataPurchaseRequest } from "./types";
+import { PrContextProps } from "../../util/PrContext";
 import generateTableData from "../../util/generateTableData";
+import { API_PURCHASE_REQUEST, API_RAW_MATERIALS_SEARCH } from "../../constants/URL_API";
+import axios from "axios";
+
 export async function fetchPurchaseRequests () {
     
     const access_token = localStorage.getItem('access_token')
@@ -7,7 +11,7 @@ export async function fetchPurchaseRequests () {
         'Authorization': `Bearer ${access_token}`,
         'Content-Type': 'application/json'
     }
-    const response = await fetch('http://127.0.0.1:5000/api/v1/purchase-request/', {
+    const response = await fetch(API_PURCHASE_REQUEST, {
         method: 'GET',
         headers: headers
     })
@@ -39,4 +43,26 @@ export async function fetchPurchaseRequests () {
     
     
     return {tableData: tableData, division: data.pr_list[0].division, pr_code: data.pr_list[0].pr_code}
+}
+
+export async function fetchSearchPurchaseRequests () {
+
+    const access_token = localStorage.getItem('access_token')
+    const headers = {
+        Authorization: `Bearer ${access_token}`,
+        'Content-Type': 'application/json'
+    }
+    const response = await fetch(API_RAW_MATERIALS_SEARCH, {
+        headers: headers,
+        method: 'POST',
+        body: JSON.stringify({word : ""})
+    });
+
+    
+
+    const data: PrContextProps = await response.json()
+    console.log("Search",data);
+    
+    return data
+
 }

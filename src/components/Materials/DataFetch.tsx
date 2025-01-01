@@ -1,12 +1,13 @@
 import { RawMaterialResponse, Data } from "./types";
 import generateTableData from "../../util/generateTableData";
+import { API_RAW_MATERIALS } from "../../constants/URL_API";
 export async function DataFetchMaterial()  {
     const token = localStorage.getItem('access_token');
             const headers = {
               'Authorization': `Bearer ${token}`, // Add "Bearer" if required for JWT tokens
               'Content-Type': 'application/json', // Ensure content type is specified
             };
-            const response = await fetch("http://127.0.0.1:5000/api/v1/raw-materials/", {
+            const response = await fetch(API_RAW_MATERIALS, {
               method: 'GET',
               headers: headers,
             });
@@ -37,7 +38,7 @@ export async function DeleteMaterial(id: number, name: string): Promise<void> {
       };
       console.log(JSON.stringify({ id, name }));
       const response = await fetch(
-        "http://127.0.0.1:5000/api/v1/raw-materials/", 
+        API_RAW_MATERIALS, 
         {
           method: 'DELETE',
           body: JSON.stringify({ id, name }),
@@ -65,7 +66,7 @@ export async function DeleteMaterial(id: number, name: string): Promise<void> {
       }
   }
 
-export async function createMaterial(data: Data): Promise<void> {
+export async function CreateMaterial(data: Data): Promise<void> {
     try {
       const token = localStorage.getItem('access_token');
       const headers = {
@@ -74,7 +75,7 @@ export async function createMaterial(data: Data): Promise<void> {
       };
       console.log(JSON.stringify(data));
       const response = await fetch(
-        "http://127.0.0.1:5000/api/v1/raw-materials/", 
+        API_RAW_MATERIALS, 
         {
           method: 'POST',
           body: JSON.stringify(data),

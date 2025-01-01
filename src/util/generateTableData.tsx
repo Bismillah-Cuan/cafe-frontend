@@ -65,6 +65,8 @@ function generateTableData(data: Data[]): TableData<Data> {
         
         }
         else if (key === "metadata") {
+          if (value) {
+         
           const metadata = Object.entries(value).map(([key, value]) => {
             if(key  === "created_at" ) {
               const date = new Date(value as string | number);
@@ -75,10 +77,12 @@ function generateTableData(data: Data[]): TableData<Data> {
               });
               return formattedDate  
             }
-
+             }
+            )
+            return metadata;
           }
-          )
-          return metadata;
+          
+          
         }
         
 
