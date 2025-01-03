@@ -3,7 +3,7 @@ import AddListItem from "./AddListItem";
 const bgClass = "fixed top-0 left-0 w-full h-full bg-black opacity-50 z-[10]";
 type ReusableFormProps = {
     // fields: Field[];
-    onSubmit: (formData: Record<string, string | number>) => void;
+    onSubmit: (formData: Record<string, string>[]) => void;
     onClose?: () => void;
     buttonLabel?: string;
     isSelected?: boolean
@@ -13,17 +13,30 @@ type ReusableFormProps = {
 
   const buttonStyle ="text-slate-900 font-light text-center bg-slate-400 w-40 hover:bg-slate-300 px-2 py-1 rounded-lg transition-all"
 const ReusableAddListItemForm: React.FC<ReusableFormProps> = ( {onSubmit, onClose, isSelected, division, username}) => {
-    const [formData, setFormData] = useState({});
+    const [formData, setFormData] = useState<Record<string, string>[]>([]);
 
     function handleSubmit() {
-      console.log("Form submitted with data:", formData);
-      onSubmit(formData);
+
+      
+      const requested_raw_materials = formData.map(item => {
+        const {raw_material_id, quantity, notes} = item;
+        return {raw_material_id, quantity, notes};
+      })
+      const filteredData = 
+        {
+          requested_raw_materials : requested_raw_materials
+        }
+      
+      console.log("Form submitted with data:", filteredData);
+      onSubmit(filteredData);
     }
   return (
     <>
     {isSelected &&  <div onClick={onClose} className={bgClass}></div>}
-    {isSelected && <section className="fixed top-1/2 left-1/2 bg-slate-100 p-5 rounded-3xl w-[60rem] min-h-[30rem] z-[20] transform -translate-x-1/2 -translate-y-1/2" role="dialog">
-    <div className="flex flex-col gap-5 p-5 z-[20]">
+    {isSelected && 
+    <section 
+      className="fixed top-1/2 left-1/2 bg-slate-100 p-5 rounded-3xl w-[60rem] min-h-[30rem] z-[20] transform -translate-x-1/2 -translate-y-1/2" role="dialog">
+    <div className="relative flex flex-col gap-5 p-5 z-[20]">
       <div className="flex justify-between">
         <button 
           onClick={onClose} 
@@ -41,7 +54,7 @@ const ReusableAddListItemForm: React.FC<ReusableFormProps> = ( {onSubmit, onClos
             <h3 className="text-md text-slate-600 mb-5 opacity-50">Pr Code: 000000</h3>
             <h3 className="text-md text-slate-600 mb-5 opacity-50">{username} - {division}</h3>
         </div>
-        <div className="flex flex-col gap-4 w-full">
+        <div className="relative flex flex-col gap-4 w-full">
             <div className="flex justify-between">
                 <label className="flex-1 text-md font-light" htmlFor="material">Bahan Baku</label>
                 <div className="flex justify-evenly flex-auto">

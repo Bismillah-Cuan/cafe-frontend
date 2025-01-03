@@ -3,6 +3,9 @@ import SavedListItem from "./SavedListItem"
 import { string } from "yup"
 import { Field } from "./typeAddList"
 import { add } from "date-fns"
+import { UsePrContext } from "../../util/context"
+import { SearchMaterialPopOut } from "./SearchMaterialPopOut"
+import { Note } from "@mui/icons-material"
 
 const listStyle = "text-sm font-bold"
 const isSelectedStyle = "hover:bg-slate-200 w[80rem]"
@@ -29,9 +32,9 @@ type addFormField = {
 
 const addFormField: addFormField[] = [
   {name: "quantity", placeholder: "kuantitas", type: "number"},
-  {name: "quantity_unit", placeholder: "satuan kuantitas", type: "text"},
+  {name: "purchase_unit", placeholder: "satuan pembelian", type: "text"},
   {name: "type", placeholder: "tipe", type: "select", options: rawMaterialsTypes},
-  {name: "note", placeholder: "catatan", type: "textarea"},
+  {name: "notes", placeholder: "catatan", type: "textarea"},
 ]
 
 type prValue = {
@@ -39,6 +42,15 @@ type prValue = {
   name: string,
   value: string | number
 }
+
+export type prRequestPost = {
+  raw_material_id?: number,
+  name?: string,
+  quantity?: number,
+  purchase_unit?: string,
+  type?: string,
+  notes?: string,
+}[]
 
 const prValue : prValue[] = [{
   name: "quantity", value: 10,
@@ -50,7 +62,7 @@ const prValue : prValue[] = [{
   name: "type", value: "dry",
 },
 {
-  name: "note", value: "catatan",
+  name: "notes", value: "catatan",
 }]
 
 const initialFormData = [
@@ -65,9 +77,26 @@ const initialFormData = [
     data: prValue,
   },
 ];
+
+const initialFormData2 = [
+  {
+    raw_material_id: "3, 4, 6", 
+    quantity: "100, 200, 300",
+    note: "catatan"
+  },
+  {
+    raw_material_id: "3, 4, 6", 
+    quantity: "100, 200, 300",
+    note: "catatan",
+  },
+];
 const AddListItem: React.FC<AddListItemProps> = ({ onAddItem }) => {
     const [isSelected, setIsSelected] = useState(false);
     const [dataSaved, setDataSaved] = useState(initialFormData);
+    const [dataSaved2, setDataSaved2] = useState<prRequestPost>([]);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+   
 
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -90,6 +119,19 @@ const AddListItem: React.FC<AddListItemProps> = ({ onAddItem }) => {
       }
     }
 
+    function handleBlur(event?: React.FocusEvent<HTMLInputElement>) {
+      
+      setIsSearchOpen(false);
+    }
+
+    function handleInputBlur(event: React.FocusEvent<HTMLInputElement>) {
+      if (event.target.value.length === 0) {
+        setIsSelected(false);
+      }
+    }
+
+    
+
     //Handle Add parent Item object
     const handleAddItem = (event: React.FocusEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>) => {
       const { name, value } = (event.target as HTMLInputElement); // Extract input name and value
@@ -108,67 +150,109 @@ const AddListItem: React.FC<AddListItemProps> = ({ onAddItem }) => {
       console.log(dataSaved);
 
       onAddItem(dataSaved)
-      // Clear the input field
+      // // Clear the input field
+      // inputRef.current!.value = event.currentTarget.value;
+      setIsSearchOpen(false);
       setIsSelected(false);
     };
 
-    //Handle Add sub data in items object
-    const addItemToData = (parentId: number, newData: { name: string; value: string }) => {
-      setDataSaved((prevState) =>
-        prevState.map((item) =>
-          item.id === parentId
-            ? {
-                ...item,
-                data: item.data.some((field) => field.name === newData.name)
-                  ? item.data.map((field) =>
-                      field.name === newData.name
-                        ? { ...field, value: newData.value } // Update existing field
-                        : field
-                    )
-                  : [...item.data, newData], // Add new field if it doesn't exist
-              }
-            : item
-        )
-      );
-      console.log(dataSaved);
 
-      onAddItem(dataSaved)
+    const addItemToData = ({name, materialId, purchaseUnit, type} : {name: string, materialId: number, purchaseUnit: string, type: string}) => {
+      console.log(name, materialId, purchaseUnit);
+      setDataSaved2((prevState) => [
+        ...prevState,
+        {
+          raw_material_id: materialId,
+          name: name,
+          purchase_unit: purchaseUnit,
+          quantity: 0,
+          type: type,
+          notes: "",
+        },
+      ]);
+    
+      // Log the state after a delay to ensure the update is visible
+      setTimeout(() => {
+        console.log("datasaved", dataSaved2);
+      }, 0);
+      setIsSelected(false);
+      // console.log("datasave Valuies",dataSaved2.map((item) => Object.entries(item).map(([name, value]) => ({ name, value }))));
+      onAddItem(dataSaved2)
     };
+
+    const updateItemInData = ({
+      id,
+      updatedFields,
+    }: {
+      id: string | undefined;
+      updatedFields: Partial<prRequestPost[number]>;
+    }) => {
+      setDataSaved2((prevState) =>
+        prevState.map((item) => (item.name === id ? { ...item, ...updatedFields } : item))
+      );
+
+      onAddItem(dataSaved2);
+    };
+
+
+    function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+      if (e.target.value.length >= 1) {
+        setIsSearchOpen(true);
+        setSearchTerm(e.target.value);
+      }
+      else if (e.target.value.length === 0) {
+        setIsSearchOpen(false);
+      }
+      console.log(e.target.value);
+    }
+
+    function handleDelete(materialId: number) {
+     setDataSaved2(dataSaved2.filter((item) => item.raw_material_id !== materialId));
+    }
 
     function handleSubmit(e: React.FormEvent) {
       e.preventDefault();
 
     }
   return (
-    <section>
-        <ol className="flex flex-col gap-2 list-disc w-full">
-            {dataSaved.map((item, index) => (
-            <li
-              key={index}
-              className={`list-disc py-1 rounded-md w-full border-b-2 ${!isSelected ? isSelectedStyle : ''}`}
-            >
-              <SavedListItem
-                formFields = {addFormField}
-                listItem= {item.item}
-                prValue= {item.data}
-                onChange= {(name, value) => addItemToData(item.id, { name, value })}
-                onDelete= {() => setDataSaved((prevState) => prevState)}
-              />
+    <section className={`relative max-h-[20rem] z-30 overflow-clip-margin-xl h-[10rem] ${isSearchOpen ? 'overflow-y-visible' : 'overflow-y-auto'}`}>
+        <ol className="relative flex flex-col gap-2 list-disc w-full">
+            {dataSaved2.length > 0 && (
+              dataSaved2.map((item) => (<li key={item.name} className="list-disc py-1 rounded-md w-full border-b-2">
 
-            </li>
-          ))}
+                <SavedListItem
+                  materialId={item.raw_material_id}
+                  formFields = {addFormField}
+                  listItem= {item.name}
+                  prValue= { Object.entries(item).map(([name, value]) => ({ name, value }))}
+                  onChange= {(name, value) => name === 'quantity' ? updateItemInData({ id: item.name, updatedFields: { [name]: Number(value)} }) :
+                     updateItemInData({ id: item.name, updatedFields: { [name]: value } })}
+                  onDelete= {(event) => handleDelete(event)}
+                />
+              </li>)
+              
+            ))}
+            
            
-            <li className={`list-disc px-2 py-1 rounded-md ${!isSelected ? isSelectedStyle : ''}`}>
+            <li className={`relative list-disc px-2 py-1 rounded-md ${!isSelected ? isSelectedStyle : ''}`}>
             {isSelected ? 
+            <div className="relative">
             <input
             className={`border-none bg-slate-100 focus:outline-none placeholder:font-light ${listStyle}`}
             type="text"
             name="item"
-            onBlur={(event) => handleAddItem(event)}
+            onBlur={handleInputBlur}
             onKeyDown={(event) => handleKeyPress(event)}
+            onChange={(event) => handleChange(event)}
             ref={inputRef}
             placeholder="Nama bahan baku"
           />
+            <SearchMaterialPopOut 
+              isSearchOpen={isSearchOpen} 
+              searchMaterial={searchTerm} 
+              OnBlur={handleBlur} 
+              OnSelected={(event) => addItemToData(event)}/>
+            </div>
             : <span onClick={handleClick} className={`hover:cursor-pointer opacity-50 font-light text-sm`}>
                 + Tambahkan Item Request
             </span>}

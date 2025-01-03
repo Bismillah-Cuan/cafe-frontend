@@ -1,15 +1,16 @@
 import AddableInput from "./AddableInput";
-
+import { prRequestPost } from "./AddListItem";
 type prValue = {
   name: string,
   value: string | number
 }
 interface SavedListItemProps {
-    listItem: string,
+    materialId: number | undefined,
+    listItem: string | undefined,
     formFields: any
-    onChange: (name: string, value: string) => void;
-    onDelete: () => void
-    prValue: prValue[] 
+    onChange: (name: string, value: string | number) => void;
+    onDelete: (materialId: number) => void
+    prValue:  prValue[]
 }
 
 const rawMaterialsTypes=[
@@ -20,13 +21,15 @@ const rawMaterialsTypes=[
 ]
 
 const listStyle = "text-sm font-bold"
-const SavedListItem: React.FC<SavedListItemProps> = ({formFields, listItem, onChange, onDelete, prValue}) => {
+const SavedListItem: React.FC<SavedListItemProps> = ({materialId, formFields, listItem, onChange, onDelete, prValue}) => {
 
-  
+  // console.log("prValue", prValue);
+  // console.log("formFields", formFields);
+
   return (
         <div className="flex items-center justify-between w-full">
             <label className={`flex-1 ${listStyle}`}>{listItem}</label>
-            <button onClick={onDelete} className="text-slate-900 font-light text-center bg-slate-400 hover:bg-slate-500 px-2 py-1 rounded-md">delete</button>
+            <button onClick={() => onDelete(materialId!)} className="text-slate-900 font-light text-center bg-slate-400 hover:bg-slate-500 px-2 py-1 rounded-md">delete</button>
             <div className="flex flex-1 justify-between gap-3 items-center ">
               {formFields.map((item: any) => {
                 return (

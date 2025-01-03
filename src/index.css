@@ -17,3 +17,13 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+ol {
+  list-style-type: decimal;
+  margin: 0;
+  padding: 0;
+}
+
+.overflow-clip-margin {
+  overflow-escape-margin: 500px;
+}

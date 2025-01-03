@@ -7,8 +7,9 @@ import EditDetailButton from "../EditDetailButton"
 import ReusablePrDetailPopOut from "../ReusablePrDetailPopOut"
 import { dummyPR } from "./DummyPR"
 import { useEffect, useState, useContext } from "react"
-import { fetchPurchaseRequests, fetchSearchPurchaseRequests } from "./DataFetch"
+import { fetchPurchaseRequests, fetchSearchPurchaseRequests, CreatePurchaseRequests } from "./DataFetch"
 import { UsePrContext } from "../../util/context"
+
 
 const statusColor = {
   requested: "bg-yellow-400",
@@ -20,7 +21,7 @@ export const PurchaseRequest = () => {
     
     // const [purchaseRequests, setPurchaseRequests] = useState<PurchaseRequestsResponse>({})
     const [showForm, setShowForm] = useState(false);
-    const [isFetching, setIsFetching] = useState(false);
+    const [isFetching, setIsFetching] = useState(true);
     const [showEditDetail, setShowEditDetail] = useState(false);
     const [division , setDivision] = useState("");
     const {prList, setPrList} = UsePrContext();
@@ -38,6 +39,7 @@ export const PurchaseRequest = () => {
         try {
           
           setIsFetching(true);
+          console.log(isFetching);
           const {tableData, division, pr_code} = await fetchPurchaseRequests();
           setDivision(division);  
           const existingHeader = tableData.headers.find(header => header.accessor === 'status');
@@ -71,12 +73,12 @@ export const PurchaseRequest = () => {
             })
           }
           setAddedPurchaseRequests(tableData);
-          console.log("Fetch PR", tableData, division, pr_code);
         } catch (error) {
           if (error instanceof Error) {
             setError({message: error.message || 'An error occurred while fetching data.'});
           }
         }
+        setIsFetching(false);
       }
 
       async function handleFetchSearch() {
@@ -85,7 +87,7 @@ export const PurchaseRequest = () => {
             const data = await fetchSearchPurchaseRequests()
             setPrList(data);
 
-            console.log("Fetch search PR", prList);
+            // console.log("Fetch search PR", prList);
         } catch (error) {
           if (error instanceof Error) {
             setError({message: error.message || 'An error occurred while fetching data.'});
@@ -95,7 +97,7 @@ export const PurchaseRequest = () => {
 
       handleFetch();
       handleFetchSearch();
-      setIsFetching(false);
+      
 
       
     }, [])
@@ -107,9 +109,19 @@ export const PurchaseRequest = () => {
 
     
 
-    function handleSubmit(data: any) {
+    async function handleSubmit(data: any) {
+      
+      
+      try {
+        console.log("process create");
+        await CreatePurchaseRequests(data);
+      } catch (error) {
+        if (error instanceof Error) {
+          setError({message: error.message || 'An error occurred while fetching data.'});
+        }
+      }
       setShowForm(!showForm);
-      console.log(data);
+      
     }
     function handleEditDetail(id: number) {
       console.log("id", id);
@@ -152,8 +164,8 @@ export const PurchaseRequest = () => {
         </div>
       </section>
       <section>
-        {isFetching && <p>Sedang Mengambil Data Tabel.....</p>}
-       <ReusableTable tableFields={addedPurchaseRequests.headers} data={addedPurchaseRequests.rows}/>
+        {isFetching ? <p>Sedang Mengambil Data Tabel.....</p> : <ReusableTable tableFields={addedPurchaseRequests.headers} data={addedPurchaseRequests.rows}/>}
+
       </section>
     </div>
     </>

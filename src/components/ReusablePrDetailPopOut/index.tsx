@@ -105,16 +105,19 @@ const ReusablePrDetailPopOut: React.FC<ReusableEditProps> = ({ fields, values, u
                     ))
                 }
             </div>
-            <div className="flex flex-col gap-4 w-full">
+            <ol className=" w-full list-outside text-black list-decimal"> 
+            {/* flex flex-col gap-4 */}
                 {/* Rows */}
+             
                 {
                     values.requested_raw_materials && values.requested_raw_materials.map((item) =>  (
-                        <div className="flex  w-full">
+                        <li className="mt-2">
+                          <div className="flex w-full">
                         {Object.entries(item).map(([key, value]) => key === "details" ? (
                            Object.entries(value).map(([detailKey, detailValue]) => (
                             detailKey !== "id" && (
                                    <div key={detailKey} className="flex-1 w-full">
-                                       <label className="text-md font-semibold" htmlFor={detailKey}>
+                                       <label className="text-sm font-semibold" htmlFor={detailKey}>
                                            {detailValue}
                                        </label> 
                                    </div>
@@ -122,20 +125,29 @@ const ReusablePrDetailPopOut: React.FC<ReusableEditProps> = ({ fields, values, u
                            ))
                         ) : (key !== "raw_material_id" && 
                         (<div className="flex-1 w-full">
-                            <label className="text-md font-semibold">
+                            <label className="text-sm font-semibold">
                                 {value.toString()}
                             </label> 
                             </div>
                             
                             ))
                     ) 
-                }</div> 
+                    
+                }</div>
+                </li> 
                     ))
                 }
-            </div>
+         
+            </ol>
             
         </div>
-        <span className={`px-2 py-1 rounded-md w-32 text-center text-slate-100 ${statusColor[values.status as keyof typeof statusColor]}`}>{values.status}</span>
+        <div className="mt-5">
+          <span className="text-md font-semibold mr-3">Status :</span>
+          <span 
+            className={`px-2 py-1 rounded-md w-32 text-center text-slate-100 ${statusColor[values.status as keyof typeof statusColor]}`}>
+              {values.status}
+          </span>
+        </div>
     </div>
     </section>}
     </>

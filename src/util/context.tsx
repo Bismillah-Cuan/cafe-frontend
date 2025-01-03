@@ -8,9 +8,7 @@ export interface Metadata {
   updated_at: string | null;
 }
 
-export interface PrContextProps {
-raw_materials: [
-  {
+export interface RawMaterial {
       id: number;
       name: string;
       brand: string;
@@ -19,8 +17,10 @@ raw_materials: [
       quantity: number;
       quantity_unit: string;
       metadata: Metadata;
-  }
-][]
+}
+
+export interface PrContextProps {
+raw_materials: RawMaterial[]
 }
 
 type PrContextSearch = {
@@ -37,14 +37,74 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 const PrContext = createContext<PrContextSearch | undefined>(undefined);
 
 export const DataProvider = ({ children }: { children: React.ReactNode }) => {
+
+  const dummyPR: PrContextProps = {
+    raw_materials: [
+      {
+        id: 1 ,
+        name: "Rice",
+        brand: "A",
+        type: "A",
+        purchase_unit: "A",
+        quantity: 10,
+        quantity_unit: "A",
+        metadata: {
+          created_at: "2023-01-01",
+          is_deleted: false,
+          updated_at: null,
+        },
+      },
+      {
+        id: 2,
+        name: "Butter",
+        brand: "B",
+        type: "B",
+        purchase_unit: "B",
+        quantity: 5,
+        quantity_unit: "B",
+        metadata: {
+          created_at: "2023-01-01",
+          is_deleted: false,
+          updated_at: null,
+        },
+      },
+      {
+        id: 3,
+        name: "Milk",
+        brand: "C",
+        type: "C",
+        purchase_unit: "C",
+        quantity: 3,
+        quantity_unit: "C",
+        metadata: {
+          created_at: "2023-01-01",
+          is_deleted: false,
+          updated_at: null,
+        },
+      },
+      {
+        id: 4,
+        name: "Egg",
+        brand: "D",
+        type: "D",
+        purchase_unit: "D",
+        quantity: 2,
+        quantity_unit: "D",
+        metadata: {
+          created_at: "2023-01-01",
+          is_deleted: false,
+          updated_at: null,
+        },
+      },
+    ],
+  }
+
   const [materials, setMaterials] = useState<TableData<Data>>({
     headers: [],
     rows: [],
   });
 
-  const [prList, setPrList] = useState<PrContextProps>({
-    raw_materials: [],
-})
+  const [prList, setPrList] = useState<PrContextProps>(dummyPR)
 
 
   return (

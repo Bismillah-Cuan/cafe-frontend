@@ -68,8 +68,10 @@ const AddableInput: React.FC<AddableInputProps> = ({placeholder, onChange, input
               className={`border-none bg-slate-100 focus:outline-none placeholder:font-light ${inputStyle}` }
               name={name} 
               onChange={handleChange}
-              value={value}>
-            <option value="" className="text-slate-400 font-light" hidden disabled selected>Tipe</option>
+              value={value}
+              required
+              >
+            <option value="" disabled>Tipe</option>
           {options?.map((option, index) => (
             <option key={index} value={option.value}>{option.label}</option>
           ))}
