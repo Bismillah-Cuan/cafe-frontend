@@ -19,7 +19,7 @@ export async function DataFetchMaterial()  {
             const data: RawMaterialResponse = await response.json();
            
             const {raw_materials}: {raw_materials: Data[]} = data
-            console.log(raw_materials);
+            // console.log(raw_materials);
             const tableData = generateTableData(raw_materials);
             
             // console.log(tableData);

@@ -4,28 +4,32 @@ import ReusableForm from "../../components/ReusableForm"
 import CreateFormButton from "../../components/CreateFormButton"
 import ReusableDetailPopOut from "../../components/ReusableDetailPopOut"
 import EditDetailButton from "../../components/EditDetailButton"
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import { TableData, Data, RawMaterialResponse } from "./types"
 import ErrorModal from "../ErrorModal"
 import {DataFetchMaterial, DeleteMaterial, CreateMaterial} from "./DataFetch"
 import {MaterialFormFields} from "./MaterialFormFields"
 import { UseDataContext } from "../../util/context"
-import { set } from "date-fns"
+
 
 
 export const Materials = () => {
   const [showForm, setShowForm] = useState(false);
   const [showEditDetail, setShowEditDetail] = useState(false);
+  const [isFirstRender, setIsFirstRender] = useState(true);
   const [itemEditId, setitemEditId] = useState(0);
   const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState();
   const {materials, setMaterials} = UseDataContext();
   const [fetchTrigger, setFetchTrigger] = useState(false); 
 
+  const materialsStorage = localStorage.getItem("materials");
+
     useEffect(() => {
       async function handleFetch() {
         try {
           setIsFetching(true);
+
           
          const tableData = await DataFetchMaterial();
   
@@ -35,7 +39,7 @@ export const Materials = () => {
               accessor: 'action',
               Cell: ({ row }: any) => (
                 <div className="flex gap-2 mr-3">
-                  <EditDetailButton key={`edit-${row.original.id}`} onClick={() => handleEditDetail(row.original.id)}  label="Edit" />
+                  <EditDetailButton key={`edit-${row.original.id}`} onClick={() => handleEditDetail(row.original.name, row.original.brand)}  label="Edit" />
                   <EditDetailButton key={`delete-${row.original.id}`} onClick={() => handleDelete(row.original.id, row.original.name)} label="Delete" />
                 </div>
               )
@@ -43,25 +47,31 @@ export const Materials = () => {
           }
           // Update materials only if data has changed
           setIsFetching(false);
-          console.log("fetched",tableData);
+          
+          console.log("fetching");
 
-
+          console.log("tableData", tableData);
           setMaterials(tableData);
-
-  
+          
+          if(tableData !== JSON.parse(materialsStorage!)){
+            localStorage.setItem("materials", JSON.stringify(materials));
+          }
+          
         } catch (error) {
           if (error instanceof Error) {
             setError({message: error.message || 'An error occurred while fetching data.'});
           }
         }
       } 
-      handleFetch(); 
-      }, [fetchTrigger]);
-      
-      if (error) {
+      handleFetch();
 
-        return <ErrorModal title="An Error occured" message={error.message} />;
-      }
+      }, [fetchTrigger]);
+
+   
+    if (error) {
+
+      return <ErrorModal title="An Error occured" message={error.message} />;
+    }
 
      async function handleDelete(id: number, name: string) {
 
@@ -76,11 +86,10 @@ export const Materials = () => {
         
       }
 
-      function handleEditDetail(id: number) {
-        
+      function handleEditDetail(name: string, brand: string) {
         console.log('After setFetchTrigger:', fetchTrigger);
         console.log('Materials:', materials);
-        const item = materials.rows.find((item) => item.id === id);
+        const item = materials!.rows.find((item) => item.name === name && item.brand === brand);
 
         console.log(item);
         if (item) {
@@ -88,9 +97,10 @@ export const Materials = () => {
           console.log(showEditDetail);
           
           setitemEditId(item.id);
-        } else{
-          setFetchTrigger(prev => !prev);
-        }
+        } 
+        // else{
+        //   setFetchTrigger(prev => !prev);
+        // }
         
       }
       

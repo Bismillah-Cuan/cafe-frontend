@@ -19,15 +19,7 @@ const AddableInput: React.FC<AddableInputProps> = ({placeholder, onChange, input
       // Trigger the parent's onChange with the name and value
     onChange(name, value);
   }
-  function handleKeyPress(e: any) {
-    if (e.key === "Enter") {
-      handleChange(e);
-    }
-  }
-
-  function handleBlur(e: any) {
-    handleChange(e);
-  }
+ 
 
   return (
     <>
@@ -35,8 +27,6 @@ const AddableInput: React.FC<AddableInputProps> = ({placeholder, onChange, input
         <textarea 
               className={`border-none bg-slate-100 outline-none w-[9.5rem] placeholder:font-light ${inputStyle}` }
               name={name} 
-              onBlur={handleBlur}
-              onKeyDown={handleKeyPress}
               onChange={handleChange}
               value={value}
               placeholder={placeholder} />
@@ -46,8 +36,6 @@ const AddableInput: React.FC<AddableInputProps> = ({placeholder, onChange, input
               className={`border-none bg-slate-100 focus:outline-none w-[8rem] placeholder:font-light ${inputStyle}` }
               name={name} 
               type="text" 
-              onBlur={handleBlur}
-              onKeyDown={handleKeyPress}
               onChange={handleChange}
               value={value}
               placeholder={placeholder} />
@@ -57,8 +45,6 @@ const AddableInput: React.FC<AddableInputProps> = ({placeholder, onChange, input
               className={`border-none bg-slate-100 focus:outline-none w-[8rem] placeholder:font-light ${inputStyle}` }
               name={name} 
               type="number" 
-              onBlur={handleBlur}
-              onKeyDown={handleKeyPress}
               onChange={handleChange}
               value={value}
               placeholder={placeholder} />
@@ -84,8 +70,6 @@ const AddableInput: React.FC<AddableInputProps> = ({placeholder, onChange, input
                   className={`border-none bg-slate-100 focus:outline-none placeholder:font-light ${inputStyle}` }
                   name={name} 
                   type={inputType} 
-                  onBlur={handleBlur}
-                  onKeyDown={handleKeyPress}
                   onChange={handleChange}
                   value={value}
                   placeholder={placeholder} />

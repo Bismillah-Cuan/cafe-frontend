@@ -65,24 +65,22 @@ function generateTableData(data: Data[]): TableData<Data> {
         
         }
         else if (key === "metadata") {
-          if (value) {
-         
-          const metadata = Object.entries(value).map(([key, value]) => {
-            if(key  === "created_at" ) {
-              const date = new Date(value as string | number);
-              const formattedDate = date.toLocaleDateString('en-US', {
+          if (value && value.created_at) {
+            const date = new Date(value.created_at);
+        
+            // Check if the date is valid
+            if (!isNaN(date.getTime())) {
+              return date.toLocaleDateString('en-US', {
                 day: 'numeric',
                 month: 'numeric',
                 year: 'numeric',
               });
-              return formattedDate  
             }
-             }
-            )
-            return metadata;
+        
+            return null; // Handle invalid dates
           }
-          
-          
+        
+          return null; // Handle cases where "created_at" is not found
         }
         
 

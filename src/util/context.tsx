@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useMemo, useEffect } from "react";
 import { TableData, Data } from "./generateTableData";
 // Define the structure of your context
 
@@ -30,6 +30,8 @@ type PrContextSearch = {
 type DataContextType = {
   materials: TableData<Data>;
   setMaterials: React.Dispatch<React.SetStateAction<TableData<Data>>>;
+  prData : TableData<Data>;
+  setPrData: React.Dispatch<React.SetStateAction<TableData<Data>>>
 };
 
 // Initialize the context with default values
@@ -104,11 +106,20 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     rows: [],
   });
 
+  const [prData, setPrData] = useState<TableData<Data>>({
+    headers: [],
+    rows: [],
+  })
+
   const [prList, setPrList] = useState<PrContextProps>(dummyPR)
+
+  useEffect(() => {
+    localStorage.setItem('materials', JSON.stringify(materials));
+  }, [materials]);
 
 
   return (
-    <DataContext.Provider value={{materials, setMaterials,}}>
+    <DataContext.Provider value={{materials, setMaterials, prData, setPrData}}>
       <PrContext.Provider value={{prList, setPrList}}>
         {children}
       </PrContext.Provider>
@@ -128,7 +139,7 @@ export const UseDataContext = () => {
 export const UsePrContext = () => {
   const context = useContext(PrContext);
   if (!context) {
-    throw new Error("useDataContext must be used within a DataProvider");
+    throw new Error("usePrContext must be used within a DataProvider");
   }
   return context;
 };

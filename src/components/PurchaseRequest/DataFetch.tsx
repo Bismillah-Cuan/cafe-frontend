@@ -5,7 +5,7 @@ import { API_PURCHASE_REQUEST, API_RAW_MATERIALS_SEARCH } from "../../constants/
 import axios from "axios";
 
 
-export async function fetchPurchaseRequests () {
+export async function FetchPurchaseRequests () {
     
     const access_token = localStorage.getItem('access_token')
     const headers = {
@@ -67,7 +67,7 @@ export async function CreatePurchaseRequests (data: any) {
     alert("Purchase Request created successfully!"); 
 }
 
-export async function fetchSearchPurchaseRequests () {
+export async function FetchSearchPurchaseRequests () {
 
     const access_token = localStorage.getItem('access_token')
     const headers = {

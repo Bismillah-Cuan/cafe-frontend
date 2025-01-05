@@ -43,8 +43,6 @@ const ReusableTable = <T extends object,>({tableFields, data}: ReusableTableProp
     sortable: true
   }), []);
 
-
-
   const {
     getTableProps,
     getTableBodyProps,

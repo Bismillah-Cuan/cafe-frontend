@@ -7,8 +7,8 @@ import EditDetailButton from "../EditDetailButton"
 import ReusablePrDetailPopOut from "../ReusablePrDetailPopOut"
 import { dummyPR } from "./DummyPR"
 import { useEffect, useState, useContext } from "react"
-import { fetchPurchaseRequests, fetchSearchPurchaseRequests, CreatePurchaseRequests } from "./DataFetch"
-import { UsePrContext } from "../../util/context"
+import { FetchPurchaseRequests, FetchSearchPurchaseRequests, CreatePurchaseRequests } from "./DataFetch"
+import { UsePrContext, UseDataContext } from "../../util/context"
 
 
 const statusColor = {
@@ -22,16 +22,13 @@ export const PurchaseRequest = () => {
     // const [purchaseRequests, setPurchaseRequests] = useState<PurchaseRequestsResponse>({})
     const [showForm, setShowForm] = useState(false);
     const [isFetching, setIsFetching] = useState(true);
+    const [fetchTrigger, setFetchTrigger] = useState(false);
     const [showEditDetail, setShowEditDetail] = useState(false);
     const [division , setDivision] = useState("");
     const {prList, setPrList} = UsePrContext();
+    const {prData, setPrData} = UseDataContext();
     const [itemEditId, setitemEditId] = useState(0);
-    const [addedPurchaseRequests, setAddedPurchaseRequests] = useState<TableData<Data>>(
-    {
-      headers: [],
-      rows: [],
-      }
-    );
+ 
     const [error, setError] = useState( {} as any);
 
     useEffect(() => {
@@ -40,7 +37,7 @@ export const PurchaseRequest = () => {
           
           setIsFetching(true);
           console.log(isFetching);
-          const {tableData, division, pr_code} = await fetchPurchaseRequests();
+          const {tableData, division, pr_code} = await FetchPurchaseRequests();
           setDivision(division);  
           const existingHeader = tableData.headers.find(header => header.accessor === 'status');
           if (existingHeader) {
@@ -72,7 +69,7 @@ export const PurchaseRequest = () => {
               }
             })
           }
-          setAddedPurchaseRequests(tableData);
+          setPrData(tableData);
         } catch (error) {
           if (error instanceof Error) {
             setError({message: error.message || 'An error occurred while fetching data.'});
@@ -100,7 +97,7 @@ export const PurchaseRequest = () => {
       
 
       
-    }, [])
+    }, [fetchTrigger]);
     const username = localStorage.getItem("username");
     function handleShowForm() {
         setShowForm((prev) => !prev);   
@@ -121,15 +118,16 @@ export const PurchaseRequest = () => {
         }
       }
       setShowForm(!showForm);
+      setFetchTrigger(!fetchTrigger);
       
     }
     function handleEditDetail(id: number) {
       console.log("id", id);
-      const item = addedPurchaseRequests.rows.find((item) => item.user_id === id);
+      const item = prData.rows.find((item) => item.user_id === id);
       console.log(item);
       if (item) {
         setShowEditDetail((prev) => !prev);
-        setitemEditId(item.user_id);
+        setitemEditId(item.user_id ?? 0);
       }
     }
     const closeForm = () => {setShowForm(false); setShowEditDetail(false)};
@@ -153,8 +151,8 @@ export const PurchaseRequest = () => {
             }
         {showEditDetail && 
           <ReusablePrDetailPopOut 
-            fields={addedPurchaseRequests.headers.filter((header) => header.accessor !== 'actions')} 
-            values={addedPurchaseRequests.rows.find((item) => item.user_id === itemEditId)?? {brand: '', name: '', type: '', purchase_unit: '', quantity: 0, quantity_unit: ''}}
+            fields={prData.headers.filter((header) => header.accessor !== 'actions')} 
+            values={prData.rows.find((item) => item.user_id === itemEditId)?? {brand: '', name: '', type: '', purchase_unit: '', quantity: 0, quantity_unit: ''}}
             onSubmit={handleSubmit} 
             onClose={closeForm} 
             username={username ?? ''}
@@ -164,7 +162,7 @@ export const PurchaseRequest = () => {
         </div>
       </section>
       <section>
-        {isFetching ? <p>Sedang Mengambil Data Tabel.....</p> : <ReusableTable tableFields={addedPurchaseRequests.headers} data={addedPurchaseRequests.rows}/>}
+        {isFetching ? <p>Sedang Mengambil Data Tabel.....</p> : <ReusableTable tableFields={prData.headers} data={prData.rows}/>}
 
       </section>
     </div>

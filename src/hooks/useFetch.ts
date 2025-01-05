@@ -32,8 +32,8 @@ export const useLogin = () => {
       });
 
       if (!response.ok) {
-        alert("Invalid credentials");
-        throw new Error("Invalid credentials");
+        alert("Something went wrong, please try again later" + response.status);
+        throw new Error("Something went wrong, please try again later");
       }
 
       const data: LoginResponse = await response.json();
