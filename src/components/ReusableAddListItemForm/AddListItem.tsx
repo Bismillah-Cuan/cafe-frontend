@@ -18,6 +18,9 @@ const rawMaterialsTypes=[
 
 interface AddListItemProps {
   onAddItem: (data: any) => void;
+  dataUpdate?: any
+  isUpdated: Boolean
+  statusPr?: string
 }
 
 type addFormField = {
@@ -25,7 +28,8 @@ type addFormField = {
   placeholder: string, 
   type: "text" | "textarea" | "select" | "number" | "checkbox" | "radio";
   options?: 
-  {value: string, label: string}[]}
+  {value: string, label: string}[]
+}
 
 
 
@@ -45,15 +49,16 @@ export type prRequestPost = {
 }[]
 
 
-const AddListItem: React.FC<AddListItemProps> = ({ onAddItem }) => {
+
+const AddListItem: React.FC<AddListItemProps> = ({ onAddItem, dataUpdate, isUpdated, statusPr }) => {
     const [isSelected, setIsSelected] = useState(false);
-    const [dataSaved2, setDataSaved2] = useState<prRequestPost>([]);
+    const [dataSaved2, setDataSaved2] = useState(() => isUpdated ? dataUpdate as prRequestPost : [] as prRequestPost);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isPrAvailabe, setIsPrAvailabe] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [referenceElement, setReferenceElement] = useState<HTMLLIElement | null>();
 
-
+    console.log("datasaved2", dataSaved2)
     const inputRef = useRef<HTMLInputElement>(null);
 
     function handleClick() {
@@ -85,12 +90,12 @@ const AddListItem: React.FC<AddListItemProps> = ({ onAddItem }) => {
 
     const addItemToData = ({name, materialId, purchaseUnit, type} : {name: string, materialId: number, purchaseUnit: string, type: string}) => {
       // console.log(name, materialId, purchaseUnit);
-      if(dataSaved2.some((item) => item.raw_material_id === materialId)) {
+      if(dataSaved2!.some((item) => item.raw_material_id === materialId)) {
         setIsPrAvailabe(true);
         return
       }
       setDataSaved2((prevState) => [
-        ...prevState,
+        ...prevState!,
         {
           raw_material_id: materialId,
           name: name,
@@ -118,7 +123,7 @@ const AddListItem: React.FC<AddListItemProps> = ({ onAddItem }) => {
       updatedFields: Partial<prRequestPost[number]>;
     }) => {
       setDataSaved2((prevState) =>
-        prevState.map((item) => (item.name === id ? { ...item, ...updatedFields } : item))
+        prevState!.map((item) => (item.name === id ? { ...item, ...updatedFields } : item))
       );
 
       onAddItem(dataSaved2);
@@ -137,7 +142,7 @@ const AddListItem: React.FC<AddListItemProps> = ({ onAddItem }) => {
     }
 
     function handleDelete(materialId: number) {
-     setDataSaved2(dataSaved2.filter((item) => item.raw_material_id !== materialId));
+     setDataSaved2(dataSaved2!.filter((item) => item.raw_material_id !== materialId));
     }
 
     function handleSubmit(e: React.FormEvent) {
@@ -147,9 +152,9 @@ const AddListItem: React.FC<AddListItemProps> = ({ onAddItem }) => {
   return (
     <section className={`relative max-h-[20rem] z-30 overflow-clip-margin-xl h-[10rem] overflow-y-auto`}>
         <ol className="relative flex flex-col gap-2 list-disc w-full">
-            {dataSaved2.length > 0 && (
-              dataSaved2.map((item) => (<li key={item.name} className="list-disc py-1 rounded-md w-full border-b-2">
-
+            {dataSaved2!.length > 0 && (
+              dataSaved2!.map((item) => (<li key={item.name} className="list-disc py-1 rounded-md w-full border-b-2">
+             
                 <SavedListItem
                   materialId={item.raw_material_id}
                   formFields = {addFormField}
@@ -162,11 +167,8 @@ const AddListItem: React.FC<AddListItemProps> = ({ onAddItem }) => {
               </li>)
               
             ))}
-            
-           
             <li 
               className={`relative list-disc px-2 py-1 rounded-md ${!isSelected ? isSelectedStyle : ''}`} 
-              
             >
             {isSelected ? 
               <div className="relative flex flex-col gap-1" ref={setReferenceElement}>
@@ -178,6 +180,7 @@ const AddListItem: React.FC<AddListItemProps> = ({ onAddItem }) => {
                 onChange={(event) => handleChange(event)}
                 ref={inputRef}
                 placeholder="Nama bahan baku"
+                autoComplete="off"
                 />
                 {isPrAvailabe && 
                   <span 
@@ -198,6 +201,8 @@ const AddListItem: React.FC<AddListItemProps> = ({ onAddItem }) => {
             </span>}
             </li>
         </ol>
+
+        
     </section>
   )
 }

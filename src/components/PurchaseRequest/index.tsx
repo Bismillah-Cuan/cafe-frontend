@@ -4,17 +4,21 @@ import { Data } from "../../util/generateTableData"
 import ReusableTable from "../ReusableTable"
 import CreateFormButton from "../CreateFormButton"
 import EditDetailButton from "../EditDetailButton"
-import ReusablePrDetailPopOut from "../ReusablePrDetailPopOut"
+import {ReusablePrDetailPopOut} from "../ReusablePrDetailPopOut"
 import { dummyPR } from "./DummyPR"
 import { useEffect, useState, useContext } from "react"
-import { FetchPurchaseRequests, FetchSearchPurchaseRequests, CreatePurchaseRequests } from "./DataFetch"
+import { FetchPurchaseRequests, FetchSearchPurchaseRequests, CreatePurchaseRequests, UpdatePurchaseRequests } from "./DataFetch"
 import { UsePrContext, UseDataContext } from "../../util/context"
+import { prRequestPost } from "../ReusableAddListItemForm/AddListItem"
+import { Select } from "@mui/material"
+import { TryTwoTone } from "@mui/icons-material"
+import { stat } from "fs"
 
 
 const statusColor = {
-  requested: "bg-yellow-400",
-  approved: "bg-green-400",
-  rejected: "bg-red-400"
+  requested: "text-yellow-400",
+  approved: "text-green-400",
+  rejected: "text-red-400"
 }
 export const PurchaseRequest = () => {
 
@@ -27,9 +31,14 @@ export const PurchaseRequest = () => {
     const [division , setDivision] = useState("");
     const {prList, setPrList} = UsePrContext();
     const {prData, setPrData} = UseDataContext();
-    const [itemEditId, setitemEditId] = useState(0);
+    const [itemEditId, setitemEditId] = useState("");
+    const [isUpdated, setIsUpdated] = useState(Boolean)
  
     const [error, setError] = useState( {} as any);
+
+    const getPrRequestData = localStorage.getItem("prData");
+    const currentDivision = localStorage.getItem("username");
+    const prRequestData: TableData<Data> = JSON.parse(getPrRequestData!);
 
     useEffect(() => {
       async function handleFetch() {
@@ -45,11 +54,29 @@ export const PurchaseRequest = () => {
             existingHeader.Cell = ({ row }: any) => (
               <div className="flex justify-between gap-2 mr-3">
                 <div>
-                <span className={`px-2 py-1 rounded-md text-slate-100 ${statusColor[row.original.status as keyof typeof statusColor]}`}>
+                {currentDivision !== "admin" && currentDivision !== "super_admin" ? (
+                  <span className={`px-2 py-1 rounded-md text-slate-100 ${statusColor[row.original.status as keyof typeof statusColor]}`}>
                   {originalCell?.({ value: null, row, column: null })}
                 </span>
+                ) : (
+                  <select 
+                    onChange={({ target: { value } }) => 
+                      handleSelectStatus ({statusValue: value, itemEditId: row.original.pr_code})
+                  } 
+                    className={`px-2 py-1 rounded-md font-semibold black ${statusColor[row.original.status as keyof typeof statusColor]}`}
+                    value={row.original.status}
+                    >
+                    <option key={row.original.status} value={row.original.status}>{originalCell?.({ value: null, row, column: null })}</option>
+                    {Object.keys(statusColor).filter((status) => status !== row.original.status).map((status) => (
+                      <option key={status} value={status}>
+                        {status}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                
                 </div>
-                  <EditDetailButton key={`edit-${row.original.id}`} onClick={() => handleEditDetail(row.original.user_id)}  label="Selengkapnya" />
+                  <EditDetailButton key={`edit-${row.original.pr_code}`} onClick={() => handleEditDetail(row.original.pr_code)}  label="Selengkapnya" />
               </div>
             );
           }
@@ -70,6 +97,7 @@ export const PurchaseRequest = () => {
             })
           }
           setPrData(tableData);
+          localStorage.setItem("prData", JSON.stringify(tableData))
         } catch (error) {
           if (error instanceof Error) {
             setError({message: error.message || 'An error occurred while fetching data.'});
@@ -78,10 +106,13 @@ export const PurchaseRequest = () => {
         setIsFetching(false);
       }
 
+      
+
       async function handleFetchSearch() {
         try { 
             console.log("Fetch search PR");
-            const data = await fetchSearchPurchaseRequests()
+            const data = await FetchSearchPurchaseRequests()
+            
             setPrList(data);
 
             // console.log("Fetch search PR", prList);
@@ -98,20 +129,55 @@ export const PurchaseRequest = () => {
 
       
     }, [fetchTrigger]);
+
+    useEffect(() => {
+      console.log("Triggered UseEffect 2");
+      localStorage.setItem("prData", JSON.stringify(prData))
+    }, [prData])
+
     const username = localStorage.getItem("username");
     function handleShowForm() {
-        setShowForm((prev) => !prev);   
+        setShowForm((prev) => !prev);
+        setIsUpdated(false)   
     }
     // const tableData = generateTableData(addedMaterials);
 
+    async function handleSelectStatus({ statusValue, itemEditId }: { statusValue: string; itemEditId: string }) {
+      const selectedStatus = statusValue;
+
+      const updatedStatus = prData.rows.find((item) => item.pr_code === itemEditId)?.status;
+      console.log(selectedStatus);
+      if (updatedStatus) {
+        try {
+          const updateType = "status"
+          await UpdatePurchaseRequests(itemEditId, selectedStatus, updateType)
+          const updatedRows = prData.rows.map((item) => {
+            if (item.pr_code === itemEditId) {
+              return { ...item, status: selectedStatus };
+            }
+            return item;
+          });
+          setPrData({ ...prData, rows: updatedRows });
+          setFetchTrigger(!fetchTrigger);
+        } catch (error) {
+          if (error instanceof Error) {
+            setError({message: error.message || 'An error occurred while Updating Status.'});
+          }
+        }
+        }
+        
+    }
     
 
     async function handleSubmit(data: any) {
-      
-      
       try {
         console.log("process create");
-        await CreatePurchaseRequests(data);
+        await CreatePurchaseRequests(data)
+        setPrData((prev) => {
+          const updatedPrData = { ...prev, rows: [...prev.rows, data] };
+          return updatedPrData;
+        });
+        // localStorage.setItem("prData", JSON.stringify(prData));
       } catch (error) {
         if (error instanceof Error) {
           setError({message: error.message || 'An error occurred while fetching data.'});
@@ -121,16 +187,33 @@ export const PurchaseRequest = () => {
       setFetchTrigger(!fetchTrigger);
       
     }
-    function handleEditDetail(id: number) {
-      console.log("id", id);
-      const item = prData.rows.find((item) => item.user_id === id);
+
+    async function handleUpdate(data: any) {
+      try {
+        console.log("process update");
+        await UpdatePurchaseRequests(data.pr_code, data.status, "raw materials", data.requested_raw_materials)
+        setPrData((prev) => {
+          const updatedPrData = { ...prev, rows: [...prev.rows, data] };
+          return updatedPrData;
+        })
+      }
+     catch (error) {
+      if (error instanceof Error) {
+        setError({message: error.message || 'An error occurred while fetching data.'});
+      }
+    }
+  }
+    function handleEditDetail(pr_code: string) {
+      console.log("prRequestData", prData);
+      const item = prRequestData.rows.find((item) => item.pr_code === pr_code );
       console.log(item);
       if (item) {
         setShowEditDetail((prev) => !prev);
-        setitemEditId(item.user_id ?? 0);
+        setitemEditId(item.pr_code ?? "");
+        setIsUpdated(true)
       }
     }
-    const closeForm = () => {setShowForm(false); setShowEditDetail(false)};
+    const closeForm = () => {setShowForm(false); setShowEditDetail(false); setIsUpdated(Boolean)};
   return (
     <>
          <div className="w-full mr-8 text-slate-800 relative overflow-x-hidden flex flex-col gap-5">
@@ -146,19 +229,38 @@ export const PurchaseRequest = () => {
             isSelected={showForm}
             division={division}
             username= {username}
+            isUpdated={isUpdated}
             />
 
             }
-        {showEditDetail && 
-          <ReusablePrDetailPopOut 
-            fields={prData.headers.filter((header) => header.accessor !== 'actions')} 
-            values={prData.rows.find((item) => item.user_id === itemEditId)?? {brand: '', name: '', type: '', purchase_unit: '', quantity: 0, quantity_unit: ''}}
-            onSubmit={handleSubmit} 
-            onClose={closeForm} 
-            username={username ?? ''}
-            division={division}
-            buttonLabel="Submit" 
-            isSelected={showEditDetail}/>}
+        {showEditDetail && (currentDivision === "admin" || currentDivision === "super_admin" ? ( 
+          <ReusableAddListItemForm 
+          // fields={MaterialFormFields} 
+          onSubmit={handleSubmit}
+          onUpdate={handleUpdate} 
+          onClose={closeForm} 
+          buttonLabel="Submit" 
+          isSelected={showEditDetail}
+          division={division}
+          username= {username}
+          UpdatedData= {prData!.rows.find((item) => item.pr_code === itemEditId)?? {brand: '', name: '', type: '', purchase_unit: '', quantity: 0, quantity_unit: ''}}
+          isUpdated={isUpdated}
+          />
+        ) : 
+        
+        <ReusablePrDetailPopOut 
+          fields={prData!.headers.filter((header) => header.accessor !== 'actions')} 
+          values={prData!.rows.find((item) => item.pr_code === itemEditId)?? {brand: '', name: '', type: '', purchase_unit: '', quantity: 0, quantity_unit: ''}}
+          onSubmit={handleSubmit} 
+          onClose={closeForm} 
+          username={username ?? ''}
+          division={division}
+          buttonLabel="Submit" 
+          isSelected={showEditDetail}/>
+
+        
+        )}   
+        
         </div>
       </section>
       <section>

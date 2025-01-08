@@ -17,20 +17,20 @@ export const Materials = () => {
   const [showForm, setShowForm] = useState(false);
   const [showEditDetail, setShowEditDetail] = useState(false);
   const [isFirstRender, setIsFirstRender] = useState(true);
-  const [itemEditId, setitemEditId] = useState(0);
+  const [itemEditId, setitemEditId] = useState({
+    name: "" ,
+    brand: "",
+  });
   const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState();
   const {materials, setMaterials} = UseDataContext();
   const [fetchTrigger, setFetchTrigger] = useState(false); 
 
-  const materialsStorage = localStorage.getItem("materials");
-
+  const materialsStorage = getMaterialFromLocalStorage();
     useEffect(() => {
       async function handleFetch() {
         try {
           setIsFetching(true);
-
-          
          const tableData = await DataFetchMaterial();
   
           if (!tableData.headers.find(header => header.accessor === 'actions')) {
@@ -46,16 +46,12 @@ export const Materials = () => {
             })
           }
           // Update materials only if data has changed
-          setIsFetching(false);
           
-          console.log("fetching");
+  
+          localStorage.setItem("materials", JSON.stringify(tableData))
 
-          console.log("tableData", tableData);
           setMaterials(tableData);
-          
-          if(tableData !== JSON.parse(materialsStorage!)){
-            localStorage.setItem("materials", JSON.stringify(materials));
-          }
+          setIsFetching(false);
           
         } catch (error) {
           if (error instanceof Error) {
@@ -64,6 +60,7 @@ export const Materials = () => {
         }
       } 
       handleFetch();
+      
 
       }, [fetchTrigger]);
 
@@ -73,36 +70,50 @@ export const Materials = () => {
       return <ErrorModal title="An Error occured" message={error.message} />;
     }
 
-     async function handleDelete(id: number, name: string) {
+    function getMaterialFromLocalStorage() {
+      if(!isFetching) {
+        const getMaterialsStorage = localStorage.getItem("materials");
+        const materialsStorage: TableData<Data> = JSON.parse(getMaterialsStorage!);
 
-        try {
-          await DeleteMaterial(id, name)
-          setMaterials((prev) => ({ ...prev, rows: prev.rows.filter((item) => item.id !== id) }));
-          console.log(`Deleted item with id ${id} - ${name}`);
-          console.log(JSON.stringify({id, name}));
-        } catch (error) {
-          setMaterials(materials);
-        }
-        
+        return materialsStorage;
+      }
+    }
+
+    
+    async function handleDelete(id: number, name: string) {
+
+      try {
+        await DeleteMaterial(id, name)
+        setMaterials((prev) => ({ ...prev, rows: prev.rows.filter((item) => item.id !== id) }));
+        console.log(`Deleted item with id ${id} - ${name}`);
+        console.log(JSON.stringify({id, name}));
+      } catch (error) {
+        setMaterials((prev) => ({...prev, materials}));
       }
 
-      function handleEditDetail(name: string, brand: string) {
-        console.log('After setFetchTrigger:', fetchTrigger);
-        console.log('Materials:', materials);
-        const item = materials!.rows.find((item) => item.name === name && item.brand === brand);
+      setFetchTrigger(!fetchTrigger);
+      
+    }
 
-        console.log(item);
-        if (item) {
-          setShowEditDetail((prev) => !prev);
-          console.log(showEditDetail);
-          
-          setitemEditId(item.id);
-        } 
-        // else{
-        //   setFetchTrigger(prev => !prev);
-        // }
+    function handleEditDetail(name: string, brand: string) {
+      const materialsStorage = getMaterialFromLocalStorage();
+      console.log('Materials:', materialsStorage);
+      const item = materialsStorage!.rows.find((item) => item.name === name && item.brand === brand);
+
+      console.log(item);
+      if (item) {
+        setShowEditDetail((prev) => !prev);
+        console.log(showEditDetail);
         
-      }
+        setitemEditId(
+          {
+            name: item.name!,
+            brand: item.brand!
+          }
+        );
+      } 
+      
+    }
       
       function handleShowForm() {
         setShowForm((prev) => !prev);
@@ -113,14 +124,16 @@ export const Materials = () => {
       
         try {
           await CreateMaterial(data);
-          setMaterials((prev) => ({ ...prev, rows: [...prev.rows, data] }));
-          setFetchTrigger(prev => !prev);
+          setMaterials((prev) => {
+            const updatedMaterials = { ...prev, rows: [...prev.rows, data] };
+            return updatedMaterials;
+          })
           console.log('After setMaterials (should be outdated):', materials);
         } catch (error) {
           setMaterials(materials);
         }
         setShowForm(!showForm);
-
+        setFetchTrigger(prev => !prev);
       }
       const closeForm = () => {setShowForm(false); setShowEditDetail(false)};
       
@@ -139,8 +152,8 @@ export const Materials = () => {
             isSelected={showForm}/>}
         {showEditDetail ? (
           <ReusableDetailPopOut 
-            fields={materials.headers.filter((header) => header.accessor !== 'actions')} 
-            values={materials.rows.find((item) => item.id === itemEditId)?? {brand: '', name: '', type: '', purchase_unit: '', quantity: 0, quantity_unit: ''}}
+            fields={materialsStorage!.headers.filter((header) => header.accessor !== 'actions')} 
+            values={materialsStorage!.rows.find((item) => item.name === itemEditId.name && item.brand === itemEditId.brand)?? {brand: '', name: '', type: '', purchase_unit: '', quantity: 0, quantity_unit: ''}}
             onSubmit={handleSubmit} 
             onClose={closeForm} 
             buttonLabel="Submit" 

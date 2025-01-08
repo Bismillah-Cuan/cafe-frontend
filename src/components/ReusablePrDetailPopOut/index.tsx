@@ -1,4 +1,5 @@
 import { request } from "http";
+import * as React from "react";
 
 
 type Field = {
@@ -58,7 +59,7 @@ type Field = {
     approved: "bg-green-400",
     rejected: "bg-red-400"
   }
-const ReusablePrDetailPopOut: React.FC<ReusableEditProps> = ({ fields, values, username, division, onSubmit, onClose, buttonLabel = "Submit", isSelected
+export const ReusablePrDetailPopOut: React.FC<ReusableEditProps> = ({ fields, values, username, division, onSubmit, onClose, buttonLabel = "Submit", isSelected
   }) => {
 
     const allKeys = new Set<string>();
@@ -99,7 +100,7 @@ const ReusablePrDetailPopOut: React.FC<ReusableEditProps> = ({ fields, values, u
             <div className="flex justify-between w-full">
                 {
                     [...allKeys].map((key) => (
-                        <div className="flex-1  font-light text-md">
+                        <div key={key} className="flex-1  font-light text-md">
                             {key}
                         </div>
                     ))
@@ -111,8 +112,8 @@ const ReusablePrDetailPopOut: React.FC<ReusableEditProps> = ({ fields, values, u
              
                 {
                     values.requested_raw_materials && values.requested_raw_materials.map((item) =>  (
-                        <li className="mt-2">
-                          <div className="flex w-full">
+                        <li key={item.details.id} className="mt-2">
+                          <div key={item.details.id} className="flex w-full">
                         {Object.entries(item).map(([key, value]) => key === "details" ? (
                            Object.entries(value).map(([detailKey, detailValue]) => (
                             detailKey !== "id" && (
@@ -124,7 +125,7 @@ const ReusablePrDetailPopOut: React.FC<ReusableEditProps> = ({ fields, values, u
                                ) 
                            ))
                         ) : (key !== "raw_material_id" && 
-                        (<div className="flex-1 w-full">
+                        (<div key={key} className="flex-1 w-full">
                             <label className="text-sm font-semibold">
                                 {value.toString()}
                             </label> 
@@ -154,4 +155,4 @@ const ReusablePrDetailPopOut: React.FC<ReusableEditProps> = ({ fields, values, u
   )
 }
 
-export default ReusablePrDetailPopOut
+

@@ -115,7 +115,8 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     localStorage.setItem('materials', JSON.stringify(materials));
-  }, [materials]);
+    localStorage.setItem('prData', JSON.stringify(prData));
+  }, [materials, prData]);
 
 
   return (

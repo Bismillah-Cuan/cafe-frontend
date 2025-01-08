@@ -14,8 +14,7 @@ type: string;
 purchase_unit: string;
 quantity: number;
 quantity_unit: string;
-metadata: Metadata;
-jumlah: number
+metadata?: Metadata;
 }
 
 export interface RawMaterialResponse {

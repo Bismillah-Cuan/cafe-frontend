@@ -63,13 +63,14 @@ export const SearchMaterialPopOut = forwardRef<HTMLDivElement, SearchMaterialPop
         <div 
             ref={setRefs}
             style={styles.popper}
-            className="overflow-auto text-sm font-light top-full left-0 w-[15rem] max-h-[20rem] z-[999] border rounded-md mt-3 bg-slate-300 px-2 py-2" 
+            className="overflow-y-auto 
+                text-sm font-light top-full left-0 w-[15rem] max-h-[10rem] z-[999] border rounded-md mt-3 bg-slate-400 px-2 py-2 scrollbar-popSearch" 
             onBlur={OnBlur}
             tabIndex={-1}
             {...attributes.popper}
             >
         {filteredPrList.length > 0 ? filteredPrList.map((item: any) => (
-            <div  key={item.id} className="cursor-pointer hover:bg-slate-400 hover:text-slate-100 mt-2">
+            <div  key={item.id} className="cursor-pointer hover:bg-slate-600 hover:text-slate-100 mt-2">
                 <p onClick={() => 
                     handleSelect(
                         {name: item.name, materialId: item.id, purchaseUnit: item.purchase_unit, type: item.type}

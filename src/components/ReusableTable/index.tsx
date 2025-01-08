@@ -85,8 +85,8 @@ const ReusableTable = <T extends object,>({tableFields, data}: ReusableTableProp
       {...getTableProps()} 
       className="w-full text-sm text-left text-gray-500 border-separate border-spacing-0 mt-2 mr-5 rounded-xl border-slate-300 border-4">
         <thead key="head" className=" text-gray-700 uppercase bg-gray-300 rounded-t-lg border">
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
+          {headerGroups.map((headerGroup, index) => (
+            <tr {...headerGroup.getHeaderGroupProps()} key={index}>
               {headerGroup.headers.map((column) => (
                 <th {...column.getHeaderProps(column.getSortByToggleProps())} className={classTableHead} key={column.id}>
                 <div className="flex items-center gap-2">

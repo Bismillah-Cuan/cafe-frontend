@@ -17,6 +17,8 @@ export async function FetchPurchaseRequests () {
         headers: headers
     })
 
+    console.log("response",response);
+
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -66,6 +68,47 @@ export async function CreatePurchaseRequests (data: any) {
 
     alert("Purchase Request created successfully!"); 
 }
+
+export async function UpdatePurchaseRequests (prCode: string, status: string, updateType: string, updateData?: any) {
+
+    function updateDataType () {
+        if(updateType === "raw materials") {
+            return  {
+                pr_code: prCode,
+                status: status,
+                update_type: updateType,
+                raw_materials: updateData
+            }
+        } else if(updateType === "status") {
+            return  {
+            pr_code: prCode,
+            status: status,
+            update_type: updateType
+        }
+    }
+}
+
+    const bodyUpdateData = updateDataType()
+
+    console.log(JSON.stringify(bodyUpdateData, null,2 ));
+    const access_token = localStorage.getItem('access_token')
+    const headers = {
+        'Authorization': `Bearer ${access_token}`,
+        'Content-Type': 'application/json'
+    }
+    const response = await fetch(`${API_PURCHASE_REQUEST}`, {
+        method: 'PUT',
+        headers: headers,
+        body: JSON.stringify(bodyUpdateData)
+    })
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    } else {
+        alert("Purchase Request updated successfully!");
+    }
+    }
+
 
 export async function FetchSearchPurchaseRequests () {
 

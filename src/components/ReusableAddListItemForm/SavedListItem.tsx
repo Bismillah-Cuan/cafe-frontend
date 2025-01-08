@@ -23,7 +23,7 @@ const rawMaterialsTypes=[
 const listStyle = "text-sm font-bold"
 const SavedListItem: React.FC<SavedListItemProps> = ({materialId, formFields, listItem, onChange, onDelete, prValue}) => {
 
-  // console.log("prValue", prValue);
+  console.log("prValue", prValue);
   // console.log("formFields", formFields);
 
   return (
