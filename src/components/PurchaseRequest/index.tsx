@@ -5,21 +5,26 @@ import ReusableTable from "../ReusableTable"
 import CreateFormButton from "../CreateFormButton"
 import EditDetailButton from "../EditDetailButton"
 import {ReusablePrDetailPopOut} from "../ReusablePrDetailPopOut"
-import { dummyPR } from "./DummyPR"
 import { useEffect, useState, useContext } from "react"
-import { FetchPurchaseRequests, FetchSearchPurchaseRequests, CreatePurchaseRequests, UpdatePurchaseRequests } from "./DataFetch"
+import { 
+  FetchPurchaseRequests, 
+  FetchSearchPurchaseRequests, 
+  CreatePurchaseRequests, 
+  UpdatePurchaseRequests,
+  DeletePurchaseRequests 
+} from "./DataFetch"
 import { UsePrContext, UseDataContext } from "../../util/context"
 import { prRequestPost } from "../ReusableAddListItemForm/AddListItem"
-import { Select } from "@mui/material"
-import { TryTwoTone } from "@mui/icons-material"
-import { stat } from "fs"
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import { ClassNames } from "@emotion/react"
 
 
 const statusColor = {
-  requested: "text-yellow-400",
-  approved: "text-green-400",
-  rejected: "text-red-400"
+  requested: "bg-yellow-400",
+  approved: "bg-green-400",
+  rejected: "bg-red-400"
 }
+
 export const PurchaseRequest = () => {
 
     
@@ -53,26 +58,55 @@ export const PurchaseRequest = () => {
             const originalCell = existingHeader.Cell;
             existingHeader.Cell = ({ row }: any) => (
               <div className="flex justify-between gap-2 mr-3">
-                <div>
+                <div className="flex gap-2">
                 {currentDivision !== "admin" && currentDivision !== "super_admin" ? (
                   <span className={`px-2 py-1 rounded-md text-slate-100 ${statusColor[row.original.status as keyof typeof statusColor]}`}>
                   {originalCell?.({ value: null, row, column: null })}
                 </span>
                 ) : (
-                  <select 
+                  <>
+                  {/* /* <select 
                     onChange={({ target: { value } }) => 
                       handleSelectStatus ({statusValue: value, itemEditId: row.original.pr_code})
                   } 
-                    className={`px-2 py-1 rounded-md font-semibold black ${statusColor[row.original.status as keyof typeof statusColor]}`}
+                    className={`px-2 py-1 rounded-md font-semibold text-white ${"bg-[" + statusColor[row.original.status as keyof typeof statusColor] + "]"} `}
                     value={row.original.status}
                     >
-                    <option key={row.original.status} value={row.original.status}>{originalCell?.({ value: null, row, column: null })}</option>
+                    <option style={{ backgroundColor: statusColor[row.original.status as keyof typeof statusColor] }} key={row.original.status} value={row.original.status}>
+                      {originalCell?.({ value: null, row, column: null })}
+                    </option>
                     {Object.keys(statusColor).filter((status) => status !== row.original.status).map((status) => (
-                      <option key={status} value={status}>
+                      <option style={{ backgroundColor: statusColor[status as keyof typeof statusColor] }} key={status} value={status}>
                         {status}
                       </option>
                     ))}
-                  </select>
+                    
+                  </select> */ }
+                  
+                  {row.original.status === "requested" ? (
+                  <>
+                    <EditDetailButton 
+                      key={`edit-${row.original.pr_code}`} 
+                      onClick={() => handleSelectStatus({ statusValue: "rejected", itemEditId: row.original.pr_code })}  
+                      label="Rejected" 
+                      className="bg-red-400"
+                    /> 
+                    <EditDetailButton 
+                      key={`edit-${row.original.pr_code}`} 
+                      onClick={() => handleSelectStatus({ statusValue: "approved", itemEditId: row.original.pr_code })}  
+                      label="Approved" 
+                      className="bg-green-400"
+                    />
+                  </>
+                ) : (
+                  <span className={`px-2 py-1 rounded-md text-slate-100 ${statusColor[row.original.status as keyof typeof statusColor]}`}>
+                    {originalCell?.({ value: null, row, column: null })}
+                  </span>
+                )}
+                  <div>
+                    <DeleteRoundedIcon htmlColor="#F44336" className="cursor-pointer" onClick={() => handleDelete(row.original.pr_code)} />
+                  </div>
+                  </>
                 )}
                 
                 </div>
@@ -142,67 +176,88 @@ export const PurchaseRequest = () => {
     }
     // const tableData = generateTableData(addedMaterials);
 
-    async function handleSelectStatus({ statusValue, itemEditId }: { statusValue: string; itemEditId: string }) {
-      const selectedStatus = statusValue;
+  async function handleSelectStatus({ statusValue, itemEditId }: { statusValue: string; itemEditId: string }) {
+    const selectedStatus = statusValue;
 
-      const updatedStatus = prData.rows.find((item) => item.pr_code === itemEditId)?.status;
-      console.log(selectedStatus);
-      if (updatedStatus) {
-        try {
-          const updateType = "status"
-          await UpdatePurchaseRequests(itemEditId, selectedStatus, updateType)
-          const updatedRows = prData.rows.map((item) => {
-            if (item.pr_code === itemEditId) {
-              return { ...item, status: selectedStatus };
-            }
-            return item;
-          });
-          setPrData({ ...prData, rows: updatedRows });
-          setFetchTrigger(!fetchTrigger);
-        } catch (error) {
-          if (error instanceof Error) {
-            setError({message: error.message || 'An error occurred while Updating Status.'});
-          }
-        }
-        }
-        
-    }
-    
-
-    async function handleSubmit(data: any) {
+    const updatedStatus = prData.rows.find((item) => item.pr_code === itemEditId)?.status;
+    console.log(selectedStatus);
+    if (updatedStatus) {
       try {
-        console.log("process create");
-        await CreatePurchaseRequests(data)
-        setPrData((prev) => {
-          const updatedPrData = { ...prev, rows: [...prev.rows, data] };
-          return updatedPrData;
+        const updateType = "status"
+        await UpdatePurchaseRequests(itemEditId, selectedStatus, updateType)
+        const updatedRows = prData.rows.map((item) => {
+          if (item.pr_code === itemEditId) {
+            return { ...item, status: selectedStatus };
+          }
+          return item;
         });
-        // localStorage.setItem("prData", JSON.stringify(prData));
+        setPrData({ ...prData, rows: updatedRows });
+        setFetchTrigger(!fetchTrigger);
       } catch (error) {
         if (error instanceof Error) {
-          setError({message: error.message || 'An error occurred while fetching data.'});
+          setError({message: error.message || 'An error occurred while Updating Status.'});
         }
       }
-      setShowForm(!showForm);
-      setFetchTrigger(!fetchTrigger);
-      
-    }
-
-    async function handleUpdate(data: any) {
-      try {
-        console.log("process update");
-        await UpdatePurchaseRequests(data.pr_code, data.status, "raw materials", data.requested_raw_materials)
-        setPrData((prev) => {
-          const updatedPrData = { ...prev, rows: [...prev.rows, data] };
-          return updatedPrData;
-        })
       }
-     catch (error) {
+      
+  }
+    
+
+
+  async function handleSubmit(data: any) {
+    try {
+      console.log("process create");
+      await CreatePurchaseRequests(data)
+      setPrData((prev) => {
+        const updatedPrData = { ...prev, rows: [...prev.rows, data] };
+        return updatedPrData;
+      });
+      // localStorage.setItem("prData", JSON.stringify(prData));
+    } catch (error) {
       if (error instanceof Error) {
         setError({message: error.message || 'An error occurred while fetching data.'});
       }
     }
+    setShowForm(!showForm);
+    setFetchTrigger(!fetchTrigger);
+    
   }
+
+  async function handleUpdate(data: any) {
+    try {
+      console.log("process update");
+      await UpdatePurchaseRequests(data.pr_code, data.status, "raw_materials", data.requested_raw_materials)
+      // setPrData((prev) => {
+      //   const updatedPrData = { ...prev, rows: [...prev.rows, data] };
+      //   return updatedPrData;
+      // })
+    }
+    catch (error) {
+    if (error instanceof Error) {
+      setError({message: error.message || 'An error occurred while fetching data.'});
+    }
+  }
+  setShowEditDetail(!showEditDetail);
+  setFetchTrigger(!fetchTrigger);
+}
+
+async function handleDelete(pr_code: string) {
+  try {
+    await DeletePurchaseRequests(pr_code)
+    setPrData((prev) => {
+      const updatedPrData = { ...prev, rows: prev.rows.filter((item) => item.pr_code !== pr_code) };
+      return updatedPrData;
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      setError({message: error.message || 'An error occurred while fetching data.'});
+  }
+    }
+    setFetchTrigger(!fetchTrigger);
+  }
+
+
+
     function handleEditDetail(pr_code: string) {
       console.log("prRequestData", prData);
       const item = prRequestData.rows.find((item) => item.pr_code === pr_code );
@@ -243,14 +298,15 @@ export const PurchaseRequest = () => {
           isSelected={showEditDetail}
           division={division}
           username= {username}
-          UpdatedData= {prData!.rows.find((item) => item.pr_code === itemEditId)?? {brand: '', name: '', type: '', purchase_unit: '', quantity: 0, quantity_unit: ''}}
+          UpdatedData= {prData!.rows.find((item) => item.pr_code === itemEditId)?? {brand: '', name: '', type: '', purchase_unit: '', quantity: 0, quantity_unit: '', notes: ''}}
           isUpdated={isUpdated}
+          pr_code={itemEditId}
           />
         ) : 
         
         <ReusablePrDetailPopOut 
           fields={prData!.headers.filter((header) => header.accessor !== 'actions')} 
-          values={prData!.rows.find((item) => item.pr_code === itemEditId)?? {brand: '', name: '', type: '', purchase_unit: '', quantity: 0, quantity_unit: ''}}
+          values={prData!.rows.find((item) => item.pr_code === itemEditId)?? {brand: '', name: '', type: '', purchase_unit: '', quantity: 0, quantity_unit: '', notes: ''}}
           onSubmit={handleSubmit} 
           onClose={closeForm} 
           username={username ?? ''}

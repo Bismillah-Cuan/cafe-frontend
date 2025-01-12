@@ -14,6 +14,8 @@ const rawMaterialsTypes=[
   {value: "fresh", label: "fresh"},
   {value: "dairy", label: "dairy"},
   {value: "atk", label: "atk"},
+  {value: "packaging", label: "packaging"},
+  {value: "support", label: "support"},
 ]
 
 interface AddListItemProps {
@@ -119,11 +121,11 @@ const AddListItem: React.FC<AddListItemProps> = ({ onAddItem, dataUpdate, isUpda
       id,
       updatedFields,
     }: {
-      id: string | undefined;
+      id: string | undefined | number;
       updatedFields: Partial<prRequestPost[number]>;
     }) => {
       setDataSaved2((prevState) =>
-        prevState!.map((item) => (item.name === id ? { ...item, ...updatedFields } : item))
+        prevState!.map((item) => (item.raw_material_id === id ? { ...item, ...updatedFields } : item))
       );
 
       onAddItem(dataSaved2);
@@ -160,8 +162,8 @@ const AddListItem: React.FC<AddListItemProps> = ({ onAddItem, dataUpdate, isUpda
                   formFields = {addFormField}
                   listItem= {item.name}
                   prValue= { Object.entries(item).map(([name, value]) => ({ name, value }))}
-                  onChange= {(name, value) => name === 'quantity' ? updateItemInData({ id: item.name, updatedFields: { [name]: Number(value)} }) :
-                     updateItemInData({ id: item.name, updatedFields: { [name]: value } })}
+                  onChange= {(name, value) => name === 'quantity' ? updateItemInData({ id: item.raw_material_id, updatedFields: { [name]: Number(value)} }) :
+                     updateItemInData({ id: item.raw_material_id, updatedFields: { [name]: value } })}
                   onDelete= {(event) => handleDelete(event)}
                 />
               </li>)

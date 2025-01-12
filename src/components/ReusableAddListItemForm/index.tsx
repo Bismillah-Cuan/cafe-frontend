@@ -16,6 +16,7 @@ type ReusableFormProps = {
     isUpdated: Boolean;
     division?: string | null
     username?: string | null
+    pr_code?: string
   };
 
 const buttonStyle ="text-slate-900 font-light text-center bg-slate-400 w-40 hover:bg-slate-300 px-2 py-1 rounded-lg transition-all"
@@ -25,7 +26,7 @@ const statusColor = {
   rejected: "bg-red-400"
 }
 const ReusableAddListItemForm: React.FC<ReusableFormProps> = ( 
-  {onSubmit, onUpdate, onClose, isSelected, division, username, isUpdated, UpdatedData}) => {
+  {onSubmit, onUpdate, onClose, isSelected, pr_code, username, isUpdated, UpdatedData}) => {
 
   const [formData, setFormData] = useState(() => 
     isUpdated ? UpdatedData : [] as Record<string, string>[]
@@ -46,8 +47,8 @@ const ReusableAddListItemForm: React.FC<ReusableFormProps> = (
       return filteredData.map((item) => {
     
           const { name, purchase_unit, type } = item.details;
-          const { quantity, raw_material_id } = item;
-          return { raw_material_id, name, purchase_unit, type, quantity }
+          const { quantity, raw_material_id, notes } = item;
+          return { raw_material_id, name, purchase_unit, type, quantity, notes };
       });
     }
     }
@@ -68,13 +69,14 @@ const ReusableAddListItemForm: React.FC<ReusableFormProps> = (
     }
 
     function handleUpdate() {
+      
       const requested_raw_materials = formData!.map(item => {
         const {raw_material_id, quantity, notes} = item;
         return {raw_material_id, quantity, notes};
       })
       const filteredData = 
         {
-          pr_code : formData.pr_code,
+          pr_code : pr_code,
           status : formData.status,
           requested_raw_materials : requested_raw_materials
         }
@@ -103,7 +105,7 @@ const ReusableAddListItemForm: React.FC<ReusableFormProps> = (
       </div>  
         <h2 className="text-2xl font-bold mb-2">{isUpdated ? "Update Purchase Request" : "Create Purchase Request"}</h2>
         <div className="flex justify-between">
-            <h3 className="text-md text-slate-600 mb-5 opacity-50">Pr Code: {formData.pr_code}</h3>
+            <h3 className="text-md text-slate-600 mb-5 opacity-50">Pr Code: {pr_code}</h3>
             <h3 className="text-md text-slate-600 mb-5 opacity-50">division - {formData.division}</h3>
         </div>
         <div className="relative flex flex-col gap-4 w-full">

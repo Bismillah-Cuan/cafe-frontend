@@ -72,12 +72,12 @@ export async function CreatePurchaseRequests (data: any) {
 export async function UpdatePurchaseRequests (prCode: string, status: string, updateType: string, updateData?: any) {
 
     function updateDataType () {
-        if(updateType === "raw materials") {
+        if(updateType === "raw_materials") {
             return  {
                 pr_code: prCode,
                 status: status,
                 update_type: updateType,
-                raw_materials: updateData
+                requested_raw_materials: updateData
             }
         } else if(updateType === "status") {
             return  {
@@ -131,3 +131,23 @@ export async function FetchSearchPurchaseRequests () {
     return data
 
 }
+
+export async function DeletePurchaseRequests (pr_code: string) {
+
+    const access_token = localStorage.getItem('access_token')
+    const headers = {
+        Authorization: `Bearer ${access_token}`,
+        'Content-Type': 'application/json'
+    }
+    const response = await fetch(API_PURCHASE_REQUEST, {
+        headers: headers,
+        method: 'DELETE',
+        body: JSON.stringify({pr_code})
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    alert("Purchase Request deleted successfully!");
+    }

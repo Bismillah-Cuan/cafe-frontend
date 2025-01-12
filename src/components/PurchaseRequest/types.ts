@@ -21,6 +21,7 @@ export interface DataPurchaseRequest {
                 quantity: number;
                 raw_material_id: number;
             };
+            notes: string;
             quantity: number;
             raw_material_id: number;
             }
