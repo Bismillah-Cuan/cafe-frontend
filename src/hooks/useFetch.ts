@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { json, useNavigate } from "react-router-dom";
+import { API_LOGIN } from "../constants/URL_API";
 
 type LoginData = {
     username: string;
@@ -8,6 +9,7 @@ type LoginData = {
   
   type LoginResponse = {
     access_token: string;
+    division: string;
   };
   
 
@@ -21,7 +23,7 @@ export const useLogin = () => {
     setError(null);
     try {
       console.log(JSON.stringify(values, null, 2));
-      const response = await fetch("http://127.0.0.1:5000/api/v1/users/login", {
+      const response = await fetch(API_LOGIN, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -30,12 +32,13 @@ export const useLogin = () => {
       });
 
       if (!response.ok) {
-        alert("Invalid credentials");
-        throw new Error("Invalid credentials");
+        alert("Something went wrong, please try again later" + response.status);
+        throw new Error("Something went wrong, please try again later");
       }
 
       const data: LoginResponse = await response.json();
       localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("division", data.division);
       localStorage.setItem("username", values.username);
       navigate("/");
     } catch (err: unknown) {

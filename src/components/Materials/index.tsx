@@ -4,105 +4,145 @@ import ReusableForm from "../../components/ReusableForm"
 import CreateFormButton from "../../components/CreateFormButton"
 import ReusableDetailPopOut from "../../components/ReusableDetailPopOut"
 import EditDetailButton from "../../components/EditDetailButton"
-import { useState, useEffect } from "react"
-import { tableData } from "../../util/tableDummyData"
-import {format, set} from "date-fns"
-import { ColumnFilter } from "../../components/ColumnFilter"
+import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import { TableData, Data, RawMaterialResponse } from "./types"
-import { TableHeaders } from "../ReusableTable/TableTypes"
-import generateTableData from "../../util/generateTableData"
 import ErrorModal from "../ErrorModal"
-import {DataFetchMaterial, DeleteMaterial} from "./DataFetch"
+import {DataFetchMaterial, DeleteMaterial, CreateMaterial} from "./DataFetch"
 import {MaterialFormFields} from "./MaterialFormFields"
+import { UseDataContext } from "../../util/context"
+
 
 
 export const Materials = () => {
   const [showForm, setShowForm] = useState(false);
   const [showEditDetail, setShowEditDetail] = useState(false);
-  const [itemEditId, setitemEditId] = useState(0);
+  const [isFirstRender, setIsFirstRender] = useState(true);
+  const [itemEditId, setitemEditId] = useState({
+    name: "" ,
+    brand: "",
+  });
   const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState();
-  const [data, setData] = useState<TableData<Data>>({
-    headers: [],
-    rows: [],
-    });
+  const {materials, setMaterials} = UseDataContext();
+  const [fetchTrigger, setFetchTrigger] = useState(false); 
 
+  const materialsStorage = getMaterialFromLocalStorage();
     useEffect(() => {
-        
-        async function handleFetch() {
-          try {
-            setIsFetching(true);
-           
-           const tableData = await DataFetchMaterial();
-
-            if (!tableData.headers.find(header => header.accessor === 'actions')) {
-              tableData.headers.push({
-                Header: 'Actions',
-                accessor: 'actions',
-                Cell: ({ row }: any) => (
-                  <div className="flex gap-2 mr-3">
-                    <EditDetailButton key={`edit-${row.original.id}`} onClick={() => handleEditDetail(row.original.id)}  label="Edit" />
-                    <EditDetailButton key={`delete-${row.original.id}`} onClick={() => handleDelete(row.original.id, row.original.name)} label="Delete" />
-                  </div>
-                )
-              })
-            }
-            setData(tableData);
-            
-          } catch (error) {
-            if (error instanceof Error) {
-              setError({message: error.message || 'An error occurred while fetching data.'});
-            }
-            
-          }
-          setIsFetching(false);
-        }
-        
-        handleFetch();
-        
-      }, []);
-      
-      if (error) {
-        return <ErrorModal title="An Error occured" message={error.message} />;
-      }
-
-     async function handleDelete(id: number, name: string) {
-
+      async function handleFetch() {
         try {
-          await DeleteMaterial(id, name)
-          setData((prev) => ({ ...prev, rows: prev.rows.filter((item) => item.id !== id) }));
-          console.log(`Deleted item with id ${id} - ${name}`);
+          setIsFetching(true);
+         const tableData = await DataFetchMaterial();
+  
+          if (!tableData.headers.find(header => header.accessor === 'actions')) {
+            tableData.headers.push({
+              Header: 'Action',
+              accessor: 'action',
+              Cell: ({ row }: any) => (
+                <div className="flex gap-2 mr-3">
+                  <EditDetailButton key={`edit-${row.original.id}`} onClick={() => handleEditDetail(row.original.name, row.original.brand)}  label="Edit" />
+                  <EditDetailButton key={`delete-${row.original.id}`} onClick={() => handleDelete(row.original.id, row.original.name)} label="Delete" />
+                </div>
+              )
+            })
+          }
+          // Update materials only if data has changed
+          
+  
+          localStorage.setItem("materials", JSON.stringify(tableData))
+
+          setMaterials(tableData);
+          setIsFetching(false);
+          
         } catch (error) {
-          setData(data);
+          if (error instanceof Error) {
+            setError({message: error.message || 'An error occurred while fetching data.'});
+          }
         }
-        
+      } 
+      handleFetch();
+      
+
+      }, [fetchTrigger]);
+
+   
+    if (error) {
+
+      return <ErrorModal title="An Error occured" message={error.message} />;
+    }
+
+    function getMaterialFromLocalStorage() {
+      if(!isFetching) {
+        const getMaterialsStorage = localStorage.getItem("materials");
+        const materialsStorage: TableData<Data> = JSON.parse(getMaterialsStorage!);
+
+        return materialsStorage;
       }
-      function handleEditDetail(id: number) {
-        const item = data.rows.find((item) => item.id === id);
-        if (item) {
-          setShowEditDetail((prev) => !prev);
-          setitemEditId(item.id);
-        }
-        
+    }
+
+    
+    async function handleDelete(id: number, name: string) {
+
+      try {
+        await DeleteMaterial(id, name)
+        setMaterials((prev) => ({ ...prev, rows: prev.rows.filter((item) => item.id !== id) }));
+        console.log(`Deleted item with id ${id} - ${name}`);
+        console.log(JSON.stringify({id, name}));
+      } catch (error) {
+        setMaterials((prev) => ({...prev, materials}));
       }
+
+      setFetchTrigger(!fetchTrigger);
+      
+    }
+
+    function handleEditDetail(name: string, brand: string) {
+      const materialsStorage = getMaterialFromLocalStorage();
+      console.log('Materials:', materialsStorage);
+      const item = materialsStorage!.rows.find((item) => item.name === name && item.brand === brand);
+
+      console.log(item);
+      if (item) {
+        setShowEditDetail((prev) => !prev);
+        console.log(showEditDetail);
+        
+        setitemEditId(
+          {
+            name: item.name!,
+            brand: item.brand!
+          }
+        );
+      } 
+      
+    }
       
       function handleShowForm() {
         setShowForm((prev) => !prev);
       }
     
-      function handleSubmit(data: any) {
+     async function handleSubmit(data: any) {
+      console.log('Before setMaterials:', materials);
+      
+        try {
+          await CreateMaterial(data);
+          setMaterials((prev) => {
+            const updatedMaterials = { ...prev, rows: [...prev.rows, data] };
+            return updatedMaterials;
+          })
+          console.log('After setMaterials (should be outdated):', materials);
+        } catch (error) {
+          setMaterials(materials);
+        }
         setShowForm(!showForm);
-        console.log(data);
-        setData((prev) => ({ ...prev, rows: [...prev.rows, data] }));
+        setFetchTrigger(prev => !prev);
       }
       const closeForm = () => {setShowForm(false); setShowEditDetail(false)};
       
   return (
     <div>
         <div className="w-full mr-8 text-slate-800 relative overflow-x-hidden flex flex-col gap-5">
-      <header className="flex justify-between items-center">
+      <section className="flex justify-end items-center">
         <div>
-        <CreateFormButton onClick={handleShowForm} label="Create Order" />
+        <CreateFormButton onClick={handleShowForm} label="Create Materials" />
         {showForm && 
           <ReusableForm 
             fields={MaterialFormFields} 
@@ -110,19 +150,19 @@ export const Materials = () => {
             onClose={closeForm} 
             buttonLabel="Submit" 
             isSelected={showForm}/>}
-        {showEditDetail && 
+        {showEditDetail ? (
           <ReusableDetailPopOut 
-            fields={data.headers.filter((header) => header.accessor !== 'actions')} 
-            values={data.rows.find((item) => item.id === itemEditId)?? {brand: '', name: '', type: '', purchase_unit: '', quantity: 0, quantity_unit: ''}}
+            fields={materialsStorage!.headers.filter((header) => header.accessor !== 'actions')} 
+            values={materialsStorage!.rows.find((item) => item.name === itemEditId.name && item.brand === itemEditId.brand)?? {brand: '', name: '', type: '', purchase_unit: '', quantity: 0, quantity_unit: ''}}
             onSubmit={handleSubmit} 
             onClose={closeForm} 
             buttonLabel="Submit" 
-            isSelected={showEditDetail}/>}
+            isSelected={showEditDetail}/>) : (null)}
         </div>
-      </header>
+      </section>
       <section>
         {isFetching && <p>Sedang Mengambil Data Tabel.....</p>}
-       {!isFetching && <ReusableTable tableFields={data.headers} data={data.rows}/>} 
+       {!isFetching && <ReusableTable tableFields={materials.headers} data={materials.rows}/>} 
       </section>
     </div>
     </div>

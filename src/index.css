@@ -2,6 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .scrollbar-popSearch::-webkit-scrollbar {
+    width: 10px;
+    
+  }
+
+  .scrollbar-popSearch::-webkit-scrollbar-track {
+    border-radius: 100vh;
+    background: rgb(148 163 184 / var(--tw-bg-opacity, 1));;
+  }
+
+  .scrollbar-popSearch::-webkit-scrollbar-thumb {
+    background: rgb(241 245 249 / var(--tw-text-opacity, 1));
+    border-radius: 100vh;
+    border: 3px solid #f6f7ed;
+  }
+
+  .scrollbar-popSearch::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+}
 :root {
   font-family: Poppins, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -16,4 +37,36 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* width
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgb(148 163 184 / var(--tw-bg-opacity, 1));
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgb(241 245 249 / var(--tw-text-opacity, 1));
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+} */
+
+
+ol {
+  list-style-type: decimal;
+  margin: 0;
+  padding: 0;
+}
+
+.overflow-clip-margin {
+  overflow-escape-margin: 500px;
 }

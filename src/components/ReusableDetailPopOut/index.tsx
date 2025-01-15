@@ -41,7 +41,7 @@ const ReusableDetailPopOut: React.FC<ReusableEditProps> = ({ fields, values, onS
         <h3 className="text-sm text-slate-600 italic mb-5">Click any of the field to edit</h3>
         <div className="flex flex-col gap-4">
           {fields.map((field) => ( 
-            field.Header === "Action" || field.Header === "id" ? null :(
+            field.Header === "Action" || field.Header === "id" || field.Header === "date" ? null :(
             <div key={field.Header}>
               <label className="text-md font-semibold" htmlFor={field.Header}>
                 {field.Header} : <span className="font-light">{values[field.accessor] ? values[field.accessor] : "No Data"} </span> 
