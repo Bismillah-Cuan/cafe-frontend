@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useMemo, useEffect } from "react";
+import { DataPurchaseOrder } from "../components/PurchaseOrder/types";
 import { TableData, Data } from "./generateTableData";
 // Define the structure of your context
 
@@ -32,6 +33,8 @@ type DataContextType = {
   setMaterials: React.Dispatch<React.SetStateAction<TableData<Data>>>;
   prData : TableData<Data>;
   setPrData: React.Dispatch<React.SetStateAction<TableData<Data>>>
+  poData: DataPurchaseOrder['purchase_orders'];
+  setPoData: React.Dispatch<React.SetStateAction<DataPurchaseOrder['purchase_orders']>>
 };
 
 // Initialize the context with default values
@@ -113,6 +116,8 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [prList, setPrList] = useState<PrContextProps>(dummyPR)
 
+  const [poData, setPoData] = useState<DataPurchaseOrder['purchase_orders']>([]);
+
   useEffect(() => {
     localStorage.setItem('materials', JSON.stringify(materials));
     localStorage.setItem('prData', JSON.stringify(prData));
@@ -120,7 +125,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
 
 
   return (
-    <DataContext.Provider value={{materials, setMaterials, prData, setPrData}}>
+    <DataContext.Provider value={{materials, setMaterials, prData, setPrData, poData, setPoData}}>
       <PrContext.Provider value={{prList, setPrList}}>
         {children}
       </PrContext.Provider>

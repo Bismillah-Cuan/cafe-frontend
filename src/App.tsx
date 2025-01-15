@@ -12,6 +12,7 @@ import { UserContext } from './components/Store/user-context'
 import RegisterPage from './pages/register'
 import MarketListPage from './pages/marketList'
 import PurchaseOrderPage from './pages/poPage'
+import DetailPurchaseOrderPage from './pages/poPage/poDetailPage'
 import PurchaseRequestPage from './pages/prPage'
 import SupplierPage from './pages/supplier'
 import ListUserPage from './pages/listUser'
@@ -36,6 +37,7 @@ const router = createBrowserRouter([
       {path: "materials", element: <MaterialPage />},
       {path: "market-list", element: <MarketListPage />},
       {path: "purchase-order", element: <PurchaseOrderPage />},
+      {path: "purchase-order/:purchaseOrderId", element: <DetailPurchaseOrderPage />},
       {path: "purchase-request", element: <PurchaseRequestPage />},
       {path: "supplier", element: <SupplierPage />},
       {path: "list-user", element: <ListUserPage />}
