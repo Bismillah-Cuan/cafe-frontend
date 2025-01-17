@@ -52,16 +52,12 @@ export async function DeleteMaterial(id: number, name: string): Promise<void> {
           `Failed to delete material. Status: ${response.status}, Message: ${errorData.message || "Unknown error"}`
         );
       }
-  
-      alert("Material deleted successfully!");
     } catch (error) {
         if (error instanceof Error) {
           // Narrowing the type to Error
           console.error("Error deleting material:", error.message);
-          alert(`Error: ${error.message}`);
         } else {
           console.error("An unknown error occurred:", error);
-          alert("An unknown error occurred. Please try again.");
         }
       }
   }

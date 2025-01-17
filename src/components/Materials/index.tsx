@@ -10,6 +10,9 @@ import ErrorModal from "../ErrorModal"
 import {DataFetchMaterial, DeleteMaterial, CreateMaterial} from "./DataFetch"
 import {MaterialFormFields} from "./MaterialFormFields"
 import { UseDataContext } from "../../util/context"
+import CustomPrompt from "../CustomPrompt"
+import ConfrimPrompt from "../ConfirmPrompt"
+import { number } from "yup"
 
 
 
@@ -20,11 +23,14 @@ export const Materials = () => {
   const [itemEditId, setitemEditId] = useState({
     name: "" ,
     brand: "",
+    id: 0
   });
   const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState();
   const {materials, setMaterials} = UseDataContext();
   const [fetchTrigger, setFetchTrigger] = useState(false); 
+  const [isConfirm, setIsConfirm] = useState(false);
+  const [showPrompt, setShowPrompt] = useState(false)
 
   const materialsStorage = getMaterialFromLocalStorage();
     useEffect(() => {
@@ -40,7 +46,7 @@ export const Materials = () => {
               Cell: ({ row }: any) => (
                 <div className="flex gap-2 mr-3">
                   <EditDetailButton key={`edit-${row.original.id}`} onClick={() => handleEditDetail(row.original.name, row.original.brand)}  label="Edit" />
-                  <EditDetailButton key={`delete-${row.original.id}`} onClick={() => handleDelete(row.original.id, row.original.name)} label="Delete" />
+                  <EditDetailButton key={`delete-${row.original.id}`} onClick={() => handleConfirmPrompt(row.original.id, row.original.name, row.original.brand)} label="Delete" />
                 </div>
               )
             })
@@ -82,17 +88,20 @@ export const Materials = () => {
     
     async function handleDelete(id: number, name: string) {
 
-      try {
-        await DeleteMaterial(id, name)
-        setMaterials((prev) => ({ ...prev, rows: prev.rows.filter((item) => item.id !== id) }));
-        console.log(`Deleted item with id ${id} - ${name}`);
-        console.log(JSON.stringify({id, name}));
-      } catch (error) {
-        setMaterials((prev) => ({...prev, materials}));
-      }
+          try {
+            await DeleteMaterial(id, name)
+            setMaterials((prev) => ({ ...prev, rows: prev.rows.filter((item) => item.id !== id) }));
+            // console.log(`Deleted item with id ${id} - ${name}`);
+            // console.log(JSON.stringify({id, name}));
 
-      setFetchTrigger(!fetchTrigger);
-      
+            setIsConfirm(false)
+            setShowPrompt(true)
+          } catch (error) {
+            setMaterials((prev) => ({...prev, materials}));
+           
+          }
+          setFetchTrigger(!fetchTrigger);
+
     }
 
     function handleEditDetail(name: string, brand: string) {
@@ -108,7 +117,8 @@ export const Materials = () => {
         setitemEditId(
           {
             name: item.name!,
-            brand: item.brand!
+            brand: item.brand!,
+            id : 0
           }
         );
       } 
@@ -135,7 +145,16 @@ export const Materials = () => {
         setShowForm(!showForm);
         setFetchTrigger(prev => !prev);
       }
-      const closeForm = () => {setShowForm(false); setShowEditDetail(false)};
+      const closeForm = () => {setShowForm(false); setShowEditDetail(false); setShowPrompt(false); setIsConfirm(false)};
+
+      function handleConfirmPrompt(id: number, name: string, brand: string) {
+        setitemEditId({
+          id: id!,
+          name: name!,
+          brand: brand
+        })
+        setIsConfirm(true);
+      }
       
   return (
     <div>
@@ -158,6 +177,12 @@ export const Materials = () => {
             onClose={closeForm} 
             buttonLabel="Submit" 
             isSelected={showEditDetail}/>) : (null)}
+        {isConfirm && 
+          <ConfrimPrompt OnConfirm={()=>handleDelete(itemEditId.id, itemEditId.name)}  OnClose={closeForm}
+          title="Delete Material" message={`Are you sure you want to delete ${itemEditId.name} - ${itemEditId.brand}?`}/>}
+        {showPrompt && 
+        <CustomPrompt   
+          title="Success" message={`Success Delete Material`} isSuccess={true} OnConfirm={closeForm}/>}
         </div>
       </section>
       <section>

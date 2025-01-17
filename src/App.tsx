@@ -37,7 +37,7 @@ const router = createBrowserRouter([
       {path: "materials", element: <MaterialPage />},
       {path: "market-list", element: <MarketListPage />},
       {path: "purchase-order", element: <PurchaseOrderPage />},
-      {path: "purchase-order/:purchaseOrderId", element: <DetailPurchaseOrderPage />},
+      {path: "purchase-order/:status/:purchaseOrderId", element: <DetailPurchaseOrderPage />},
       {path: "purchase-request", element: <PurchaseRequestPage />},
       {path: "supplier", element: <SupplierPage />},
       {path: "list-user", element: <ListUserPage />}

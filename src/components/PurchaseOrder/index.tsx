@@ -32,7 +32,7 @@ const PurchaseOrder = () => {
         <div className='flex flex-col gap-3 w-full'>
             {poData && poData!.map((item, index: number) => (
                 
-                <Link to={`/purchase-order/${item.po_code}`}>
+                <Link to={`/purchase-order/${item.status}/${item.po_code}`}>
                     <div 
                         className='flex flex-col bg-slate-500 rounded-lg items-center justify-center w-full py-4 hover:bg-slate-300 hover:cursor-pointer'
                         key={index}
