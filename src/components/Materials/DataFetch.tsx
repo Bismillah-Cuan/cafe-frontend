@@ -86,15 +86,15 @@ export async function CreateMaterial(data: Data): Promise<void> {
         );
       }
   
-      alert("Material created successfully!");    
+      // alert("Material created successfully!");    
     } catch (error) {
       if (error instanceof Error) {
         // Narrowing the type to Error
         console.error("Error creating material:", error.message);
-        alert(`Error: ${error.message}`);
+        // alert(`Error: ${error.message}`);
       } else {
         console.error("An unknown error occurred:", error);
-        alert("An unknown error occurred. Please try again.");
+        // alert("An unknown error occurred. Please try again.");
       }
     }
 }

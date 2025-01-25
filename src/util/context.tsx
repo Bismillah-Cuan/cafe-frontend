@@ -35,6 +35,8 @@ type DataContextType = {
   setPrData: React.Dispatch<React.SetStateAction<TableData<Data>>>
   poData: DataPurchaseOrder['purchase_orders'];
   setPoData: React.Dispatch<React.SetStateAction<DataPurchaseOrder['purchase_orders']>>
+  tablePoData: TableData<Data>
+  setTablePoData: React.Dispatch<React.SetStateAction<TableData<Data>>>
 };
 
 // Initialize the context with default values
@@ -118,6 +120,11 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [poData, setPoData] = useState<DataPurchaseOrder['purchase_orders']>([]);
 
+  const [tablePoData, setTablePoData] = useState<TableData<Data>>({
+    headers: [],
+    rows: [],
+  })
+
   useEffect(() => {
     localStorage.setItem('materials', JSON.stringify(materials));
     localStorage.setItem('prData', JSON.stringify(prData));
@@ -125,7 +132,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
 
 
   return (
-    <DataContext.Provider value={{materials, setMaterials, prData, setPrData, poData, setPoData}}>
+    <DataContext.Provider value={{materials, setMaterials, prData, setPrData, poData, setPoData, tablePoData, setTablePoData}}>
       <PrContext.Provider value={{prList, setPrList}}>
         {children}
       </PrContext.Provider>

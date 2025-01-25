@@ -13,6 +13,8 @@ import { set } from "date-fns";
 interface ReusableTableProps <T>  {
   tableFields: TableHeaders<T>[];
   data: T[];
+  enabledFilters?: boolean;
+  enabledPagination?: boolean;
 }
 
 const classTableRow= "py-3 pl-2 border-b border-gray-200";
@@ -28,7 +30,7 @@ const filterRows = <T extends object> (rows: T[], filterValue: string) => {
     )
   );
 }
-const ReusableTable = <T extends object,>({tableFields, data}: ReusableTableProps<T>) => {
+const ReusableTable = <T extends object,>({tableFields, data, enabledFilters = true, enabledPagination = true}: ReusableTableProps<T>) => {
 
   // const [sortBy, setSortBy] = useState<({ id: any; desc: boolean } | null)[]>([]);
   const [sortBy, setSortBy] = useState<SortingRule<T>[]>([]);
@@ -80,7 +82,10 @@ const ReusableTable = <T extends object,>({tableFields, data}: ReusableTableProp
   return (
     <>
       {/* External Sort Controls */}
-      <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} />
+      { enabledFilters && (
+        <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} />
+      )}
+      
     <table 
       {...getTableProps()} 
       className="w-full text-sm text-left text-gray-500 border-separate border-spacing-0 mt-2 mr-5 rounded-xl border-slate-300 border-4">
@@ -124,8 +129,8 @@ const ReusableTable = <T extends object,>({tableFields, data}: ReusableTableProp
       </table>
 
       {/* //Pagination COntrols */}
-
-      <div className="flex items-center border-t fixed bottom-0 right-0 border-gray-200 bg-white px-4 py-3 mr-10 mb-5 sm:px-6">
+      {enabledPagination && (
+        <div className="flex items-center border-t fixed bottom-0 right-0 border-gray-200 bg-white px-4 py-3 mr-10 mb-5 sm:px-6">
         <button 
           onClick={() => previousPage()}
           disabled={!canPreviousPage}
@@ -153,6 +158,8 @@ const ReusableTable = <T extends object,>({tableFields, data}: ReusableTableProp
             Next
         </button>
       </div>
+      )}    
+      
       </>
   )
 }

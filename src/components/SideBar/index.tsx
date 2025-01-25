@@ -20,6 +20,7 @@ const SideBar = () => {
     }
   }
 
+
   return (
 <aside className="flex flex-col items-center bg-slate-800 max-w-[15rem] h-screen py-5 gap-4 shadow-[rgba(0,0,10,0.2)_10px_5px_8px_0px]">
         <img src={logoCuan} alt="CoffeeNCoupleLogo" className='mb-5 px-6' />
@@ -31,7 +32,7 @@ const SideBar = () => {
             <li key={link.path}>
               <NavLink
                 to={link.path}
-                className={({ isActive }) => (isActive ? classes.active : undefined)}
+                className={({ isActive }) => (isActive || window.location.pathname.startsWith(link.path) ? classes.active : undefined)}
                 end
               >
                 {link.label}

@@ -8,11 +8,12 @@ const PurchaseOrderDetail = () => {
 
   return (
     <>
-    {status === "on_process" &&
+    {
+      status === "new" &&
         <StatusNewPage /> ||
-        status === "on_process1" &&
+      status === "on_process" &&
         <StatusOnProcessPage />
-        }
+    }
         
     </>
     

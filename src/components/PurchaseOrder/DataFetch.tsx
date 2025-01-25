@@ -28,3 +28,62 @@ export async function FetchPurchaseOrders () {
     
     return {PurhcaseOrderData: header}
 }
+
+export async function UpdatePurchaseOrder (po_code: string, data?: [],  status?: string, updateType?: string) {
+    const access_token = localStorage.getItem('access_token')
+
+    function updateDataType () {
+        if (updateType === "status") {
+            return  {
+                po_code: po_code,
+                status: status,
+                update_type: updateType
+            }
+        } else if(updateType === "supplier") {
+           return {
+                po_code: po_code,
+                update_type: updateType,
+                update_supplier: data?.map((item: any) => ({
+                    raw_material_id: item.supplier_id,
+                    supplier_name: item.supplier_name
+                }))
+            } 
+        } 
+}
+
+    const bodyUpdateData = updateDataType()
+    
+
+    console.log("stringify data",JSON.stringify(bodyUpdateData, null, 2));
+    const headers = {
+        'Authorization': `Bearer ${access_token}`,
+        'Content-Type': 'application/json'
+    }
+    const response = await fetch(API_PURCHASE_ORDER, {
+        method: 'PUT',
+        headers: headers,
+        body: JSON.stringify(bodyUpdateData)
+   })
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    // alert("Purchase Order updated successfully!"); 
+}
+
+export async function CreatePurchaseOrder(data: any) {
+    const pr_code = {pr_code: data}
+    const access_token = localStorage.getItem('access_token')
+    console.log("stringify data",JSON.stringify(data, null, 2));
+    const headers = {
+        'Authorization': `Bearer ${access_token}`,
+        'Content-Type': 'application/json'
+    }
+    const response = await fetch(API_PURCHASE_ORDER, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(pr_code)
+    })
+
+}

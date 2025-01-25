@@ -66,7 +66,7 @@ export async function CreatePurchaseRequests (data: any) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    alert("Purchase Request created successfully!"); 
+    // alert("Purchase Request created successfully!"); 
 }
 
 export async function UpdatePurchaseRequests (prCode: string, status: string, updateType: string, updateData?: any) {
@@ -105,7 +105,7 @@ export async function UpdatePurchaseRequests (prCode: string, status: string, up
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
     } else {
-        alert("Purchase Request updated successfully!");
+        // alert("Purchase Request updated successfully!");
     }
     }
 
@@ -149,5 +149,5 @@ export async function DeletePurchaseRequests (pr_code: string) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    alert("Purchase Request deleted successfully!");
+    // alert("Purchase Request deleted successfully!");
     }

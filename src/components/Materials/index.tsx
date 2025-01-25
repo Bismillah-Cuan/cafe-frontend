@@ -30,7 +30,10 @@ export const Materials = () => {
   const {materials, setMaterials} = UseDataContext();
   const [fetchTrigger, setFetchTrigger] = useState(false); 
   const [isConfirm, setIsConfirm] = useState(false);
-  const [showPrompt, setShowPrompt] = useState(false)
+  const [showPrompt, setShowPrompt] = useState({
+    isShow: false,
+    isSuccess: false
+  })
 
   const materialsStorage = getMaterialFromLocalStorage();
     useEffect(() => {
@@ -91,13 +94,13 @@ export const Materials = () => {
           try {
             await DeleteMaterial(id, name)
             setMaterials((prev) => ({ ...prev, rows: prev.rows.filter((item) => item.id !== id) }));
-            // console.log(`Deleted item with id ${id} - ${name}`);
-            // console.log(JSON.stringify({id, name}));
 
-            setIsConfirm(false)
-            setShowPrompt(true)
+
+            setIsConfirm(false) //Close Confirmation prompt
+            setShowPrompt({isSuccess: true, isShow: true}) //Open Success prompt
           } catch (error) {
             setMaterials((prev) => ({...prev, materials}));
+            setShowPrompt({isSuccess: false, isShow: true});
            
           }
           setFetchTrigger(!fetchTrigger);
@@ -113,7 +116,6 @@ export const Materials = () => {
       if (item) {
         setShowEditDetail((prev) => !prev);
         console.log(showEditDetail);
-        
         setitemEditId(
           {
             name: item.name!,
@@ -138,14 +140,19 @@ export const Materials = () => {
             const updatedMaterials = { ...prev, rows: [...prev.rows, data] };
             return updatedMaterials;
           })
-          console.log('After setMaterials (should be outdated):', materials);
+          // console.log('After setMaterials (should be outdated):', materials);
+
+          setShowPrompt({isSuccess: true, isShow: true});
         } catch (error) {
           setMaterials(materials);
+          setShowPrompt({isSuccess: false, isShow: true});
         }
         setShowForm(!showForm);
         setFetchTrigger(prev => !prev);
       }
-      const closeForm = () => {setShowForm(false); setShowEditDetail(false); setShowPrompt(false); setIsConfirm(false)};
+      const closeForm = () => {
+          setShowForm(false); setShowEditDetail(false); setShowPrompt((prev) => ({...prev, isShow: false})); setIsConfirm(false)
+        };
 
       function handleConfirmPrompt(id: number, name: string, brand: string) {
         setitemEditId({
@@ -179,10 +186,10 @@ export const Materials = () => {
             isSelected={showEditDetail}/>) : (null)}
         {isConfirm && 
           <ConfrimPrompt OnConfirm={()=>handleDelete(itemEditId.id, itemEditId.name)}  OnClose={closeForm}
-          title="Delete Material" message={`Are you sure you want to delete ${itemEditId.name} - ${itemEditId.brand}?`}/>}
-        {showPrompt && 
+          title="Delete Material" message={`Anda yakin ingin menghapus ${itemEditId.name} - ${itemEditId.brand}?`}/>}
+        {showPrompt.isShow && 
         <CustomPrompt   
-          title="Success" message={`Success Delete Material`} isSuccess={true} OnConfirm={closeForm}/>}
+          title="Success" message={`Aksi yang anda lakukan berhasil`} isSuccess={showPrompt.isSuccess} OnConfirm={closeForm}/>}
         </div>
       </section>
       <section>
