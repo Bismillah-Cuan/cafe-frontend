@@ -73,7 +73,7 @@ const StatusNew = () => {
                                 type="text"
                                 name="supplier_name"
                                 value={row.original.supplier_name || ''}
-                                className="bg-slate-100 px-2"
+                                className="bg-slate-100 px-2 outline-none"
                                 onChange={handleChange}
                                 placeholder="isi Supplier"
                                 autoComplete="off"
@@ -119,11 +119,14 @@ const StatusNew = () => {
           console.log("Po-Submitted",data);
           await UpdatePurchaseOrder( filteredPoData!.po_code, data, "", "supplier");
           
-          setShowPrompt({
-            isShow: true,
-            isSuccess: true
-          });
           
+          setTimeout(() => {
+            setShowPrompt({
+                isShow: true,
+                isSuccess: true
+              });
+          }, 2000);
+          setShowPrompt(prev => ({...prev, isShow: false}));
           navigate("/purchase-order");
         }
         catch (error) {

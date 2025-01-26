@@ -43,8 +43,9 @@ export async function UpdatePurchaseOrder (po_code: string, data?: [],  status?:
            return {
                 po_code: po_code,
                 update_type: updateType,
-                update_supplier: data?.map((item: any) => ({
-                    raw_material_id: item.supplier_id,
+                update_supplier: data?.map((item: any) => (
+                    console.log(item.id), {
+                    raw_material_id: item.id,
                     supplier_name: item.supplier_name
                 }))
             } 

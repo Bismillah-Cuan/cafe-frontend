@@ -288,6 +288,7 @@ async function handleDelete(pr_code: string) {
   }
     }
     setFetchTrigger(!fetchTrigger);
+    setShowPrompt({isSuccess: false, isShow: false});
   }
 
  function handleConfirmPrompt (id: string, name: string, brand: string)  {
