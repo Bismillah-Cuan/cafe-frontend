@@ -6,6 +6,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import ReusableTable from "../../ReusableTable";
 import { UpdatePurchaseOrder } from "../DataFetch";
 import CustomPrompt from "../../CustomPrompt";
+import { group, table } from "console";
 
 const PO_Color = {
   on_process: "bg-yellow-400",
@@ -27,6 +28,7 @@ const StatusOnProcessPage = () => {
         isShow: false,
         isSuccess: false
     });
+
 
   
   useEffect(() => {
@@ -70,6 +72,53 @@ const StatusOnProcessPage = () => {
   setIsFetching(false);
 }, [setTablePoData]);
 
+  const groupDataBySupplier = tablePoData.rows.reduce((acc, item) => {
+  const {supplier_name, supplier_notes} = item as { supplier_name?: string, supplier_notes?: string };
+
+  if(!supplier_name) return acc;
+
+  if(!acc[supplier_name]) {
+    acc[supplier_name] = {
+      supplier_name,
+      supplier_notes: supplier_notes!,
+      rows: [],
+    }
+  }
+
+  acc[supplier_name].rows.push(item);
+
+  return acc
+}, {} as Record<string, {supplier_name: string, supplier_notes: string, rows: any[]}>
+);
+
+function handleChangeSupplierNotes(supplier_name: string, supplier_notes: string) {
+  setTablePoData((prev) => {
+    const updatedRows = prev.rows.map((row : Data) => {
+      if (row.supplier_name === supplier_name) {
+        return {...row, supplier_notes};
+      }
+      return row;
+    });
+    return {...prev, rows: updatedRows};
+  });
+}
+
+function handleUpdate(data: any) {
+  // try {
+  //   console.log("process update");
+  //   UpdatePurchaseOrder( filteredPoData!.po_code, data, "on_process", "status");
+  //   setShowPrompt({isSuccess: true, isShow: true});
+  // }
+  // catch (error) {
+  //   if (error instanceof Error) {
+      
+  //     setShowPrompt({isSuccess: false, isShow: true});
+  //   }
+  // }
+  // setShowEditDetail(!showEditDetail);
+  // setFetchTrigger(!fetchTrigger);
+  console.log(data);
+}
 
   return (
     <>
@@ -84,39 +133,49 @@ const StatusOnProcessPage = () => {
                 </h3> 
 
                 <div className="flex flex-col gap-10">
-                  {tablePoData.rows.map((item, index) => {
-                    const { supplier_name, supplier_notes, ...restItem } = item as { 
-                      supplier_name?: string, supplier_notes?: string, [key: string]: any 
-                    };
+                  {Object.values(groupDataBySupplier).map((group, index) => {
+                      const { supplier_name, supplier_notes, rows } = group;
 
-                    const filteredHeaders = tablePoData.headers.filter(header => header.accessor !== "supplier_name" && header.accessor !== "supplier_notes");
-                    return (
-                    
-                    <div key={index} className="flex flex-col gap-5">
-                      <div className="flex flex-col gap-2">
-                          <h3 className="text-md font-semibold">No: PO/{index + 1}</h3>
-                          <h3 className="text-md font-semibold">Supplier: {supplier_name}</h3>
-                      </div>
-                        
-                        <ReusableTable tableFields={filteredHeaders} data={[restItem]} enabledFilters={false} enabledPagination={false}/>
+                      const filteredHeaders = tablePoData.headers.filter(
+                        (header) => header.accessor !== "supplier_name" && header.accessor !== "supplier_notes"
+                      );
 
-                        <div className="w-full border-4 border-gray-300 rounded-lg">
-                            <div className="bg-gray-300 px-2 py-2"> 
-                              <h3 className="text- font-semibold ">Supplier Note's {supplier_name}</h3>
+                      return (
+                        <div key={index} className="flex flex-col gap-5">
+                          <div className="flex flex-col gap-2">
+                            <h3 className="text-md font-semibold">No: PO/{index + 1}</h3>
+                            <h3 className="text-md font-semibold">Supplier: {supplier_name}</h3>
+                          </div>
+
+                          <ReusableTable
+                            tableFields={filteredHeaders}
+                            data={rows} 
+                            enabledFilters={false}
+                            enabledPagination={false}
+                          />
+
+                          <div className="w-full border-4 border-gray-300 rounded-lg">
+                            <div className="bg-gray-300 px-2 py-2">
+                              <h3 className="text-md font-semibold">
+                                Supplier Note's {supplier_name}
+                              </h3>
                             </div>
-                            
-                            <textarea 
-                              id={item.id!.toString()}
-                              name="supplier_notes" 
-                              rows={4} 
-                              className="w-full h-20 p-2 bg-slate-50 border-none outline-none resize-none" 
+
+                            <textarea
+                              id={index.toString()}
+                              name={supplier_name}
+                              rows={4}
+                              className="w-full h-20 p-2 bg-slate-50 border-none outline-none resize-none"
                               placeholder="Supplier Notes"
+                              value={supplier_notes}
+                              onChange={(e) => handleChangeSupplierNotes(supplier_name, e.target.value)}
                             >
                               {supplier_notes}
                             </textarea>
+                          </div>
                         </div>
-                    </div>
-                  )})}
+                      );
+                    })}
                     
                 </div>
                 <div className="flex justify-end w-full">
@@ -127,7 +186,7 @@ const StatusOnProcessPage = () => {
                             </button>
                         <button 
                             className="bg-slate-600 px-2 py-2 rounded-md hover:bg-slate-400 hover:cursor-pointer text-white"
-                            // onClick={() => handleUpdate(tablePoData.rows)}
+                            onClick={() => handleUpdate(tablePoData.rows)}
                         >
                             Submit
                         </button>

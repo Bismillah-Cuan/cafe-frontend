@@ -111,12 +111,15 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     rows: [],
   });
 
-  const [prData, setPrData] = useState<TableData<Data>>({
-    headers: [],
-    rows: [],
+  const [prData, setPrData] = useState<TableData<Data>>(() => {
+    const storedData = sessionStorage.getItem("prData");
+    return storedData ? JSON.parse(storedData) : { headers: [], rows: [] };
   })
 
-  const [prList, setPrList] = useState<PrContextProps>(dummyPR)
+  const [prList, setPrList] = useState<PrContextProps>(() => {
+    const storedData = sessionStorage.getItem("prList");
+    return storedData ? JSON.parse(storedData) : { raw_materials: [] };
+  });
 
   const [poData, setPoData] = useState<DataPurchaseOrder['purchase_orders']>([]);
 
@@ -126,8 +129,10 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
   })
 
   useEffect(() => {
+    console.log("UseEffect Context:");
     localStorage.setItem('materials', JSON.stringify(materials));
-    localStorage.setItem('prData', JSON.stringify(prData));
+    sessionStorage.getItem('prData');
+
   }, [materials, prData]);
 
 

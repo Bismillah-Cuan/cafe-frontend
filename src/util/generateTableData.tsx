@@ -17,6 +17,7 @@ export interface Data {
   note?: string;
   quantity?: number;
   quantity_unit?: string;
+  supplier_name?: string;
   metadata?: Metadata;
   division?: string;
   user_id?: number;

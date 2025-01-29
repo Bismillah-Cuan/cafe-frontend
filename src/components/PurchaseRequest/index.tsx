@@ -1,6 +1,6 @@
 import ReusableAddListItemForm from "../ReusableAddListItemForm"
-import { PurchaseRequestsResponse, DataPurchaseRequest, TableData } from "./types"
-import { Data } from "../../util/generateTableData"
+import { PurchaseRequestsResponse, DataPurchaseRequest,  } from "./types"
+import { TableData, Data } from "../../util/generateTableData"
 import ReusableTable from "../ReusableTable"
 import CreateFormButton from "../CreateFormButton"
 import EditDetailButton from "../EditDetailButton"
@@ -20,6 +20,7 @@ import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import ConfrimPrompt from "../ConfirmPrompt"
 import CustomPrompt from "../CustomPrompt"
 import { set } from "date-fns"
+import { json } from "stream/consumers"
 
 
 const statusColor = {
@@ -27,7 +28,7 @@ const statusColor = {
   approved: "bg-green-400",
   rejected: "bg-red-400"
 }
-
+const currentDivision = localStorage.getItem("username");
 export const PurchaseRequest = () => {
 
     
@@ -54,8 +55,9 @@ export const PurchaseRequest = () => {
  
     const [error, setError] = useState( {} as any);
 
-    const getPrRequestData = localStorage.getItem("prData");
-    const currentDivision = localStorage.getItem("username");
+    sessionStorage.setItem("prList", JSON.stringify(prList));
+    const getPrRequestData = sessionStorage.getItem("prData");
+    
     const prRequestData: TableData<Data> = JSON.parse(getPrRequestData!);
 
     useEffect(() => {
@@ -65,7 +67,8 @@ export const PurchaseRequest = () => {
           setIsFetching(true);
           console.log(isFetching);
           const {tableData, division, pr_code} = await FetchPurchaseRequests();
-          setDivision(division);  
+          setDivision(division); 
+         
           const existingHeader = tableData.headers.find(header => header.accessor === 'status');
           if (existingHeader) {
             const originalCell = existingHeader.Cell;
@@ -73,6 +76,7 @@ export const PurchaseRequest = () => {
               <div className="flex justify-between gap-2 mr-3">
                 <div className="flex gap-2">
                 {currentDivision !== "admin" && currentDivision !== "super_admin" ? (
+                   console.log("division", currentDivision), 
                   <span 
                     className={`px-2 py-1 rounded-md text-slate-100 
                       ${statusColor[row.original.status as keyof typeof statusColor]}`}>
@@ -154,8 +158,8 @@ export const PurchaseRequest = () => {
               }
             })
           }
-          setPrData(tableData);
-          localStorage.setItem("prData", JSON.stringify(tableData))
+          setPrData( prev => ({...prev, ...tableData}));
+          sessionStorage.setItem("prData", JSON.stringify(tableData))
         } catch (error) {
           if (error instanceof Error) {
             setError({message: error.message || 'An error occurred while fetching data.'});
@@ -171,8 +175,8 @@ export const PurchaseRequest = () => {
             console.log("Fetch search PR");
             const data = await FetchSearchPurchaseRequests()
             
-            setPrList(data);
-
+            setPrList(prev => ({ ...prev, ...data }));
+            sessionStorage.setItem("prList", JSON.stringify(data));
             // console.log("Fetch search PR", prList);
         } catch (error) {
           if (error instanceof Error) {
@@ -190,7 +194,11 @@ export const PurchaseRequest = () => {
 
     useEffect(() => {
       console.log("Triggered UseEffect 2");
-      localStorage.setItem("prData", JSON.stringify(prData))
+   
+      sessionStorage.setItem("prData", JSON.stringify(prData))
+
+      // setPrData(prev => ({...prev, rows: JSON.parse(updatedData!)}));
+      
     }, [prData])
 
     const username = localStorage.getItem("username");
@@ -236,10 +244,10 @@ export const PurchaseRequest = () => {
     try {
       console.log("process create");
       await CreatePurchaseRequests(data)
-      setPrData((prev) => {
-        const updatedPrData = { ...prev, rows: [...prev.rows, data] };
-        return updatedPrData;
-      });
+      // setPrData((prev) => {
+      //   const updatedPrData = { ...prev, rows: [...prev.rows, data] };
+      //   return updatedPrData;
+      // });
       setShowPrompt({isSuccess: true, isShow: true});
       // localStorage.setItem("prData", JSON.stringify(prData));
     } catch (error) {
@@ -301,13 +309,13 @@ async function handleDelete(pr_code: string) {
   }
 
     function handleEditDetail(pr_code: string) {
-      console.log("prRequestData", prData);
+      console.log("prData", prData);
       const item = prRequestData.rows.find((item) => item.pr_code === pr_code );
       console.log(item);
       if (item) {
         setShowEditDetail((prev) => !prev);
         setitemEditId({
-          id: item.pr_code,
+          id: item.pr_code!,
           name: "",
           materials: ""});
         setIsUpdated(true)

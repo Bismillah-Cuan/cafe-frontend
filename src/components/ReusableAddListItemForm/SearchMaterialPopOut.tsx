@@ -55,7 +55,7 @@ export const SearchMaterialPopOut = forwardRef<HTMLDivElement, SearchMaterialPop
     }
 
 
-    const filteredPrList = prList.raw_materials.filter((item: any) => item.name.toLowerCase().includes(searchMaterial.toLowerCase()));
+    const filteredPrList = prList.raw_materials.filter((item: any) => item.name.toLowerCase().includes(searchMaterial.toLowerCase())) || [];
 
   return createPortal(
     <>

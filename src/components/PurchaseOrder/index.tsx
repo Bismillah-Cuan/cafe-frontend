@@ -27,19 +27,20 @@ const PurchaseOrder = () => {
                 const { PurhcaseOrderData } = await FetchPurchaseOrders();
                 console.log(PurhcaseOrderData);
                 setPoData(PurhcaseOrderData);
+                setIsFetching(false);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
         }
 
         handleFetch();
-        setIsFetching(false);
+        
     }, [])
 
   return (
     <>
         <div className='flex flex-col gap-3 w-full'>
-            {isFetching ? <p>Sedang mengambil data purchase order</p> : poData && poData!.map((item, index: number) => (
+            {isFetching ? <p>Sedang mengambil data purchase order...</p> : (poData && poData!.map((item, index: number) => (
                 
                 <Link to={`/purchase-order/${item.status}/${item.po_code}`}>
                     <div 
@@ -52,7 +53,7 @@ const PurchaseOrder = () => {
                     </div>
                 </Link>
                 
-            ))}
+            )))}
         </div>
     </>
   )

@@ -32,15 +32,27 @@ export const useLogin = () => {
       });
 
       if (!response.ok) {
-        alert("Something went wrong, please try again later" + response.status);
-        throw new Error("Something went wrong, please try again later");
+        const msg = await response.text();
+
+          if ([401, 403, 404].includes(response.status)) {
+            // Handle client-side errors (e.g., invalid username/password)
+            alert("Invalid username or password");
+            throw new Error("Invalid username or password");
+          } else {
+            // Handle server-side or other errors
+            alert("Something went wrong, please try again later");
+            throw new Error("Something went wrong, please try again later");
+          }
       }
 
       const data: LoginResponse = await response.json();
       localStorage.setItem("access_token", data.access_token);
       localStorage.setItem("division", data.division);
       localStorage.setItem("username", values.username);
-      navigate("/");
+      if (response.ok) {
+        navigate("/");
+      }
+      
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
