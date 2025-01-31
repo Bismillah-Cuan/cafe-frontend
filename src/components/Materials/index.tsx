@@ -12,7 +12,7 @@ import {MaterialFormFields} from "./MaterialFormFields"
 import { UseDataContext } from "../../util/context"
 import CustomPrompt from "../CustomPrompt"
 import ConfrimPrompt from "../ConfirmPrompt"
-import { number } from "yup"
+import LoadingPrompt from "../LoadingPrompt"
 
 
 
@@ -34,6 +34,7 @@ export const Materials = () => {
     isShow: false,
     isSuccess: false
   })
+  const [showLoading, setShowLoading] = useState(false);
 
   const materialsStorage = getMaterialFromLocalStorage();
     useEffect(() => {
@@ -63,9 +64,7 @@ export const Materials = () => {
           setIsFetching(false);
           
         } catch (error) {
-          if (error instanceof Error) {
-            setError({message: error.message || 'An error occurred while fetching data.'});
-          }
+          throw new Error("An error occurred while fetching data");
         }
       } 
       handleFetch();
@@ -76,7 +75,7 @@ export const Materials = () => {
    
     if (error) {
 
-      return <ErrorModal title="An Error occured" message={error.message} />;
+      return <ErrorModal title="An Error occured" message="An error occurred while fetching data" />;
     }
 
     function getMaterialFromLocalStorage() {
@@ -90,7 +89,7 @@ export const Materials = () => {
 
     
     async function handleDelete(id: number, name: string) {
-
+          setShowLoading(true);
           try {
             await DeleteMaterial(id, name)
             setMaterials((prev) => ({ ...prev, rows: prev.rows.filter((item) => item.id !== id) }));
@@ -104,7 +103,7 @@ export const Materials = () => {
            
           }
           setFetchTrigger(!fetchTrigger);
-
+          setShowLoading(false);
     }
 
     function handleEditDetail(name: string, brand: string) {
@@ -132,8 +131,8 @@ export const Materials = () => {
       }
     
      async function handleSubmit(data: any) {
-      console.log('Before setMaterials:', materials);
-      
+      // console.log('Before setMaterials:', materials);
+      setShowLoading(true);
         try {
           await CreateMaterial(data);
           setMaterials((prev) => {
@@ -149,6 +148,7 @@ export const Materials = () => {
         }
         setShowForm(!showForm);
         setFetchTrigger(prev => !prev);
+        setShowLoading(false);
       }
       const closeForm = () => {
           setShowForm(false); setShowEditDetail(false); setShowPrompt((prev) => ({...prev, isShow: false})); setIsConfirm(false)
@@ -166,37 +166,38 @@ export const Materials = () => {
   return (
     <div>
         <div className="w-full mr-8 text-slate-800 relative overflow-x-hidden flex flex-col gap-5">
-      <section className="flex justify-end items-center">
-        <div>
-        <CreateFormButton onClick={handleShowForm} label="Create Materials" />
-        {showForm && 
-          <ReusableForm 
-            fields={MaterialFormFields} 
-            onSubmit={handleSubmit} 
-            onClose={closeForm} 
-            buttonLabel="Submit" 
-            isSelected={showForm}/>}
-        {showEditDetail ? (
-          <ReusableDetailPopOut 
-            fields={materialsStorage!.headers.filter((header) => header.accessor !== 'actions')} 
-            values={materialsStorage!.rows.find((item) => item.name === itemEditId.name && item.brand === itemEditId.brand)?? {brand: '', name: '', type: '', purchase_unit: '', quantity: 0, quantity_unit: ''}}
-            onSubmit={handleSubmit} 
-            onClose={closeForm} 
-            buttonLabel="Submit" 
-            isSelected={showEditDetail}/>) : (null)}
-        {isConfirm && 
-          <ConfrimPrompt OnConfirm={()=>handleDelete(itemEditId.id, itemEditId.name)}  OnClose={closeForm}
-          title="Delete Material" message={`Anda yakin ingin menghapus ${itemEditId.name} - ${itemEditId.brand}?`}/>}
-        {showPrompt.isShow && 
-        <CustomPrompt   
-          title="Success" message={`Aksi yang anda lakukan berhasil`} isSuccess={showPrompt.isSuccess} OnConfirm={closeForm}/>}
-        </div>
-      </section>
+          <section className="flex justify-end items-center">
+            <div>
+              <CreateFormButton onClick={handleShowForm} label="Create Materials" />
+              {showForm && 
+                <ReusableForm 
+                  fields={MaterialFormFields} 
+                  onSubmit={handleSubmit} 
+                  onClose={closeForm} 
+                  buttonLabel="Submit" 
+                  isSelected={showForm}/>}
+              {showEditDetail ? (
+                <ReusableDetailPopOut 
+                  fields={materialsStorage!.headers.filter((header) => header.accessor !== 'actions')} 
+                  values={materialsStorage!.rows.find((item) => item.name === itemEditId.name && item.brand === itemEditId.brand)?? {brand: '', name: '', type: '', purchase_unit: '', quantity: 0, quantity_unit: ''}}
+                  onSubmit={handleSubmit} 
+                  onClose={closeForm} 
+                  buttonLabel="Submit" 
+                  isSelected={showEditDetail}/>) : (null)}
+              {isConfirm && 
+                <ConfrimPrompt OnConfirm={()=>handleDelete(itemEditId.id, itemEditId.name)}  OnClose={closeForm}
+                title="Delete Material" message={`Anda yakin ingin menghapus ${itemEditId.name} - ${itemEditId.brand}?`}/>}
+              {showPrompt.isShow && 
+              <CustomPrompt   
+                title="Success" message={`Aksi yang anda lakukan berhasil`} isSuccess={showPrompt.isSuccess} OnConfirm={closeForm}/>}
+            </div>
+        </section>
       <section>
         {isFetching && <p>Sedang Mengambil Data Tabel.....</p>}
        {!isFetching && <ReusableTable tableFields={materials.headers} data={materials.rows}/>} 
       </section>
-    </div>
+      </div>
+      {showLoading && <LoadingPrompt />}
     </div>
   )
 }

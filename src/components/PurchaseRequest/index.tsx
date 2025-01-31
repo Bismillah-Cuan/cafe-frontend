@@ -1,11 +1,10 @@
 import ReusableAddListItemForm from "../ReusableAddListItemForm"
-import { PurchaseRequestsResponse, DataPurchaseRequest,  } from "./types"
 import { TableData, Data } from "../../util/generateTableData"
 import ReusableTable from "../ReusableTable"
 import CreateFormButton from "../CreateFormButton"
 import EditDetailButton from "../EditDetailButton"
 import {ReusablePrDetailPopOut} from "../ReusablePrDetailPopOut"
-import { useEffect, useState, useContext } from "react"
+import { useEffect, useState } from "react"
 import { 
   FetchPurchaseRequests, 
   FetchSearchPurchaseRequests, 
@@ -15,12 +14,10 @@ import {
 } from "./DataFetch"
 import { CreatePurchaseOrder } from "../PurchaseOrder/DataFetch"
 import { UsePrContext, UseDataContext } from "../../util/context"
-import { prRequestPost } from "../ReusableAddListItemForm/AddListItem"
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import ConfrimPrompt from "../ConfirmPrompt"
 import CustomPrompt from "../CustomPrompt"
-import { set } from "date-fns"
-import { json } from "stream/consumers"
+import LoadingPrompt from "../LoadingPrompt"
 
 
 const statusColor = {
@@ -28,7 +25,7 @@ const statusColor = {
   approved: "bg-green-400",
   rejected: "bg-red-400"
 }
-const currentDivision = localStorage.getItem("username");
+
 export const PurchaseRequest = () => {
 
     
@@ -51,14 +48,11 @@ export const PurchaseRequest = () => {
       isShow: false,
       isSuccess: false
     })
-  
+    const [showLoading, setShowLoading] = useState(false);
  
-    const [error, setError] = useState( {} as any);
-
+    // const [error, setError] = useState( {} as any);
+    const currentDivision = localStorage.getItem("username");
     sessionStorage.setItem("prList", JSON.stringify(prList));
-    const getPrRequestData = sessionStorage.getItem("prData");
-    
-    const prRequestData: TableData<Data> = JSON.parse(getPrRequestData!);
 
     useEffect(() => {
       async function handleFetch() {
@@ -162,7 +156,7 @@ export const PurchaseRequest = () => {
           sessionStorage.setItem("prData", JSON.stringify(tableData))
         } catch (error) {
           if (error instanceof Error) {
-            setError({message: error.message || 'An error occurred while fetching data.'});
+            throw new Error("An error occurred while fetching data");
           }
         }
         setIsFetching(false);
@@ -180,7 +174,7 @@ export const PurchaseRequest = () => {
             // console.log("Fetch search PR", prList);
         } catch (error) {
           if (error instanceof Error) {
-            setError({message: error.message || 'An error occurred while fetching data.'});
+            throw new Error("An error occurred while fetching data");
           }
         }
       }
@@ -202,18 +196,18 @@ export const PurchaseRequest = () => {
     }, [prData])
 
     const username = localStorage.getItem("username");
-    function handleShowForm() {
-        setShowForm((prev) => !prev);
-        setIsUpdated(false)   
-    }
+  function handleShowForm() {
+      setShowForm((prev) => !prev);
+      setIsUpdated(false)   
+  }
     // const tableData = generateTableData(addedMaterials);
 
   async function handleSelectStatus({ statusValue, itemEditId }: { statusValue: string; itemEditId: string }) {
     const selectedStatus = statusValue;
-
     const updatedStatus = prData.rows.find((item) => item.pr_code === itemEditId)?.status;
     console.log(updatedStatus);
     if (updatedStatus) {
+      setShowLoading(true);
       try {
         const updateType = "status"
         await UpdatePurchaseRequests(itemEditId, selectedStatus, updateType)
@@ -232,15 +226,16 @@ export const PurchaseRequest = () => {
         setFetchTrigger(!fetchTrigger);
       } catch (error) {
         if (error instanceof Error) {
-          setError({message: error.message || 'An error occurred while Updating Status.'});
           setShowPrompt({isSuccess: false, isShow: true});
+          throw new Error("An error occurred while fetching data");
         }
       }
       }
-      
+      setShowLoading(false);
   }
 
   async function handleSubmit(data: any) {
+    setShowLoading(true);
     try {
       console.log("process create");
       await CreatePurchaseRequests(data)
@@ -252,16 +247,19 @@ export const PurchaseRequest = () => {
       // localStorage.setItem("prData", JSON.stringify(prData));
     } catch (error) {
       if (error instanceof Error) {
-        setError({message: error.message || 'An error occurred while fetching data.'});
         setShowPrompt({isSuccess: false, isShow: true});
+        throw new Error("An error occurred while fetching data");
+        
       }
     }
+    setShowLoading(false);
     setShowForm(!showForm);
     setFetchTrigger(!fetchTrigger);
     
   }
 
   async function handleUpdate(data: any) {
+    setShowLoading(true);
     try {
       console.log("process update");
       await UpdatePurchaseRequests(data.pr_code, data.status, "raw_materials", data.requested_raw_materials)
@@ -273,15 +271,18 @@ export const PurchaseRequest = () => {
     }
     catch (error) {
     if (error instanceof Error) {
-      setError({message: error.message || 'An error occurred while fetching data.'});
       setShowPrompt({isSuccess: false, isShow: true});
+      throw new Error("An error occurred while fetching data");
     }
+
   }
+  setShowLoading(false);
   setShowEditDetail(!showEditDetail);
   setFetchTrigger(!fetchTrigger);
 }
 
 async function handleDelete(pr_code: string) {
+  setShowLoading(true);
   try {
     await DeletePurchaseRequests(pr_code)
     setPrData((prev) => {
@@ -291,10 +292,11 @@ async function handleDelete(pr_code: string) {
     setShowPrompt({isSuccess: true, isShow: true});
   } catch (error) {
     if (error instanceof Error) {
-      setError({message: error.message || 'An error occurred while fetching data.'});
+      throw new Error("An error occurred while fetching data");
       setShowPrompt({isSuccess: false, isShow: true});
   }
     }
+    setShowLoading(false);
     setFetchTrigger(!fetchTrigger);
     setShowPrompt({isSuccess: false, isShow: false});
   }
@@ -309,7 +311,9 @@ async function handleDelete(pr_code: string) {
   }
 
     function handleEditDetail(pr_code: string) {
-      console.log("prData", prData);
+      const getPrRequestData = sessionStorage.getItem("prData");
+    
+      const prRequestData: TableData<Data> = JSON.parse(getPrRequestData!);
       const item = prRequestData.rows.find((item) => item.pr_code === pr_code );
       console.log(item);
       if (item) {
@@ -366,8 +370,6 @@ async function handleDelete(pr_code: string) {
           division={division}
           buttonLabel="Submit" 
           isSelected={showEditDetail}/>
-
-        
         )}   
         
         </div>
@@ -394,6 +396,9 @@ async function handleDelete(pr_code: string) {
         isSuccess={showPrompt.isSuccess}
         OnConfirm={() => setShowPrompt({isShow: false, isSuccess: false})}
       />
+    )}
+    {showLoading && (
+      <LoadingPrompt />
     )}
     </>
   )
