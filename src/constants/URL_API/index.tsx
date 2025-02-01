@@ -5,3 +5,5 @@ export const API_RAW_MATERIALS = `${API_URL}raw-materials/`
 export const API_RAW_MATERIALS_SEARCH = `${API_URL}raw-materials/search`
 export const API_PURCHASE_REQUEST = `${API_URL}purchase-request/`
 export const API_PURCHASE_ORDER = `${API_URL}purchase-order/`
+export const API_SUPPLIERS = `${API_URL}suppliers/`
+export const API_USERS = `${API_URL}users/me`

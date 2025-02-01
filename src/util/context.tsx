@@ -37,6 +37,8 @@ type DataContextType = {
   setPoData: React.Dispatch<React.SetStateAction<DataPurchaseOrder['purchase_orders']>>
   tablePoData: TableData<Data>
   setTablePoData: React.Dispatch<React.SetStateAction<TableData<Data>>>
+  suppliersData: TableData<Data>;
+  setSuppliersData: React.Dispatch<React.SetStateAction<TableData<Data>>>;
 };
 
 // Initialize the context with default values
@@ -127,6 +129,11 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     headers: [],
     rows: [],
   })
+  
+  const [suppliersData, setSuppliersData] = useState<TableData<Data>>(() => {
+    const storedData = sessionStorage.getItem("supData");
+    return storedData ? JSON.parse(storedData) : { headers: [], rows: [] };
+  })
 
   useEffect(() => {
     console.log("UseEffect Context:");
@@ -137,7 +144,8 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
 
 
   return (
-    <DataContext.Provider value={{materials, setMaterials, prData, setPrData, poData, setPoData, tablePoData, setTablePoData}}>
+    <DataContext.Provider value={{
+        materials, setMaterials, prData, setPrData, poData, setPoData, tablePoData, setTablePoData, suppliersData, setSuppliersData}}>
       <PrContext.Provider value={{prList, setPrList}}>
         {children}
       </PrContext.Provider>
