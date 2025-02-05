@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { UseDataContext } from "../../../util/context"
 import generateTableData, {TableData, Data} from "../../../util/generateTableData";
 import { DataPurchaseOrder, DataPurchaseOrderFiltered } from ".././types";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 import ReusableTable from "../../ReusableTable";
 import { UpdatePurchaseOrder } from "../DataFetch";
 import CustomPrompt from "../../CustomPrompt";
-import { group, table } from "console";
+import LoadingPrompt from "../../LoadingPrompt";
 
 const PO_Color = {
   on_process: "bg-yellow-400",
@@ -17,20 +17,21 @@ const PO_Color = {
   done : "bg-green-400"
 }
 
+
 const StatusOnProcessPage = () => {
   const { poData, setPoData } = UseDataContext();
   const [filteredPoData, setFilteredPoData] = useState<DataPurchaseOrderFiltered>();
-
   const {tablePoData, setTablePoData} = UseDataContext()
-    const {purchaseOrderId} = useParams();
-    const [isFetching, setIsFetching] = useState(true);
-    const [showPrompt, setShowPrompt] = useState({
-        isShow: false,
-        isSuccess: false
-    });
+  const {purchaseOrderId} = useParams();
+  const [isFetching, setIsFetching] = useState(true);
+  const [showPrompt, setShowPrompt] = useState({
+      isShow: false,
+      isSuccess: false
+  });
+  const [showLoading, setShowLoading] = useState(false);  
 
 
-  
+  const navigate = useNavigate();
   useEffect(() => {
     function transformData(data: DataPurchaseOrder['purchase_orders']) {
       const filteredData = data.filter((item) => item.po_code === purchaseOrderId).map((item) => {
@@ -72,6 +73,7 @@ const StatusOnProcessPage = () => {
   setIsFetching(false);
 }, [setTablePoData]);
 
+// Group data by supplier
   const groupDataBySupplier = tablePoData.rows.reduce((acc, item) => {
   const {supplier_name, supplier_notes} = item as { supplier_name?: string, supplier_notes?: string };
 
@@ -104,20 +106,26 @@ function handleChangeSupplierNotes(supplier_name: string, supplier_notes: string
 }
 
 function handleUpdate(data: any) {
-  // try {
-  //   console.log("process update");
-  //   UpdatePurchaseOrder( filteredPoData!.po_code, data, "on_process", "status");
-  //   setShowPrompt({isSuccess: true, isShow: true});
-  // }
-  // catch (error) {
-  //   if (error instanceof Error) {
+  setShowLoading(true);
+  try {
+    console.log("process update");
+    data.forEach((item: any) => {
+      const supplier_data = {supplier_name: item.supplier_name, supplier_notes: item.supplier_notes};
+      UpdatePurchaseOrder( filteredPoData!.po_code, supplier_data, "", "supplier_notes");
+    })
+    
+    UpdatePurchaseOrder( filteredPoData!.po_code, [], "received", "status");
+    setShowPrompt({isSuccess: true, isShow: true});
+    navigate("/purchase-order");
+  }
+  catch (error) {
+    if (error instanceof Error) {
       
-  //     setShowPrompt({isSuccess: false, isShow: true});
-  //   }
-  // }
-  // setShowEditDetail(!showEditDetail);
-  // setFetchTrigger(!fetchTrigger);
+      setShowPrompt({isSuccess: false, isShow: true});
+    }
+  }
   console.log(data);
+  setShowLoading(false);
 }
 
   return (
@@ -202,6 +210,7 @@ function handleUpdate(data: any) {
                 isSuccess={showPrompt.isSuccess}                
              />
         }
+    {showLoading && <LoadingPrompt/>}
     </>
   )
 }

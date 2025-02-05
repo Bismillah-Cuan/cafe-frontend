@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import StatusNewPage from "./StatusNew"
 import StatusOnProcessPage from "./StatusOnProcess"
+import StatusReceivedPage from "./StatusReceived"
 
 const PurchaseOrderDetail = () => {
     const { status } = useParams();
@@ -12,7 +13,9 @@ const PurchaseOrderDetail = () => {
       status === "new" &&
         <StatusNewPage /> ||
       status === "on_process" &&
-        <StatusOnProcessPage />
+        <StatusOnProcessPage /> ||
+      status === "received" &&
+        <StatusReceivedPage />
     }
         
     </>

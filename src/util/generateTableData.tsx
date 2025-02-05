@@ -24,6 +24,7 @@ export interface Data {
   pr_code?: string;
   status?: string;
   date?: string;
+  [key: string]: any; // Allow additional properties
   placeholder?: string;
   defaultValue?: string;
   options?: { value: string; label: string }[]; // Only for "select" type

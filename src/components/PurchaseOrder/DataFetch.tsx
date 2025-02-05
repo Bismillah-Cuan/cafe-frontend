@@ -29,7 +29,7 @@ export async function FetchPurchaseOrders () {
     return {PurhcaseOrderData: header}
 }
 
-export async function UpdatePurchaseOrder (po_code: string, data?: [],  status?: string, updateType?: string) {
+export async function UpdatePurchaseOrder (po_code: string, data?: any,  status?: string, updateType?: string) {
     const access_token = localStorage.getItem('access_token')
 
     function updateDataType () {
@@ -49,8 +49,15 @@ export async function UpdatePurchaseOrder (po_code: string, data?: [],  status?:
                     supplier_name: item.supplier_name
                 }))
             } 
-        } 
-}
+        } else if(updateType === "supplier_notes") {
+            return {
+                po_code: po_code,
+                update_type: updateType,
+                supplier_name: data.supplier_name,
+                supplier_notes: data.supplier_notes
+            } 
+        }
+    }
 
     const bodyUpdateData = updateDataType()
     

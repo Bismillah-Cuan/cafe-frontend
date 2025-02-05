@@ -204,7 +204,9 @@ export const PurchaseRequest = () => {
 
   async function handleSelectStatus({ statusValue, itemEditId }: { statusValue: string; itemEditId: string }) {
     const selectedStatus = statusValue;
-    const updatedStatus = prData.rows.find((item) => item.pr_code === itemEditId)?.status;
+    const getPrRequestData = sessionStorage.getItem("prData");
+    const prRequestData: TableData<Data> = JSON.parse(getPrRequestData!);
+    const updatedStatus = prRequestData.rows.find((item) => item.pr_code === itemEditId)?.status;
     console.log(updatedStatus);
     if (updatedStatus) {
       setShowLoading(true);
