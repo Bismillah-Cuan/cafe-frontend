@@ -41,7 +41,7 @@ type Field = {
   }
   
   type ReusableEditProps = {
-    fields: Field[];
+    fields?: Field[];
     username: string;
     division: string;
     values: Data;

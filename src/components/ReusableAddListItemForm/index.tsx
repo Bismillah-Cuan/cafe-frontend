@@ -53,8 +53,6 @@ const ReusableAddListItemForm: React.FC<ReusableFormProps> = (
     }
     }
     function handleSubmit() {
-
-      
       const requested_raw_materials = formData!.map(item => {
         const {raw_material_id, quantity, notes} = item;
         return {raw_material_id, quantity, notes};

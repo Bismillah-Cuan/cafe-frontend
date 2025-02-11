@@ -7,6 +7,7 @@ import ReusableTable from "../../ReusableTable";
 import { UpdatePurchaseOrder } from "../DataFetch";
 import CustomPrompt from "../../CustomPrompt";
 import LoadingPrompt from "../../LoadingPrompt";
+import { set } from "date-fns";
 
 const PO_Color = {
   on_process: "bg-yellow-400",
@@ -105,17 +106,26 @@ function handleChangeSupplierNotes(supplier_name: string, supplier_notes: string
   });
 }
 
-function handleUpdate(data: any) {
+async function handleUpdate(data: any) {
   setShowLoading(true);
   try {
     console.log("process update");
-    data.forEach((item: any) => {
+
+    for (const item of data as any[]) {
       const supplier_data = {supplier_name: item.supplier_name, supplier_notes: item.supplier_notes};
-      UpdatePurchaseOrder( filteredPoData!.po_code, supplier_data, "", "supplier_notes");
+      await UpdatePurchaseOrder( filteredPoData!.po_code, supplier_data, "", "supplier_notes");
+    }
+
+    // data.forEach((item: any) => {
+    //   const supplier_data = {supplier_name: item.supplier_name, supplier_notes: item.supplier_notes};
+    //   await UpdatePurchaseOrder( filteredPoData!.po_code, supplier_data, "", "supplier_notes");
+    // })
+    
+    UpdatePurchaseOrder( filteredPoData!.po_code, [], "purchased", "status");
+    setTimeout(() => {
+      setShowPrompt({isSuccess: true, isShow: true});
     })
     
-    UpdatePurchaseOrder( filteredPoData!.po_code, [], "received", "status");
-    setShowPrompt({isSuccess: true, isShow: true});
     navigate("/purchase-order");
   }
   catch (error) {

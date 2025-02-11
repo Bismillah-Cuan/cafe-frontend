@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 const statusColor = {
     on_process: "bg-yellow-400",
     new: "bg-green-700",
+    purchased: "bg-orange-400",
     received: "bg-red-400",
     issue_requested: "bg-orange-400",
     issue_accepted: "bg-yellow-400",
@@ -27,6 +28,7 @@ const PurchaseOrder = () => {
                 const { PurhcaseOrderData } = await FetchPurchaseOrders();
                 console.log(PurhcaseOrderData);
                 setPoData(PurhcaseOrderData);
+                sessionStorage.setItem('poData', JSON.stringify(PurhcaseOrderData));
                 setIsFetching(false);
             } catch (error) {
                 console.error('Error fetching data:', error);

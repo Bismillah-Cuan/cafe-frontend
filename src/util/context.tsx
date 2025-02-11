@@ -123,11 +123,17 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     return storedData ? JSON.parse(storedData) : { raw_materials: [] };
   });
 
-  const [poData, setPoData] = useState<DataPurchaseOrder['purchase_orders']>([]);
+  const [poData, setPoData] = useState<DataPurchaseOrder['purchase_orders']>(() => {
+    const storedData = sessionStorage.getItem("poData");
+    return storedData ? JSON.parse(storedData) : []
+  });
 
-  const [tablePoData, setTablePoData] = useState<TableData<Data>>({
-    headers: [],
-    rows: [],
+  const [tablePoData, setTablePoData] = useState<TableData<Data>>(() => {
+    const storedData = sessionStorage.getItem("tablePoData");
+    return storedData ? JSON.parse(storedData) : {
+      headers: [],
+      rows: [],
+    }
   })
   
   const [suppliersData, setSuppliersData] = useState<TableData<Data>>(() => {

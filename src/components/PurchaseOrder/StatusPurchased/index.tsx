@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { UseDataContext } from "../../../util/context"
-import generateTableData, {TableData, Data} from "../../../util/generateTableData";
+import generateTableData, { Data} from "../../../util/generateTableData";
 import { DataPurchaseOrder, DataPurchaseOrderFiltered } from ".././types";
 import { useParams, useNavigate } from "react-router-dom";
 import ReusableTable from "../../ReusableTable";
 import { UpdatePurchaseOrder } from "../DataFetch";
 import CustomPrompt from "../../CustomPrompt";
-import { set } from "date-fns";
+
 
 const PO_Color = {
   on_process: "bg-yellow-400",
@@ -31,10 +31,9 @@ type inputData = {
   received_notes: string;
 }
 
-const StatusOnReceivedPage = () => {
-    const { poData, setPoData } = UseDataContext();
+const StatusPurchasedPage = () => {
+    const { poData } = UseDataContext();
     const [filteredPoData, setFilteredPoData] = useState<DataPurchaseOrderFiltered>();
-    const [status, setStatus] = useState(false);
     const {tablePoData, setTablePoData} = UseDataContext()
     const {purchaseOrderId} = useParams();
     const [isFetching, setIsFetching] = useState(true);
@@ -142,7 +141,7 @@ const StatusOnReceivedPage = () => {
             : header
     );
       
-      setTablePoData((prev) => prev = tableData);
+      setTablePoData(tableData);
       sessionStorage.setItem("tablePoData", JSON.stringify(tablePoData));
       console.log("tableData",tableData);
       setGroupData(generateGroupdata());
@@ -261,20 +260,31 @@ function handleChangeSupplierNotes(supplier_name: string, supplier_notes: string
   });
 }
 
-function handleUpdate(data: any) {
+async function handleUpdate(data: any) {
   // setShowLoading(true);
+  let hasIssue = false;
   try {
     console.log("process update");
-    data.forEach((item: inputData) => {
+    for (const item of data as inputData[]) {
+      if (item.quantity !== item.received_quantity) {
+        hasIssue = true;
+      }
+
       const received_data = {
-          raw_material_id: item.id, 
-          received_qty: item.received_quantity, 
-          received_notes: item.received_notes
-        };
-      UpdatePurchaseOrder( filteredPoData!.po_code, received_data, "", "received_data");
-    })
+        raw_material_id: item.id,
+        received_qty: item.received_quantity,
+        received_notes: item.received_notes,
+      };
+
+      await UpdatePurchaseOrder(filteredPoData!.po_code, received_data, "", "received_data"); // Await the async call
+    }
     
-    UpdatePurchaseOrder( filteredPoData!.po_code, [], "received", "status");
+    if (hasIssue) {
+      await UpdatePurchaseOrder( filteredPoData!.po_code, [], "issue", "status");
+    } else {
+      await UpdatePurchaseOrder( filteredPoData!.po_code, [], "received", "status");
+    }
+    
     setShowPrompt({isSuccess: true, isShow: true});
     navigate("/purchase-order");
   }
@@ -374,4 +384,4 @@ function handleUpdate(data: any) {
   )
 }
 
-export default StatusOnReceivedPage
+export default StatusPurchasedPage

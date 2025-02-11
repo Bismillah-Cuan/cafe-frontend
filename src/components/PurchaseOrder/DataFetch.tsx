@@ -56,6 +56,15 @@ export async function UpdatePurchaseOrder (po_code: string, data?: any,  status?
                 supplier_name: data.supplier_name,
                 supplier_notes: data.supplier_notes
             } 
+        } else if(updateType === "received_data") {
+            return {
+                po_code: po_code,
+                update_type: updateType,
+                received_qty: data.received_qty,
+                raw_material_id: data.raw_material_id,
+                received_notes: data.received_notes
+
+            } 
         }
     }
 

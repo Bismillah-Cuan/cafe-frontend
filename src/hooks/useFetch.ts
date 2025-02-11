@@ -50,7 +50,7 @@ export const useLogin = () => {
       localStorage.setItem("division", data.division);
       localStorage.setItem("username", values.username);
       if (response.ok) {
-        navigate("/");
+        navigate("/dashboard");
       }
       
     } catch (err: unknown) {

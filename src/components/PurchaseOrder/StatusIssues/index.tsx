@@ -17,24 +17,10 @@ const PO_Color = {
   done : "bg-green-400"
 }
 
-type inputData = {
-  name: string;
-  brand: string;
-  id: number;
-  quantity: number;
-  type: string;
-  purchase_unit: string;
-  notes: string;
-  supplier_name: string;
-  supplier_notes: string;
-  received_quantity: number;
-  received_notes: string;
-}
-
-const StatusOnReceivedPage = () => {
+const StatusIssuesPage = () => {
     const { poData, setPoData } = UseDataContext();
     const [filteredPoData, setFilteredPoData] = useState<DataPurchaseOrderFiltered>();
-    const [status, setStatus] = useState(false);
+
     const {tablePoData, setTablePoData} = UseDataContext()
     const {purchaseOrderId} = useParams();
     const [isFetching, setIsFetching] = useState(true);
@@ -44,7 +30,7 @@ const StatusOnReceivedPage = () => {
     });
 
     const [groupData, setGroupData] = useState<Record<string, { supplier_name: string; supplier_notes: string; rows: any[]; }>>({});
-    const navigate = useNavigate();
+  
   useEffect(() => {
     function transformData(data: DataPurchaseOrder['purchase_orders']) {
       const filteredData = data.filter((item) => item.po_code === purchaseOrderId).map((item) => {
@@ -262,30 +248,20 @@ function handleChangeSupplierNotes(supplier_name: string, supplier_notes: string
 }
 
 function handleUpdate(data: any) {
-  // setShowLoading(true);
-  try {
-    console.log("process update");
-    data.forEach((item: inputData) => {
-      const received_data = {
-          raw_material_id: item.id, 
-          received_qty: item.received_quantity, 
-          received_notes: item.received_notes
-        };
-      UpdatePurchaseOrder( filteredPoData!.po_code, received_data, "", "received_data");
-    })
-    
-    UpdatePurchaseOrder( filteredPoData!.po_code, [], "received", "status");
-    setShowPrompt({isSuccess: true, isShow: true});
-    navigate("/purchase-order");
-  }
-  catch (error) {
-    if (error instanceof Error) {
+  // try {
+  //   console.log("process update");
+  //   UpdatePurchaseOrder( filteredPoData!.po_code, data, "on_process", "status");
+  //   setShowPrompt({isSuccess: true, isShow: true});
+  // }
+  // catch (error) {
+  //   if (error instanceof Error) {
       
-      setShowPrompt({isSuccess: false, isShow: true});
-    }
-  }
+  //     setShowPrompt({isSuccess: false, isShow: true});
+  //   }
+  // }
+  // setShowEditDetail(!showEditDetail);
+  // setFetchTrigger(!fetchTrigger);
   console.log(data);
-  // setShowLoading(false);
 }
 
   return (
@@ -374,4 +350,4 @@ function handleUpdate(data: any) {
   )
 }
 
-export default StatusOnReceivedPage
+export default StatusIssuesPage

@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { UseDataContext } from "../../../util/context"
-import generateTableData, {TableData, Data} from "../../../util/generateTableData";
+import generateTableData  from "../../../util/generateTableData";
 import { DataPurchaseOrder, DataPurchaseOrderFiltered } from ".././types";
 import { useParams, useNavigate } from "react-router-dom";
 import ReusableTable from "../../ReusableTable";
 import { UpdatePurchaseOrder } from "../DataFetch";
 import CustomPrompt from "../../CustomPrompt";
+import LoadingPrompt from "../../LoadingPrompt";
 
 const PO_Color = {
     on_process: "bg-yellow-400",
@@ -17,14 +18,10 @@ const PO_Color = {
 }
 
 const StatusNew = () => {
-    const { poData, setPoData } = UseDataContext();
+    const { poData } = UseDataContext();
     const [filteredPoData, setFilteredPoData] = useState<DataPurchaseOrderFiltered>();
-    // const [tablePoData, setTablePoData] = useState<TableData<Data>>({
-    //     headers : [],
-    //     rows: []
-    // })
-
     const {tablePoData, setTablePoData} = UseDataContext()
+    const [showLoading, setShowLoading] = useState(false);
     const {purchaseOrderId} = useParams();
     const [isFetching, setIsFetching] = useState(true);
     const [showPrompt, setShowPrompt] = useState({
@@ -82,7 +79,7 @@ const StatusNew = () => {
                     }
                     : header
             );
-            setTablePoData((prev) => prev = tableData);
+            setTablePoData(tableData);
             console.log("tableData",tableData);
         
             
@@ -112,6 +109,7 @@ const StatusNew = () => {
         // console.log(tablePoData);
     }
     async function handleUpdate(data: any) {
+        setShowLoading(true);
         try {
           console.log("process update");
           await UpdatePurchaseOrder( filteredPoData!.po_code, [], "on_process", "status");
@@ -172,6 +170,7 @@ const StatusNew = () => {
                 isSuccess={showPrompt.isSuccess}                
              />
         }
+    {showLoading && <LoadingPrompt />}
     </>
   )
 }

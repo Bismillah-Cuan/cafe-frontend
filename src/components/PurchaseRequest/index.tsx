@@ -229,6 +229,7 @@ export const PurchaseRequest = () => {
       } catch (error) {
         if (error instanceof Error) {
           setShowPrompt({isSuccess: false, isShow: true});
+          setShowLoading(false);
           throw new Error("An error occurred while fetching data");
         }
       }
@@ -364,7 +365,7 @@ async function handleDelete(pr_code: string) {
         ) : 
         
         <ReusablePrDetailPopOut 
-          fields={prData!.headers.filter((header) => header.accessor !== 'actions')} 
+          
           values={prData!.rows.find((item) => item.pr_code === itemEditId.id)?? {brand: '', name: '', type: '', purchase_unit: '', quantity: 0, quantity_unit: '', notes: ''}}
           onSubmit={handleSubmit} 
           onClose={closeForm} 
