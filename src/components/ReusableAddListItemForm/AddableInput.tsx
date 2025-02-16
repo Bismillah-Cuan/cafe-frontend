@@ -1,7 +1,7 @@
 interface AddableInputProps {
   onChange:
     (name: string, value: string) => void;
-  inputType: "text" | "textarea" | "select" | "number" | "checkbox" | "radio";
+  inputType: "text" | "textarea" | "select" | "number" | "checkbox" | "radio" | "span";
   options?: { value: string; label: string }[]; // For select, radio
   name?: string; // Name for input, radio
   placeholder?: string; // For text, textarea
@@ -9,7 +9,7 @@ interface AddableInputProps {
   label?: string; // Optional label
 }
 
-const listStyle = "text-sm font-bold"
+
 const inputStyle = "text-sm font-bold h-full rounded-md h-full  flex-none px-2 py-1" 
 const AddableInput: React.FC<AddableInputProps> = ({placeholder, onChange, inputType, options, name, value}) => {
 
@@ -25,7 +25,7 @@ const AddableInput: React.FC<AddableInputProps> = ({placeholder, onChange, input
     <>
       {inputType === "textarea" && ( //Textarea
         <textarea 
-              className={`border-none bg-slate-100 outline-none w-[9.5rem] placeholder:font-light ${inputStyle}` }
+              className={`border-none bg-slate-100 outline-none  flex-1 placeholder:font-light ${inputStyle}` }
               name={name} 
               onChange={handleChange}
               value={value}
@@ -33,7 +33,7 @@ const AddableInput: React.FC<AddableInputProps> = ({placeholder, onChange, input
       )}
       {inputType === "text" && ( // Text
         <input 
-              className={`border-none bg-slate-100 focus:outline-none w-[8rem] placeholder:font-light ${inputStyle}` }
+              className={`border-none bg-slate-100 focus:outline-none max-w-[5rem] placeholder:font-light ${inputStyle}` }
               name={name} 
               type="text" 
               onChange={handleChange}
@@ -42,7 +42,7 @@ const AddableInput: React.FC<AddableInputProps> = ({placeholder, onChange, input
       )}
       {inputType === "number" && ( // Number
         <input 
-              className={`border-none bg-slate-100 focus:outline-none w-[8rem] placeholder:font-light ${inputStyle}` }
+              className={`border-none bg-slate-100 focus:outline-none max-w-[5rem] placeholder:font-light ${inputStyle}` }
               name={name} 
               type="number" 
               onChange={handleChange}
@@ -76,6 +76,9 @@ const AddableInput: React.FC<AddableInputProps> = ({placeholder, onChange, input
               <span>{option.label}</span>
             </label>
           ))
+      )}
+      {inputType === "span" && ( // Span
+        <span className="font-bold max-w-[4rem] w-[3rem] text-sm">{value}</span>
       )}
     </>
   )

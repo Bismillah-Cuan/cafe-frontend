@@ -1,11 +1,6 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 // import { UserContext } from "../store/user-context";
 
-interface Metadata {
-  created_at: string;
-  is_deleted: boolean;
-  updated_at: string | null;
-}
 
 type Field = {
     
@@ -31,7 +26,6 @@ type Field = {
 
   const ReusableForm: React.FC<ReusableFormProps> = ({ fields, onSubmit, onClose, buttonLabel = "Submit", isSelected
   }) => {
-    const token = localStorage.getItem("access_token");
     const [formData, setFormData] = useState(
       Object.fromEntries(fields.map(field => [field.name, field.defaultValue || ''])) as { [key: string]: string | number }
     );

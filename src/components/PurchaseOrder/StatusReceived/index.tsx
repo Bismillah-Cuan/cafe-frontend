@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { UseDataContext } from "../../../util/context"
-import generateTableData, {TableData, Data} from "../../../util/generateTableData";
+import generateTableData, { Data} from "../../../util/generateTableData";
 import { DataPurchaseOrder, DataPurchaseOrderFiltered } from ".././types";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import ReusableTable from "../../ReusableTable";
 import { UpdatePurchaseOrder } from "../DataFetch";
 import CustomPrompt from "../../CustomPrompt";
-import { set } from "date-fns";
+
+
 
 const PO_Color = {
   on_process: "bg-yellow-400",
@@ -32,9 +33,8 @@ type inputData = {
 }
 
 const StatusOnReceivedPage = () => {
-    const { poData, setPoData } = UseDataContext();
+    const { poData,  } = UseDataContext();
     const [filteredPoData, setFilteredPoData] = useState<DataPurchaseOrderFiltered>();
-    const [status, setStatus] = useState(false);
     const {tablePoData, setTablePoData} = UseDataContext()
     const {purchaseOrderId} = useParams();
     const [isFetching, setIsFetching] = useState(true);
@@ -142,7 +142,7 @@ const StatusOnReceivedPage = () => {
             : header
     );
       
-      setTablePoData((prev) => prev = tableData);
+      setTablePoData(tableData);
       sessionStorage.setItem("tablePoData", JSON.stringify(tablePoData));
       console.log("tableData",tableData);
       setGroupData(generateGroupdata());
@@ -348,10 +348,12 @@ function handleUpdate(data: any) {
                 </div>
                 <div className="flex justify-end w-full">
                     <div className="flex gap-5">
+                      <Link to="./pdf">
                         <button 
                             className="bg-slate-600 px-2 py-2 rounded-md hover:bg-slate-400 hover:cursor-pointer text-white">
                               PDF
-                            </button>
+                          </button>
+                        </Link>
                         <button 
                             className="bg-slate-600 px-2 py-2 rounded-md hover:bg-slate-400 hover:cursor-pointer text-white"
                             onClick={() => handleUpdate(tablePoData.rows)}

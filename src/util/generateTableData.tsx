@@ -1,5 +1,4 @@
 import { TableHeaders } from "../components/ReusableTable/TableTypes";
-import { useState } from "react";
 
 interface Metadata {
     created_at: string;

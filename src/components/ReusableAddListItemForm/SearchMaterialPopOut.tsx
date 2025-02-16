@@ -7,28 +7,27 @@ interface SearchMaterialPopOutProps {
     isSearchOpen: boolean
     OnBlur: () => void
     OnSelected: (e:{name: string, materialId: number, purchaseUnit: string, type: string}) => void
-    ref: HTMLDivElement | undefined | null
+    anchorEl: HTMLDivElement | null
 }
 
-type prItemSelect = {
-    raw_material_id: string,
-    name: string,
-    purchase_unit: string,
-    type: string
-}
+// type prItemSelect = {
+//     raw_material_id: string,
+//     name: string,
+//     purchase_unit: string,
+//     type: string
+// }
 
 export const SearchMaterialPopOut = forwardRef<HTMLDivElement, SearchMaterialPopOutProps>(
-    ({ searchMaterial, isSearchOpen, OnBlur, OnSelected }, ref) => {
-    const {prList, setPrList} = UsePrContext();
+    ({ searchMaterial, isSearchOpen, OnBlur, OnSelected, anchorEl }, ) => {
+    const {prList, } = UsePrContext();
     const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
     const popperElementRef= useRef<HTMLElement | null>(null);
 
-    const { styles, attributes } = usePopper(ref as HTMLElement | null, popperElement, {
+    const { styles, attributes } = usePopper(anchorEl as HTMLElement | null, popperElement, {
         placement: "bottom-start",
         
     });
 
-    const searchRef = useRef<HTMLDivElement>(null);(null)
     const setRefs = (node: HTMLDivElement) => {
         // Set both refs
         popperElementRef.current = node;

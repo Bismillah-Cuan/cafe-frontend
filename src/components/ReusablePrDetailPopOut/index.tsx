@@ -1,4 +1,4 @@
-import { request } from "http";
+
 import * as React from "react";
 
 
@@ -59,7 +59,7 @@ type Field = {
     approved: "bg-green-400",
     rejected: "bg-red-400"
   }
-export const ReusablePrDetailPopOut: React.FC<ReusableEditProps> = ({ fields, values, username, division, onSubmit, onClose, buttonLabel = "Submit", isSelected
+export const ReusablePrDetailPopOut: React.FC<ReusableEditProps> = ({  values,  onClose,  isSelected
   }) => {
 
     const allKeys = new Set<string>();

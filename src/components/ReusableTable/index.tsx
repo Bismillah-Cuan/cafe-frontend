@@ -1,13 +1,12 @@
-import { Link } from "react-router-dom";
+
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { ArrowUpDown } from "../CustomIcon";
 import { useState, useMemo } from "react";
-import {useTable, useSortBy, useGlobalFilter, useFilters, usePagination, SortingRule, Column } from 'react-table';
+import {useTable, useSortBy, useGlobalFilter, useFilters, usePagination,  } from 'react-table';
 import { GlobalFilter } from "../GlobalFilter";
-import { ColumnFilter } from "../ColumnFilter";
 import { TableHeaders } from "../../pages/reports/types";
-import { set } from "date-fns";
+
 
 
 interface ReusableTableProps <T>  {
@@ -33,17 +32,17 @@ const filterRows = <T extends object> (rows: T[], filterValue: string) => {
 const ReusableTable = <T extends object,>({tableFields, data, enabledFilters = true, enabledPagination = true}: ReusableTableProps<T>) => {
 
   // const [sortBy, setSortBy] = useState<({ id: any; desc: boolean } | null)[]>([]);
-  const [sortBy, setSortBy] = useState<SortingRule<T>[]>([]);
-  const [filter, setFilter] = useState<string | undefined>('');
+  // const [sortBy, setSortBy] = useState<SortingRule<T>[]>([]);
+  const [filter, ] = useState<string | undefined>('');
   const tableFieldsMemo = useMemo(
     () => tableFields,
     [tableFields]
   );
   const dataMemo = useMemo(() => filterRows(data, filter ?? ''), [data, filter]);
-  const defaultColumn = useMemo(() => ({
-    Filter: ColumnFilter,
-    sortable: true
-  }), []);
+  // const defaultColumn = useMemo(() => ({
+  //   Filter: ColumnFilter,
+  //   sortable: true
+  // }), []);
 
   const {
     getTableProps,
@@ -58,7 +57,7 @@ const ReusableTable = <T extends object,>({tableFields, data, enabledFilters = t
     gotoPage,
     pageCount,
     prepareRow,
-    setPageSize,
+    // setPageSize,
     state,
     setGlobalFilter,
   } = useTable(
@@ -76,7 +75,7 @@ const ReusableTable = <T extends object,>({tableFields, data, enabledFilters = t
     useFilters,  useGlobalFilter, useSortBy,  usePagination, // Add this line to enable sorting
   );
 
-  const { globalFilter, pageIndex, pageSize } = state; 
+  const { globalFilter, pageIndex,  } = state; 
   
 
   return (

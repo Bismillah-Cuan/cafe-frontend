@@ -25,8 +25,11 @@ const statusColor = {
   approved: "bg-green-400",
   rejected: "bg-red-400"
 }
+interface PurchaseRequestProps {
+  disabled?: boolean
+}
 
-export const PurchaseRequest = () => {
+export const PurchaseRequest: React.FC<PurchaseRequestProps> = ({disabled}) => {
 
     
     // const [purchaseRequests, setPurchaseRequests] = useState<PurchaseRequestsResponse>({})
@@ -60,7 +63,7 @@ export const PurchaseRequest = () => {
           
           setIsFetching(true);
           console.log(isFetching);
-          const {tableData, division, pr_code} = await FetchPurchaseRequests();
+          const {tableData, division, } = await FetchPurchaseRequests();
           setDivision(division); 
          
           const existingHeader = tableData.headers.find(header => header.accessor === 'status');
@@ -334,7 +337,7 @@ async function handleDelete(pr_code: string) {
          <div className="w-full mr-8 text-slate-800 relative overflow-x-hidden flex flex-col gap-5">
       <section className="flex justify-end  items-center">
         <div>
-        <CreateFormButton onClick={handleShowForm} label="Create Order" />
+        <CreateFormButton onClick={handleShowForm} label="Create Order" disabled={disabled}/>
         {showForm && 
           <ReusableAddListItemForm 
             // fields={MaterialFormFields} 
@@ -378,7 +381,13 @@ async function handleDelete(pr_code: string) {
         </div>
       </section>
       <section>
-        {isFetching ? <p>Sedang Mengambil Data Tabel.....</p> : <ReusableTable tableFields={prData.headers} data={prData.rows}/>}
+        {isFetching ? <p>Sedang Mengambil Data Tabel.....</p> : 
+          <ReusableTable 
+            tableFields={prData.headers} 
+            data={prData.rows} 
+            enabledFilters={!disabled} 
+            enabledPagination={!disabled}
+          />}
 
       </section>
     </div>

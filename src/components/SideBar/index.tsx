@@ -1,8 +1,7 @@
-import { useContext } from 'react'
+
 import { NavLink, Link } from 'react-router-dom'
 import logoCuan from '../../assets/CoffeeNCouple.png'
 import classes from './MainNavigation.module.css'
-import { UserContext } from '../Store/user-context'
 import { navLinks } from '../../util/navLinks'
 
 

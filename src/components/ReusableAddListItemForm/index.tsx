@@ -1,14 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState,  } from "react";
 import AddListItem from "./AddListItem";
-import { prRequestPost } from "./AddListItem";
-import { TableData, Data } from "./generateTableData";
-import { DataPurchaseRequest, PurchaseRequestsResponse } from "../PurchaseRequest/types";
+import { DataPurchaseRequest,  } from "../PurchaseRequest/types";
+import { TableData, Data } from "../../util/generateTableData"
 const bgClass = "fixed top-0 left-0 w-full h-full bg-black opacity-50 z-[10]";
 
 type ReusableFormProps = {
     // fields: Field[];
-    onSubmit: (formData: Record<string, string>[]) => void;
-    onUpdate?: (formData: Record<string, string>[]) => void
+    onSubmit: (formData: { requested_raw_materials: any}) => void;
+    onUpdate?: (formData: { pr_code: string | undefined, status: string | undefined, requested_raw_materials: any }) => void;
     onClose?: () => void;
     buttonLabel?: string;
     isSelected?: boolean 
@@ -26,12 +25,11 @@ const statusColor = {
   rejected: "bg-red-400"
 }
 const ReusableAddListItemForm: React.FC<ReusableFormProps> = ( 
-  {onSubmit, onUpdate, onClose, isSelected, pr_code, username, isUpdated, UpdatedData}) => {
+  {onSubmit, onUpdate, onClose, isSelected, pr_code, isUpdated, UpdatedData}) => {
 
-  const [formData, setFormData] = useState(() => 
+  const [formData, setFormData] = useState<TableData<Data>["rows"][number]>(() => 
     isUpdated ? UpdatedData : [] as Record<string, string>[]
   );
-  const [isPopOut, setPopOut] = useState(false);
     
 
   
@@ -53,7 +51,7 @@ const ReusableAddListItemForm: React.FC<ReusableFormProps> = (
     }
     }
     function handleSubmit() {
-      const requested_raw_materials = formData!.map(item => {
+      const requested_raw_materials = formData!.map((item: any) => {
         const {raw_material_id, quantity, notes} = item;
         return {raw_material_id, quantity, notes};
       })
@@ -68,7 +66,7 @@ const ReusableAddListItemForm: React.FC<ReusableFormProps> = (
 
     function handleUpdate() {
       
-      const requested_raw_materials = formData!.map(item => {
+      const requested_raw_materials = formData!.map((item: any) => {
         const {raw_material_id, quantity, notes} = item;
         return {raw_material_id, quantity, notes};
       })
@@ -107,13 +105,13 @@ const ReusableAddListItemForm: React.FC<ReusableFormProps> = (
             <h3 className="text-md text-slate-600 mb-5 opacity-50">division - {formData.division}</h3>
         </div>
         <div className="relative flex flex-col gap-4 w-full">
-            <div className="flex justify-between">
-                <label className="flex-1 text-md font-light" htmlFor="material">Bahan Baku</label>
-                <div className="flex justify-evenly flex-auto">
+            <div className="flex  justify-between">
+                <label className=" flex-1 text-md font-light" htmlFor="material">Bahan Baku</label>
+                <div className="flex justify-between gap-[6rem] flex-auto">
                   <label className="   text-md font-light" htmlFor="quantity">Kuantitas</label>
                   <label className="text-md font-light" htmlFor="purchaseUnit">Satuan Beli</label>
                   <label className=" text-md font-light" htmlFor="type">Tipe</label>
-                  <label className=" text-md font-light" htmlFor="note">Catatan</label>
+                  <label className=" flex-1 text-md font-light" htmlFor="note">Catatan</label>
                 </div>
             </div>
             <AddListItem onAddItem={(formData) => setFormData(formData)} dataUpdate={transformedData} isUpdated={isUpdated}/>

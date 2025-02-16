@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { FetchPurchaseOrders } from './DataFetch'
-import { DataPurchaseOrder } from './types';
 import { UseDataContext } from '../../util/context';
 import { Link } from 'react-router-dom';
 
@@ -16,7 +15,6 @@ const statusColor = {
 }
 const PurchaseOrder = () => {
     const {poData, setPoData} = UseDataContext();
-    const [fetchTrigger, setFetchTrigger] = useState(false);
     const [isFetching, setIsFetching] = useState(true);
 
     useEffect(() => {

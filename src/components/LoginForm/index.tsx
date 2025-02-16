@@ -3,7 +3,7 @@ import logoCuan from "../../assets/CoffeeNCouple.png"
 import { Link, useNavigate } from "react-router-dom"
 import { Required } from '../../util/validation.js'
 import { useInput } from "../../hooks/useInput"
-import { useContext, useState } from "react"
+import { useContext } from "react"
 import { UserContext } from "../Store/user-context";
 import { useLogin } from "../../hooks/useFetch"
 
@@ -13,8 +13,8 @@ interface LoginData {
 }
 
 const LoginForm:React.FC = () => {
-  const {user, updateCurrentUser} = useContext(UserContext)
-  const { handleLogin, loading, error } = useLogin();
+  const { updateCurrentUser} = useContext(UserContext)
+  const { handleLogin } = useLogin();
   
   const navigate = useNavigate()
 

@@ -1,7 +1,5 @@
 import { DataPurchaseOrder } from "./types";
-import { PrContextProps } from "../../util/context";
-import generateTableData from "../../util/generateTableData";
-import { API_PURCHASE_ORDER, API_RAW_MATERIALS_SEARCH } from "../../constants/URL_API";
+import { API_PURCHASE_ORDER,  } from "../../constants/URL_API";
 
 export async function FetchPurchaseOrders () {
     
@@ -97,7 +95,7 @@ export async function CreatePurchaseOrder(data: any) {
         'Authorization': `Bearer ${access_token}`,
         'Content-Type': 'application/json'
     }
-    const response = await fetch(API_PURCHASE_ORDER, {
+     await fetch(API_PURCHASE_ORDER, {
         method: 'POST',
         headers: headers,
         body: JSON.stringify(pr_code)

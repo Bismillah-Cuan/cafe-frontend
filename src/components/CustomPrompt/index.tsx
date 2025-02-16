@@ -2,17 +2,17 @@ import "./customPrompt.css"
 import { useState } from "react"
 
 interface promptPros {
-    title: string,
-    message: string,
+    title?: string,
+    message?: string,
     isSuccess: boolean
     OnOpen?: boolean
     OnConfirm?: () => void
 }
 
 
-const CustomPrompt: React.FC<promptPros> = ({ title, message, isSuccess, OnOpen = true, OnConfirm}) => {
+const CustomPrompt: React.FC<promptPros> = ({  isSuccess,  OnConfirm}) => {
 
-    const [isOpen, setIsOpen] = useState(true)
+    const [isOpen, ] = useState(true)
 
 
   return (

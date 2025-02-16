@@ -1,22 +1,19 @@
-import { useState, useRef } from "react"
+import { useState, useRef, useCallback } from "react"
 import SavedListItem from "./SavedListItem"
-import { ref, string } from "yup"
-import { Field } from "./typeAddList"
-import { add } from "date-fns"
-import { UsePrContext } from "../../util/context"
 import { SearchMaterialPopOut } from "./SearchMaterialPopOut"
+
 
 const listStyle = "text-sm font-bold"
 const isSelectedStyle = "hover:bg-slate-200 w[80rem]"
 
-const rawMaterialsTypes=[
-  {value: "dry", label: "dry"},
-  {value: "fresh", label: "fresh"},
-  {value: "dairy", label: "dairy"},
-  {value: "atk", label: "atk"},
-  {value: "packaging", label: "packaging"},
-  {value: "support", label: "support"},
-]
+// const rawMaterialsTypes=[
+//   {value: "dry", label: "dry"},
+//   {value: "fresh", label: "fresh"},
+//   {value: "dairy", label: "dairy"},
+//   {value: "atk", label: "atk"},
+//   {value: "packaging", label: "packaging"},
+//   {value: "support", label: "support"},
+// ]
 
 interface AddListItemProps {
   onAddItem: (data: any) => void;
@@ -28,7 +25,7 @@ interface AddListItemProps {
 type addFormField = {
   name: string, 
   placeholder: string, 
-  type: "text" | "textarea" | "select" | "number" | "checkbox" | "radio";
+  type: "text" | "textarea" | "select" | "number" | "checkbox" | "radio" | "span",
   options?: 
   {value: string, label: string}[]
 }
@@ -37,8 +34,8 @@ type addFormField = {
 
 const addFormField: addFormField[] = [
   {name: "quantity", placeholder: "kuantitas", type: "number"},
-  {name: "purchase_unit", placeholder: "satuan pembelian", type: "text"},
-  {name: "type", placeholder: "tipe", type: "select", options: rawMaterialsTypes},
+  {name: "purchase_unit", placeholder: "satuan pembelian", type: "span"},
+  {name: "type", placeholder: "tipe", type: "span"},
   {name: "notes", placeholder: "catatan", type: "textarea"},
 ]
 export type prRequestPost = {
@@ -52,14 +49,19 @@ export type prRequestPost = {
 
 
 
-const AddListItem: React.FC<AddListItemProps> = ({ onAddItem, dataUpdate, isUpdated, statusPr }) => {
+const AddListItem: React.FC<AddListItemProps> = ({ onAddItem, dataUpdate, isUpdated,  }) => {
     const [isSelected, setIsSelected] = useState(false);
     const [dataSaved2, setDataSaved2] = useState(() => isUpdated ? dataUpdate as prRequestPost : [] as prRequestPost);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isPrAvailabe, setIsPrAvailabe] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
-    const [referenceElement, setReferenceElement] = useState<HTMLLIElement | null>();
+    const [referenceElement, setReferenceElement] = useState< null | HTMLDivElement>(null);
 
+
+    const setReference = useCallback((node: HTMLDivElement | null) => {
+      setReferenceElement(node);
+    }, []);
+    // const referenceElement = useRef<HTMLDivElement>(null);
     console.log("datasaved2", dataSaved2)
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -72,7 +74,7 @@ const AddListItem: React.FC<AddListItemProps> = ({ onAddItem, dataUpdate, isUpda
     }
 
 
-    function handleBlur(event?: React.FocusEvent<HTMLInputElement>) {
+    function handleBlur() {
       
       setIsSearchOpen(false);
       setIsPrAvailabe(false);
@@ -147,10 +149,6 @@ const AddListItem: React.FC<AddListItemProps> = ({ onAddItem, dataUpdate, isUpda
      setDataSaved2(dataSaved2!.filter((item) => item.raw_material_id !== materialId));
     }
 
-    function handleSubmit(e: React.FormEvent) {
-      e.preventDefault();
-
-    }
   return (
     <section className={`relative max-h-[20rem] z-30 overflow-clip-margin-xl h-[10rem] overflow-y-auto`}>
         <ol className="relative flex flex-col gap-2 list-disc w-full">
@@ -173,7 +171,7 @@ const AddListItem: React.FC<AddListItemProps> = ({ onAddItem, dataUpdate, isUpda
               className={`relative list-disc px-2 py-1 rounded-md ${!isSelected ? isSelectedStyle : ''}`} 
             >
             {isSelected ? 
-              <div className="relative flex flex-col gap-1" ref={setReferenceElement}>
+              <div className="relative flex flex-col gap-1" ref={setReference}>
                 <input
                 className={`border-none bg-slate-100 focus:outline-none placeholder:font-light ${listStyle}`}
                 type="text"
@@ -195,7 +193,7 @@ const AddListItem: React.FC<AddListItemProps> = ({ onAddItem, dataUpdate, isUpda
                   searchMaterial={searchTerm} 
                   OnBlur={handleBlur} 
                   OnSelected={(event) => addItemToData(event)}
-                  ref={referenceElement}
+                  anchorEl={referenceElement}
                   />
               </div>
             : <span onClick={handleClick} className={`hover:cursor-pointer opacity-50 font-light text-sm`}>

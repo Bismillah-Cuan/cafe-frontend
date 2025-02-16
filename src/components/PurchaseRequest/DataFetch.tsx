@@ -2,7 +2,6 @@ import { DataPurchaseRequest } from "./types";
 import { PrContextProps } from "../../util/context";
 import generateTableData from "../../util/generateTableData";
 import { API_PURCHASE_REQUEST, API_RAW_MATERIALS_SEARCH } from "../../constants/URL_API";
-import axios from "axios";
 
 
 export async function FetchPurchaseRequests () {

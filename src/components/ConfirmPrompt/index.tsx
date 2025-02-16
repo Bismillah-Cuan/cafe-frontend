@@ -1,5 +1,4 @@
 import "./confrimPrompt.css"
-import { useState } from "react"
 
 interface confirmPromptProps {
     title: string,
@@ -8,7 +7,7 @@ interface confirmPromptProps {
     OnConfirm?: () => void
     OnClose?: () => void
 }
-const ConfrimPrompt: React.FC<confirmPromptProps> = ({title, message, OnOpen = true, OnConfirm, OnClose}) => {
+const ConfrimPrompt: React.FC<confirmPromptProps> = ({title, message, OnConfirm, OnClose}) => {
 
     // const [isOpen, setIsOpen] = useState(OnOpen)
   return (

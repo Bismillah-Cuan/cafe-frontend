@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { json, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import { API_LOGIN } from "../constants/URL_API";
 
 type LoginData = {
@@ -32,7 +32,7 @@ export const useLogin = () => {
       });
 
       if (!response.ok) {
-        const msg = await response.text();
+        // const msg = await response.text();
 
           if ([401, 403, 404].includes(response.status)) {
             // Handle client-side errors (e.g., invalid username/password)

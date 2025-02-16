@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { UseDataContext } from "../../../util/context"
-import generateTableData, {TableData, Data} from "../../../util/generateTableData";
+import generateTableData, { Data} from "../../../util/generateTableData";
 import { DataPurchaseOrder, DataPurchaseOrderFiltered } from ".././types";
-import { useParams, useNavigate, Navigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import ReusableTable from "../../ReusableTable";
 import { UpdatePurchaseOrder } from "../DataFetch";
 import CustomPrompt from "../../CustomPrompt";
 import LoadingPrompt from "../../LoadingPrompt";
-import { set } from "date-fns";
+
 
 const PO_Color = {
   on_process: "bg-yellow-400",
@@ -20,7 +20,7 @@ const PO_Color = {
 
 
 const StatusOnProcessPage = () => {
-  const { poData, setPoData } = UseDataContext();
+  const { poData, } = UseDataContext();
   const [filteredPoData, setFilteredPoData] = useState<DataPurchaseOrderFiltered>();
   const {tablePoData, setTablePoData} = UseDataContext()
   const {purchaseOrderId} = useParams();
@@ -62,7 +62,7 @@ const StatusOnProcessPage = () => {
       const tableData = generateTableData(inputTableData);
 
       
-      setTablePoData((prev) => prev = tableData);
+      setTablePoData(tableData);
       console.log("tableData",tableData);
   
       

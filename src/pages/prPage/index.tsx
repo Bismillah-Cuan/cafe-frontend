@@ -1,6 +1,5 @@
 import Header from '../../components/Header'
 import {PurchaseRequest} from '../../components/PurchaseRequest'
-import { useNavigate } from 'react-router-dom'
 
 const index = () => {
   

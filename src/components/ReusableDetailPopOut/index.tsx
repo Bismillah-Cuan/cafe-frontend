@@ -22,13 +22,13 @@ type Data = {
 type ReusableEditProps = {
   fields: Field[];
   values: Data;
-  onSubmit: (formData: Record<string, string>) => void;
+  onSubmit?: (formData: Record<string, string>) => void;
   onClose?: () => void;
   buttonLabel?: string;
   isSelected?: boolean
 };
 const bgClass = "fixed top-0 left-0 w-full h-full bg-black opacity-50 z-[10]";
-const ReusableDetailPopOut: React.FC<ReusableEditProps> = ({ fields, values, onSubmit, onClose, buttonLabel = "Submit", isSelected
+const ReusableDetailPopOut: React.FC<ReusableEditProps> = ({ fields, values, onClose, isSelected
   }) => {
   return (
     <>

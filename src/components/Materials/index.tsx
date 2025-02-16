@@ -1,12 +1,10 @@
 import ReusableTable from "../../components/ReusableTable"
-import Header from "../../components/Header"
 import ReusableForm from "../../components/ReusableForm"
 import CreateFormButton from "../../components/CreateFormButton"
 import ReusableDetailPopOut from "../../components/ReusableDetailPopOut"
 import EditDetailButton from "../../components/EditDetailButton"
-import { useState, useEffect, useCallback, useRef, useMemo } from "react"
-import { TableData, Data, RawMaterialResponse } from "./types"
-import ErrorModal from "../ErrorModal"
+import { useState, useEffect,  } from "react"
+import { TableData, Data } from "./types"
 import {DataFetchMaterial, DeleteMaterial, CreateMaterial} from "./DataFetch"
 import {MaterialFormFields} from "./MaterialFormFields"
 import { UseDataContext } from "../../util/context"
@@ -19,14 +17,12 @@ import LoadingPrompt from "../LoadingPrompt"
 export const Materials = () => {
   const [showForm, setShowForm] = useState(false);
   const [showEditDetail, setShowEditDetail] = useState(false);
-  const [isFirstRender, setIsFirstRender] = useState(true);
   const [itemEditId, setitemEditId] = useState({
     name: "" ,
     brand: "",
     id: 0
   });
   const [isFetching, setIsFetching] = useState(false);
-  const [error, setError] = useState();
   const {materials, setMaterials} = UseDataContext();
   const [fetchTrigger, setFetchTrigger] = useState(false); 
   const [isConfirm, setIsConfirm] = useState(false);
@@ -72,11 +68,7 @@ export const Materials = () => {
 
       }, [fetchTrigger]);
 
-   
-    if (error) {
-
-      return <ErrorModal title="An Error occured" message="An error occurred while fetching data" />;
-    }
+  
 
     function getMaterialFromLocalStorage() {
       if(!isFetching) {

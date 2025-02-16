@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import LoginPage from './pages/login'
 import DashboardPage from './pages/dashboard'
@@ -8,7 +7,6 @@ import ReportDetailPage from './pages/reportDetails'
 import InitialPages from './pages/initial'
 import ReportsEditPage from './pages/reportsEdit'
 import MaterialPage from './pages/MaterialPage'
-import { UserContext } from './components/Store/user-context'
 import RegisterPage from './pages/register'
 import MarketListPage from './pages/marketList'
 import PurchaseOrderPage from './pages/poPage'
@@ -17,6 +15,7 @@ import PurchaseRequestPage from './pages/prPage'
 import SupplierPage from './pages/supplier'
 import ListUserPage from './pages/listUser'
 import { DataProvider } from './util/context'
+import PdfPage from './components/PdfPage'
 
 
 const router = createBrowserRouter([
@@ -38,6 +37,7 @@ const router = createBrowserRouter([
       {path: "market-list", element: <MarketListPage />},
       {path: "purchase-order", element: <PurchaseOrderPage />},
       {path: "purchase-order/:status/:purchaseOrderId", element: <DetailPurchaseOrderPage />},
+      {path: "purchase-order/:status/:purchaseOrderId/pdf", element: <PdfPage />},
       {path: "purchase-request", element: <PurchaseRequestPage />},
       {path: "supplier", element: <SupplierPage />},
       {path: "list-user", element: <ListUserPage />}
@@ -47,14 +47,14 @@ const router = createBrowserRouter([
 ])
 
 const App = () => {
-  const [currentUser, setCurrentUser] = useState({
-    user:"" ,
-  })
+  // const [currentUser, setCurrentUser] = useState({
+  //   user:"" ,
+  // })
 
-  const ctxValue = {
-    user: currentUser.user,
-    updateCurrentUser: (user: string) => setCurrentUser({ user })
-  }
+  // const ctxValue = {
+  //   user: currentUser.user,
+  //   updateCurrentUser: (user: string) => setCurrentUser({ user })
+  // }
 
   
   return (
