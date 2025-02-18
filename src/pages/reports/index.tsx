@@ -6,12 +6,9 @@ import ReusableDetailPopOut from "../../components/ReusableDetailPopOut"
 import EditDetailButton from "../../components/EditDetailButton"
 import { useState } from "react"
 import { tableData, RowData } from "../../util/tableDummyData"
-import {format} from "date-fns"
 import { TableHeaders } from "./types"
 
 
-
-const buttonClass = "text-slate-900 font-light text-center bg-slate-400 hover:bg-slate-500 px-2 py-1 rounded-md";
 
 const Reports= () => {
   const [showForm, setShowForm] = useState(false);

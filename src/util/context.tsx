@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useMemo, useEffect } from "react";
+import { createContext, useContext, useState,  useEffect } from "react";
 import { DataPurchaseOrder } from "../components/PurchaseOrder/types";
 import { TableData, Data } from "./generateTableData";
 // Define the structure of your context
@@ -47,67 +47,7 @@ const PrContext = createContext<PrContextSearch | undefined>(undefined);
 
 export const DataProvider = ({ children }: { children: React.ReactNode }) => {
 
-  const dummyPR: PrContextProps = {
-    raw_materials: [
-      {
-        id: 1 ,
-        name: "Rice",
-        brand: "A",
-        type: "A",
-        purchase_unit: "A",
-        quantity: 10,
-        quantity_unit: "A",
-        metadata: {
-          created_at: "2023-01-01",
-          is_deleted: false,
-          updated_at: null,
-        },
-      },
-      {
-        id: 2,
-        name: "Butter",
-        brand: "B",
-        type: "B",
-        purchase_unit: "B",
-        quantity: 5,
-        quantity_unit: "B",
-        metadata: {
-          created_at: "2023-01-01",
-          is_deleted: false,
-          updated_at: null,
-        },
-      },
-      {
-        id: 3,
-        name: "Milk",
-        brand: "C",
-        type: "C",
-        purchase_unit: "C",
-        quantity: 3,
-        quantity_unit: "C",
-        metadata: {
-          created_at: "2023-01-01",
-          is_deleted: false,
-          updated_at: null,
-        },
-      },
-      {
-        id: 4,
-        name: "Egg",
-        brand: "D",
-        type: "D",
-        purchase_unit: "D",
-        quantity: 2,
-        quantity_unit: "D",
-        metadata: {
-          created_at: "2023-01-01",
-          is_deleted: false,
-          updated_at: null,
-        },
-      },
-    ],
-  }
-
+ 
   const [materials, setMaterials] = useState<TableData<Data>>({
     headers: [],
     rows: [],

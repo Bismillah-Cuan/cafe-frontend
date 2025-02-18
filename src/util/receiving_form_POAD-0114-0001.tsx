@@ -1,0 +1,83 @@
+export const htmlContent = `<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Form Penerimaan Bahan Baku</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="p-6 bg-gray-100">
+    <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6">
+        <h1 class="text-xl font-bold text-center text-gray-800 mb-6">FORM PENERIMAAN BAHAN BAKU</h1>
+        
+        <div class="grid grid-cols-2 gap-6 mb-6">
+            <div>
+                <p><span class="font-semibold">Nama Penerima:</span> </p>
+                <p><span class="font-semibold">Divisi:</span> </p>
+                <p><span class="font-semibold">No. PO:</span> </p>
+            </div>
+            <div>
+                <p><span class="font-semibold">Tgl. Penerimaan:</span></p>
+                <p><span class="font-semibold">Nama Supplier:</span> </p>
+            </div>
+        </div>
+        
+        <table class="w-full border border-gray-300 text-sm text-gray-700">
+            <thead class="bg-gray-200">
+                <tr>
+                    <th class="border border-gray-300 px-3 py-2">No.</th>
+                    <th class="border border-gray-300 px-3 py-2">Nama Bahan Baku</th>
+                    <th class="border border-gray-300 px-3 py-2">Jumlah Seharusnya</th>
+                    <th class="border border-gray-300 px-3 py-2">Jumlah yang Diterima</th>
+                    <th class="border border-gray-300 px-3 py-2">Satuan</th>
+                    <th class="border border-gray-300 px-3 py-2">Kondisi</th>
+                    <th class="border border-gray-300 px-3 py-2 w-1/4">Catatan</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                <tr class="bg-white hover:bg-gray-100">
+                    <td class="border border-gray-300 px-3 py-2 text-center">1</td>
+                    <td class="border border-gray-300 px-3 py-2">Milk</td>
+                    <td class="border border-gray-300 px-3 py-2 text-center"></td>
+                    <td class="border border-gray-300 px-3 py-2 text-center"></td>
+                    <td class="border border-gray-300 px-3 py-2 text-center">pcs</td>
+                    <td class="border border-gray-300 px-3 py-2 text-center">Baik / Rusak</td>
+                    <td class="border border-gray-300 px-3 py-2"></td>
+                </tr>
+                
+                <tr class="bg-white hover:bg-gray-100">
+                    <td class="border border-gray-300 px-3 py-2 text-center">2</td>
+                    <td class="border border-gray-300 px-3 py-2">Egg</td>
+                    <td class="border border-gray-300 px-3 py-2 text-center"></td>
+                    <td class="border border-gray-300 px-3 py-2 text-center"></td>
+                    <td class="border border-gray-300 px-3 py-2 text-center">box</td>
+                    <td class="border border-gray-300 px-3 py-2 text-center">Baik / Rusak</td>
+                    <td class="border border-gray-300 px-3 py-2"></td>
+                </tr>
+                
+                <tr class="bg-white hover:bg-gray-100">
+                    <td class="border border-gray-300 px-3 py-2 text-center">3</td>
+                    <td class="border border-gray-300 px-3 py-2">Sugar</td>
+                    <td class="border border-gray-300 px-3 py-2 text-center"></td>
+                    <td class="border border-gray-300 px-3 py-2 text-center"></td>
+                    <td class="border border-gray-300 px-3 py-2 text-center">pcs</td>
+                    <td class="border border-gray-300 px-3 py-2 text-center">Baik / Rusak</td>
+                    <td class="border border-gray-300 px-3 py-2"></td>
+                </tr>
+                
+            </tbody>
+        </table>
+        
+        <div class="flex justify-between mt-8">
+            <div class="w-1/3 text-center">
+                <p class="font-semibold">Penerima</p>
+                <div class="mt-12 border-t border-gray-500"></div>
+            </div>
+            <div class="w-1/3 text-center">
+                <p class="font-semibold">Supervisor</p>
+                <div class="mt-12 border-t border-gray-500"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>`

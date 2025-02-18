@@ -1,9 +1,5 @@
 import RegisterForm from '../../components/RegisterForm'
 
-interface MyFormValues {
-    username: string
-    password: string
-}
 
 const RegisterPage: React.FC<{}> = () => {
 

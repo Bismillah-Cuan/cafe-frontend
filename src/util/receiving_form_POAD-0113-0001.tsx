@@ -62,7 +62,7 @@ export const htmlContent =
     <div class="header-section">
         <div class="header-left">
             <div class="section">
-                <label class="text-2xl">Nama Penerima:</label> 
+                <label class>Nama Penerima:</label> 
             </div>
             <div class="section">
                 <label>Divisi:</label> 

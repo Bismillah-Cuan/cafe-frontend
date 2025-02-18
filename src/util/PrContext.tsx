@@ -1,4 +1,4 @@
-import { DataPurchaseRequest } from "../components/PurchaseRequest/types"
+
 import { useContext, createContext, useState } from "react"
 
 export interface Metadata {
